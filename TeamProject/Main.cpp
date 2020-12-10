@@ -163,20 +163,141 @@ void setCyanColor() {
 	glUniform4f(shaders.getUniformColorId(), 0, 1, 1, 0);
 }
 
+void setRedColor() {
+	glUniform4f(shaders.getUniformColorId(), 1, 0, 0, 0);
+}
+
+void setGreenColor() {
+	glUniform4f(shaders.getUniformColorId(), 0, 1, 0, 0);
+}
+
+void setBlueColor() {
+	glUniform4f(shaders.getUniformColorId(), 0, 0, 1, 0);
+}
+
 ///////////////////////////////////////////////////////////////////// SCENE
 
-SceneGraph* squareTetrominoesScenegraph;
-SceneNode* ground;
+SceneGraph* slidingPuzzleScenegraph;
+SceneNode* backboard;
+SceneNode* frame;
+SceneNode* pieces;
+
 Mesh* mesh;
 
 void createEnvironmentSceneGraph()
 {
-	ground = squareTetrominoesScenegraph->createNode();
-	ground->setPreDrawFun(setCyanColor);
-	ground->setMesh(mesh);
-	ground->setMatrix(
-		MatrixFactory::scalingMatrix(2.0f)
+	#pragma region backboard
+	backboard = slidingPuzzleScenegraph->createNode();
+	backboard->setPreDrawFun(setBlueColor);
+	backboard->setMesh(mesh);
+	backboard->setMatrix(
+		MatrixFactory::scalingMatrix(Vector3d(11.0f,11.0f,1.0f))
 	);
+#pragma endregion
+
+	#pragma region frame
+
+	frame = slidingPuzzleScenegraph->createNode();
+	frame->setPreDrawFun(setRedColor);
+	frame->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.8f))
+	);
+
+	SceneNode* frameUp = frame->createNode();
+	frameUp->setMesh(mesh);
+	//Define shape and set Z
+	//UP Frame
+	frameUp->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, 2.0f, 0.0f))
+		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
+	);
+
+	//Define positions and rotations of other frame components
+	//Down
+	SceneNode* frameDown = frame->createNode();
+	frameDown->setMesh(mesh);
+	frameDown->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, -2.0f, 0.0f))
+		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
+	);
+
+	//Right
+	SceneNode* frameRight = frame->createNode(); 
+	frameRight->setMesh(mesh);
+	frameRight->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(2.0f, 0.0f, 0.0f))
+		* MatrixFactory::rotateZMatrix(90)
+		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
+	);
+	//Left
+	SceneNode* frameLeft = frame->createNode(); 
+	frameLeft->setMesh(mesh);
+	frameLeft->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(-2.0f, 0.0f, 0.0f))
+		* MatrixFactory::rotateZMatrix(90)
+		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
+	);
+
+#pragma endregion
+
+#pragma region pieces
+
+	pieces = slidingPuzzleScenegraph->createNode();
+	pieces->setPreDrawFun(setGreenColor);
+	pieces->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.8f))
+		* MatrixFactory::scalingMatrix(3.0f)
+	);
+
+	SceneNode* piece1 = pieces->createNode();
+	piece1->setMesh(mesh);
+	piece1->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(-0.4f,0.4f,0.0f))
+	);
+
+	SceneNode* piece2 = pieces->createNode();
+	piece2->setMesh(mesh);
+	piece2->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.4f, 0.0f))
+	);
+
+	SceneNode* piece3 = pieces->createNode();
+	piece3->setMesh(mesh);
+	piece3->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.4f, 0.0f))
+	);
+
+	SceneNode* piece4 = pieces->createNode();
+	piece4->setMesh(mesh);
+	piece4->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(-0.4f, 0.0f, 0.0f))
+	);
+
+	SceneNode* piece5 = pieces->createNode();
+	piece5->setMesh(mesh);
+	piece5->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.0f))
+	);
+
+	SceneNode* piece6 = pieces->createNode();
+	piece6->setMesh(mesh);
+	piece6->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.0f, 0.0f))
+	);
+
+	SceneNode* piece7 = pieces->createNode();
+	piece7->setMesh(mesh);
+	piece7->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(-0.4f, -0.4f, 0.0f))
+	);
+
+	SceneNode* piece8 = pieces->createNode();
+	piece8->setMesh(mesh);
+	piece8->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, -0.4f, 0.0f))
+	);
+
+#pragma endregion
 }
 
 
@@ -189,21 +310,21 @@ void createSceneGraph()
 	mesh->createMesh(s);
 	mesh->createMeshBufferObjects();
 
-	squareTetrominoesScenegraph = new SceneGraph();
-	squareTetrominoesScenegraph->setCamera(&camera);
+	slidingPuzzleScenegraph = new SceneGraph();
+	slidingPuzzleScenegraph->setCamera(&camera);
 
-	SceneNode* n = squareTetrominoesScenegraph->getRoot();
+	SceneNode* n = slidingPuzzleScenegraph->getRoot();
 	n->setShaderProgram(&shaders);
 
 
 	createEnvironmentSceneGraph();
 
-	squareTetrominoesScenegraph->init(shaders);
+	slidingPuzzleScenegraph->init(shaders);
 }
 
 void drawScene()
 {
-	squareTetrominoesScenegraph->draw();
+	slidingPuzzleScenegraph->draw();
 
 #ifndef ERROR_CALLBACK
 	ErrorHandler::checkOpenGLError("ERROR: Could not draw scene.");
@@ -215,7 +336,7 @@ void drawScene()
 void window_close_callback(GLFWwindow* win)
 {
 	shaders.destroy();
-	squareTetrominoesScenegraph->destroy();
+	slidingPuzzleScenegraph->destroy();
 	mesh->destroyMeshBufferObjects();
 }
 
