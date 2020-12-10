@@ -69,6 +69,7 @@ void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShade
 	glBindAttribLocation(ProgramId, COLORS, "in_Color");
 
 	glLinkProgram(ProgramId);
+	//TODO ASIGN??!!
 	this->UniformId = glGetUniformLocation(ProgramId, "ModelMatrix");
 	this->UniformColorId = glGetUniformLocation(ProgramId, "Color");
 	this->UboId = glGetUniformBlockIndex(ProgramId, "SharedMatrices");

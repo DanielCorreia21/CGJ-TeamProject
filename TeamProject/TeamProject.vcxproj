@@ -142,13 +142,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="3-Hello3dWorld.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ErrorHandler.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="Matrix2d.cpp" />
     <ClCompile Include="Matrix3d.cpp" />
     <ClCompile Include="Matrix4d.cpp" />
     <ClCompile Include="MatrixFactory.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="SceneGraph.cpp" />
+    <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="Vector2d.cpp" />
@@ -156,6 +160,7 @@
     <ClCompile Include="Vector4d.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ErrorHandler.h" />
     <ClInclude Include="GLStatics.h" />
     <ClInclude Include="Matrix2d.h" />
@@ -163,6 +168,9 @@
     <ClInclude Include="Matrix4d.h" />
     <ClInclude Include="MatrixFactory.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="SceneGraph.h" />
+    <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="Vector2d.h" />
