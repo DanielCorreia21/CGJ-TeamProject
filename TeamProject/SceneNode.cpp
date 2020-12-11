@@ -34,10 +34,18 @@ fptr SceneNode::getPreDrawFun()
 	return this->preDrawFun;
 }
 
+bool SceneNode::getShouldOutline() {
+	if (!this->shouldOutline && this->parent != nullptr) {
+		return this->parent->getShouldOutline();
+	}
+	return this-> shouldOutline;
+}
+
 SceneNode::SceneNode(SceneNode* parent)
 {
 	this->parent = parent;
 	this->matrix = MatrixFactory::identityMatrix4d();
+	this->shouldOutline = false;
 }
 
 SceneNode* SceneNode::createNode()
@@ -84,6 +92,41 @@ std::vector<SceneNode*> SceneNode::getChildren()
 	return this->children;
 }
 
+void SceneNode::outline(ShaderProgram* shaders) {
+	Matrix4d modelMatrix = this->getModelMatrix();
+	float opengl_model_matrix[16];
+
+	//NORMAL OBJECT
+	glDisable(GL_CULL_FACE);
+	//scale down a bit
+	modelMatrix = modelMatrix * MatrixFactory::scalingMatrix(0.98f);
+	//set black color
+	if (this->getPreDrawFun() != nullptr) {
+		this->getPreDrawFun()();
+	}
+
+	//prepare draw
+	modelMatrix.toColumnMajorArray(opengl_model_matrix);
+	glUniformMatrix4fv(shaders->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
+	//draw 
+	this->mesh->draw();
+
+	//BLACK OUTLINE
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+
+	//Scale
+	modelMatrix = this->getModelMatrix();
+	//Set normal color
+	glUniform4f(shaders->getUniformColorId(), 0, 0, 0, 0);
+
+	//prepare draw
+	modelMatrix.toColumnMajorArray(opengl_model_matrix);
+	glUniformMatrix4fv(shaders->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
+	//draw
+	this->mesh->draw();
+}
+
 void SceneNode::draw()
 {
 	for (SceneNode* child : this->children) {
@@ -98,16 +141,27 @@ void SceneNode::draw()
 	shaders->bind();
 	this->mesh->bind();
 
-	//pre-draw function
-	if (this->getPreDrawFun() != nullptr) {
-		this->getPreDrawFun()();
+
+	if (this->getShouldOutline()) {
+		this->outline(shaders);
+	}
+	else {
+
+		//set color
+		if (this->getPreDrawFun() != nullptr) {
+			this->getPreDrawFun()();
+		}
+
+		Matrix4d modelMatrix = this->getModelMatrix();
+		float opengl_model_matrix[16];
+
+		//prepare draw
+		modelMatrix.toColumnMajorArray(opengl_model_matrix);
+		glUniformMatrix4fv(shaders->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
+		//draw 
+		this->mesh->draw();
 	}
 
-	float opengl_model_matrix[16];
-	this->getModelMatrix().toColumnMajorArray(opengl_model_matrix);
-	glUniformMatrix4fv(shaders->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
-
-	this->mesh->draw();
 
 	this->mesh->unbind();
 	shaders->unbind();

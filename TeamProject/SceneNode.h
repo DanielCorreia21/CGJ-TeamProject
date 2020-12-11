@@ -26,7 +26,11 @@ private:
 
 	ShaderProgram* getShader();
 	fptr getPreDrawFun();
+	void outline(ShaderProgram* shaders);
+	bool getShouldOutline();
+
 public:
+	bool shouldOutline;
 	Matrix4d getModelMatrix();
 	SceneNode(SceneNode *parent);
 	SceneNode *createNode();

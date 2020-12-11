@@ -175,6 +175,10 @@ void setBlueColor() {
 	glUniform4f(shaders.getUniformColorId(), 0, 0, 1, 0);
 }
 
+void setBlackColor() {
+	glUniform4f(shaders.getUniformColorId(), 0, 0, 0, 0);
+}
+
 ///////////////////////////////////////////////////////////////////// SCENE
 
 SceneGraph* slidingPuzzleScenegraph;
@@ -243,6 +247,7 @@ void createEnvironmentSceneGraph()
 #pragma region pieces
 
 	pieces = slidingPuzzleScenegraph->createNode();
+	pieces->shouldOutline = true;
 	pieces->setPreDrawFun(setGreenColor);
 	pieces->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.8f))
