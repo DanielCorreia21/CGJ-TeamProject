@@ -26,13 +26,36 @@ ShaderProgram* SceneNode::getShader()
 	return this->shader;
 }
 
+SceneGraph* SceneNode::getSceneGraph()
+{
+	if (this->sceneGraph == nullptr && this->parent != nullptr) {
+		return this->parent->getSceneGraph();
+	}
+	return this->sceneGraph;
+}
+
 SceneNode::SceneNode(SceneNode* parent)
 {
 	this->parent = parent;
 	this->matrix = MatrixFactory::identityMatrix4d();
 }
 
-SceneNode* SceneNode::createNode()
+SceneNode::SceneNode()
+{
+	this->matrix = MatrixFactory::identityMatrix4d();
+}
+
+void SceneNode::setParent(SceneNode* parent)
+{
+	//this->setSceneGraph(parent->sceneGraph);
+	//this->setShaderProgram(parent->shader);
+
+	//TODO if parent exists
+	this->parent = parent;
+	parent->children.push_back(this);
+}
+
+/*SceneNode* SceneNode::createNode()
 {
 	SceneNode* result = new SceneNode(this);
 	result->setSceneGraph(this->sceneGraph);
@@ -44,7 +67,7 @@ SceneNode* SceneNode::createNode()
 void SceneNode::addNode(SceneNode* node)
 {
 	this->children.push_back(node);
-}
+}*/
 
 void SceneNode::setSceneGraph(SceneGraph* sceneGraph)
 {

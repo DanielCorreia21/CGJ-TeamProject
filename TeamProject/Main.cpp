@@ -171,7 +171,8 @@ SceneNode* ground;
 
 void createEnvironmentSceneGraph()
 {
-	ground = SceneGraphManager::getInstance()->get("tetrominoes")->createNode();
+	SceneNode* ground = new SceneNode();
+	ground->setParent(SceneGraphManager::getInstance()->get("tetrominoes")->getRoot());
 	ground->setPreDrawFun(setCyanColor);
 	ground->setMesh(MeshManager::getInstance()->get("cube"));
 	ground->setMatrix(

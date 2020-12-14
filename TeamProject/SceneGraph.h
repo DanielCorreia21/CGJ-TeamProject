@@ -20,7 +20,6 @@ public:
 	void setCamera(Camera *camera);
 	Camera *getCamera();
 	SceneNode *getRoot();
-	SceneNode *createNode();
 	void init(ShaderProgram shaders);
 	void destroy();
 	void draw();

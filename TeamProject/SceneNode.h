@@ -25,11 +25,14 @@ private:
 	fptr preDrawFun = nullptr;
 
 	ShaderProgram* getShader();
+	SceneGraph* getSceneGraph();
 public:
 	Matrix4d getModelMatrix();
-	SceneNode(SceneNode *parent);
-	SceneNode *createNode();
-	void addNode(SceneNode *node);
+	SceneNode(SceneNode* parent);
+	SceneNode();
+	void setParent(SceneNode* parent);
+	//SceneNode *createNode();
+	//void addNode(SceneNode *node);
 	void setSceneGraph(SceneGraph *sceneGraph);
 	void setMesh(Mesh* mesh);
 	void setMatrix(Matrix4d matrix);
