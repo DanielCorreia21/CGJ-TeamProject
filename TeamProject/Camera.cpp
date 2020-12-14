@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "GLStatics.h"
 #include <iostream>
 
 /*	AUTHORS
@@ -166,7 +167,9 @@ void Camera::initBuffer(ShaderProgram shaders)
 	{
 		//tamanho da matriz 16 elementos * 2 por serem 2 matrizes
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 16 * 2, 0, GL_STREAM_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, shaders.getUBO(), VboId[0]);
+		//TODO remove
+		//glBindBufferBase(GL_UNIFORM_BUFFER, shaders.getUBO(), VboId[0]);
+		glBindBufferBase(GL_UNIFORM_BUFFER, UBO_BP, VboId[0]);
 	}
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

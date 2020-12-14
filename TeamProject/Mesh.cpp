@@ -19,6 +19,11 @@ GLuint VboVertices, VboTexcoords, VboNormals;
 
 Mesh::Mesh() { }
 
+Mesh::~Mesh()
+{
+	destroyMeshBufferObjects();
+}
+
 ////////////////////////////////////////////////////////////////////////// MESH
 typedef struct {
 	GLfloat x, y, z;
@@ -140,13 +145,6 @@ void Mesh::freeMeshData()
 	normalIdx.clear();
 }
 
-const void Mesh::createMesh(std::string& filename)
-{
-	loadMeshData(filename);
-	processMeshData();
-	freeMeshData();
-}
-
 ////////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 GLuint VaoId, VboId;
@@ -211,6 +209,15 @@ void Mesh::destroyMeshBufferObjects() {
 void Mesh::draw()
 {
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
+}
+
+void Mesh::init(std::string& filename)
+{
+	loadMeshData(filename);
+	processMeshData();
+	freeMeshData();
+
+	createMeshBufferObjects();
 }
 
 void Mesh::bind()

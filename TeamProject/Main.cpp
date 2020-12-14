@@ -160,7 +160,10 @@ static void checkOpenGLError(std::string error)
 ///////////////////////////////////////////////////////////////////// PreDrawFunctions
 
 void setCyanColor() {
-	glUniform4f(shaders.getUniformColorId(), 0, 1, 1, 0);
+	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = shaders.uniforms.find("Color");
+	if (it != shaders.uniforms.end()) {
+		glUniform4f(it->second.index, 0, 1, 1, 0);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////// SCENE
@@ -186,8 +189,9 @@ void createSceneGraph()
 
 	string s = string("../objs/cube.obj");
 
-	mesh->createMesh(s);
-	mesh->createMeshBufferObjects();
+	//mesh->createMesh(s);
+	//mesh->createMeshBufferObjects();
+	mesh->init(s);
 
 	squareTetrominoesScenegraph = new SceneGraph();
 	squareTetrominoesScenegraph->setCamera(&camera);
@@ -216,7 +220,8 @@ void window_close_callback(GLFWwindow* win)
 {
 	shaders.destroy();
 	squareTetrominoesScenegraph->destroy();
-	mesh->destroyMeshBufferObjects();
+	//mesh->destroyMeshBufferObjects();
+	delete mesh;
 }
 
 void window_size_callback(GLFWwindow* win, int winx, int winy)
@@ -367,6 +372,7 @@ GLFWwindow* setup(int major, int minor,
 	setupGLEW();
 	setupOpenGL(winx, winy);
 
+	shaders.addUniform("Color");
 	shaders.init(vertexShaderPath, fragmentShaderPath);
 	createSceneGraph();
 

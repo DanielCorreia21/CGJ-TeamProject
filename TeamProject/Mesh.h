@@ -19,15 +19,15 @@ class Mesh
 	public:
 
 		Mesh();
-		//~Mesh();
+		~Mesh();
+		void init(std::string& filename);
 		void bind();
 		void unbind();
 		void draw();
-		const void createMesh(std::string& filename);
-		void createMeshBufferObjects();
-		void destroyMeshBufferObjects();
 
 	private:
+		void createMeshBufferObjects();
+		void destroyMeshBufferObjects();
 
 		void loadMeshData(std::string& filename);
 		void processMeshData();
