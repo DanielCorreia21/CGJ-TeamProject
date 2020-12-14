@@ -2,6 +2,7 @@
 #include "SceneNode.h"
 #include "Camera.h"
 #include "ShaderProgram.h"
+#include "Manager.h"
 
 /*	AUTHORS
 *	Group: 11
@@ -25,3 +26,4 @@ public:
 	void draw();
 };
 
+class SceneGraphManager : public Manager<SceneGraph> {};

@@ -37,7 +37,6 @@ using namespace std;
 
 const char vertexShaderPath[] = "../Resources/vertexShader.glsl";
 const char fragmentShaderPath[] = "../Resources/fragmentShader.glsl";
-ShaderProgram shaders;
 Camera camera = Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
 
 #define DEGREES_TO_RADIANS 0.01745329251994329547
@@ -136,7 +135,7 @@ static const std::string errorString(GLenum error)
 	}
 }
 
-static bool isOpenGLError() 
+static bool isOpenGLError()
 {
 	bool isError = false;
 	GLenum errCode;
@@ -160,23 +159,21 @@ static void checkOpenGLError(std::string error)
 ///////////////////////////////////////////////////////////////////// PreDrawFunctions
 
 void setCyanColor() {
-	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = shaders.uniforms.find("Color");
-	if (it != shaders.uniforms.end()) {
+	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get("main")->uniforms.find("Color");
+	if (it != ShaderProgramManager::getInstance()->get("main")->uniforms.end()) {
 		glUniform4f(it->second.index, 0, 1, 1, 0);
 	}
 }
 
 ///////////////////////////////////////////////////////////////////// SCENE
 
-SceneGraph* squareTetrominoesScenegraph;
 SceneNode* ground;
-Mesh* mesh;
 
 void createEnvironmentSceneGraph()
 {
-	ground = squareTetrominoesScenegraph->createNode();
+	ground = SceneGraphManager::getInstance()->get("tetrominoes")->createNode();
 	ground->setPreDrawFun(setCyanColor);
-	ground->setMesh(mesh);
+	ground->setMesh(MeshManager::getInstance()->get("cube"));
 	ground->setMatrix(
 		MatrixFactory::scalingMatrix(2.0f)
 	);
@@ -185,29 +182,30 @@ void createEnvironmentSceneGraph()
 
 void createSceneGraph()
 {
-	mesh = new Mesh();
+	Mesh* mesh = new Mesh();
+	MeshManager::getInstance()->add("cube", mesh);
 
 	string s = string("../objs/cube.obj");
 
 	//mesh->createMesh(s);
 	//mesh->createMeshBufferObjects();
 	mesh->init(s);
-
-	squareTetrominoesScenegraph = new SceneGraph();
+	SceneGraph* squareTetrominoesScenegraph = new SceneGraph();
 	squareTetrominoesScenegraph->setCamera(&camera);
+	SceneGraphManager::getInstance()->add("tetrominoes", squareTetrominoesScenegraph);
 
 	SceneNode* n = squareTetrominoesScenegraph->getRoot();
-	n->setShaderProgram(&shaders);
+	n->setShaderProgram(ShaderProgramManager::getInstance()->get("main"));
 
 
 	createEnvironmentSceneGraph();
 
-	squareTetrominoesScenegraph->init(shaders);
+	squareTetrominoesScenegraph->init(*(ShaderProgramManager::getInstance()->get("main")));
 }
 
 void drawScene()
 {
-	squareTetrominoesScenegraph->draw();
+	SceneGraphManager::getInstance()->get("tetrominoes")->draw();
 
 #ifndef ERROR_CALLBACK
 	ErrorHandler::checkOpenGLError("ERROR: Could not draw scene.");
@@ -218,10 +216,10 @@ void drawScene()
 
 void window_close_callback(GLFWwindow* win)
 {
-	shaders.destroy();
-	squareTetrominoesScenegraph->destroy();
+	ShaderProgramManager::getInstance()->get("main")->destroy();
+	SceneGraphManager::getInstance()->get("tetrominoes")->destroy();
+	//TODO maybe "delete mesh"
 	//mesh->destroyMeshBufferObjects();
-	delete mesh;
 }
 
 void window_size_callback(GLFWwindow* win, int winx, int winy)
@@ -275,7 +273,7 @@ void mouse_button_callback(GLFWwindow* win, int button, int action, int mods)
 
 ///////////////////////////////////////////////////////////////////////// SETUP
 
-GLFWwindow* setupWindow(int winx, int winy, const char* title, 
+GLFWwindow* setupWindow(int winx, int winy, const char* title,
 	int is_fullscreen, int is_vsync)
 {
 	GLFWmonitor* monitor = is_fullscreen ? glfwGetPrimaryMonitor() : 0;
@@ -300,7 +298,7 @@ void setupCallbacks(GLFWwindow* win)
 	glfwSetMouseButtonCallback(win, mouse_button_callback);
 }
 
-GLFWwindow* setupGLFW(int gl_major, int gl_minor, 
+GLFWwindow* setupGLFW(int gl_major, int gl_minor,
 	int winx, int winy, const char* title, int is_fullscreen, int is_vsync)
 {
 	glfwSetErrorCallback(glfw_error_callback);
@@ -327,7 +325,7 @@ void setupGLEW()
 	// Allow extension entry points to be loaded even if the extension isn't 
 	// present in the driver's extensions string.
 	GLenum result = glewInit();
-	if (result != GLEW_OK) 
+	if (result != GLEW_OK)
 	{
 		std::cerr << "ERROR glewInit: " << glewGetString(result) << std::endl;
 		exit(EXIT_FAILURE);
@@ -364,16 +362,19 @@ void setupOpenGL(int winx, int winy)
 	glViewport(0, 0, winx, winy);
 }
 
-GLFWwindow* setup(int major, int minor, 
+GLFWwindow* setup(int major, int minor,
 	int winx, int winy, const char* title, int is_fullscreen, int is_vsync)
 {
-	GLFWwindow* win = 
+	GLFWwindow* win =
 		setupGLFW(major, minor, winx, winy, title, is_fullscreen, is_vsync);
 	setupGLEW();
 	setupOpenGL(winx, winy);
 
-	shaders.addUniform("Color");
-	shaders.init(vertexShaderPath, fragmentShaderPath);
+	ShaderProgram* shaders = new ShaderProgram();
+	shaders->addUniform("Color");
+	shaders->init(vertexShaderPath, fragmentShaderPath);
+	ShaderProgramManager::getInstance()->add("main", shaders);
+
 	createSceneGraph();
 
 	return win;
@@ -423,7 +424,7 @@ int main(int argc, char* argv[])
 	int is_fullscreen = 0;
 	int is_vsync = 1;
 
-	GLFWwindow* win = setup(gl_major, gl_minor, 
+	GLFWwindow* win = setup(gl_major, gl_minor,
 		640, 640, "Team project", is_fullscreen, is_vsync);
 	run(win);
 

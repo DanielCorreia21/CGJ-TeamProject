@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "Manager.h"
+
 /*	AUTHORS
 *	Group: 11
 *	Bernardo Pinto - 98734
@@ -39,3 +41,4 @@ class Mesh
 		void parseVertex(std::stringstream& sin);
 };
 
+class MeshManager : public Manager<Mesh> {};

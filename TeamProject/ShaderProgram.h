@@ -2,8 +2,9 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "Matrix4d.h"
 #include <map>
+#include "Matrix4d.h"
+#include "Manager.h"
 
 /*	AUTHORS
 *	Group: 11
@@ -48,3 +49,4 @@ public:
 	//GLint getUniformColorId();
 };
 
+class ShaderProgramManager : public Manager<ShaderProgram> {};
