@@ -26,14 +26,6 @@ ShaderProgram* SceneNode::getShader()
 	return this->shader;
 }
 
-fptr SceneNode::getPreDrawFun()
-{
-	if (this->preDrawFun == nullptr && this->parent != nullptr) {
-		return this->parent->getPreDrawFun();
-	}
-	return this->preDrawFun;
-}
-
 SceneNode::SceneNode(SceneNode* parent)
 {
 	this->parent = parent;
@@ -99,8 +91,8 @@ void SceneNode::draw()
 	this->mesh->bind();
 
 	//pre-draw function
-	if (this->getPreDrawFun() != nullptr) {
-		this->getPreDrawFun()();
+	if (this->preDrawFun != nullptr) {
+		this->preDrawFun();
 	}
 
 	float opengl_model_matrix[16];

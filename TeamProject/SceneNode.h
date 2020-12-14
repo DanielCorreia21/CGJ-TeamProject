@@ -25,7 +25,6 @@ private:
 	fptr preDrawFun = nullptr;
 
 	ShaderProgram* getShader();
-	fptr getPreDrawFun();
 public:
 	Matrix4d getModelMatrix();
 	SceneNode(SceneNode *parent);
