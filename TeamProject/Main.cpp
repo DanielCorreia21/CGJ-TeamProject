@@ -38,6 +38,10 @@ using namespace std;
 const char vertexShaderPath[] = "../Resources/vertexShader.glsl";
 const char fragmentShaderPath[] = "../Resources/fragmentShader.glsl";
 const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
+const string MAIN_SHADER = "main";
+const string CUBE_MESH = "cube";
+
+const string COLOR_UNIFORM = "Color";
 Camera camera = Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
 
 #define DEGREES_TO_RADIANS 0.01745329251994329547
@@ -160,57 +164,46 @@ static void checkOpenGLError(std::string error)
 ///////////////////////////////////////////////////////////////////// PreDrawFunctions
 
 void setCyanColor() {
-	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get("main")->uniforms.find("Color");
-	if (it != ShaderProgramManager::getInstance()->get("main")->uniforms.end()) {
+	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.find(COLOR_UNIFORM);
+	if (it != ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.end()) {
 		glUniform4f(it->second.index, 0, 1, 1, 0);
 	}
 }
 
 void setRedColor() {
 	//glUniform4f(shaders.getUniformColorId(), 1, 0, 0, 0);
-	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get("main")->uniforms.find("Color");
-	if (it != ShaderProgramManager::getInstance()->get("main")->uniforms.end()) {
+	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.find(COLOR_UNIFORM);
+	if (it != ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.end()) {
 		glUniform4f(it->second.index, 1, 0, 0, 0);
 	}
 }
 
 void setGreenColor() {
 	//glUniform4f(shaders.getUniformColorId(), 0, 1, 0, 0);
-	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get("main")->uniforms.find("Color");
-	if (it != ShaderProgramManager::getInstance()->get("main")->uniforms.end()) {
+	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.find(COLOR_UNIFORM);
+	if (it != ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.end()) {
 		glUniform4f(it->second.index, 0, 1, 0, 0);
 	}
 }
 
 void setBlueColor() {
 	//glUniform4f(shaders.getUniformColorId(), 0, 0, 1, 0);
-	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get("main")->uniforms.find("Color");
-	if (it != ShaderProgramManager::getInstance()->get("main")->uniforms.end()) {
+	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.find(COLOR_UNIFORM);
+	if (it != ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.end()) {
 		glUniform4f(it->second.index, 0, 0, 1, 0);
 	}
 }
 
 ///////////////////////////////////////////////////////////////////// SCENE
 
-/*<<<<<<< HEAD
-SceneNode* ground;
 
-void createEnvironmentSceneGraph()
-{
-	SceneNode* ground = new SceneNode();
-	ground->setParent(SceneGraphManager::getInstance()->get("tetrominoes")->getRoot());
-	ground->setPreDrawFun(setCyanColor);
-	ground->setMesh(MeshManager::getInstance()->get("cube"));
-	ground->setMatrix(
-		MatrixFactory::scalingMatrix(2.0f)
-=======*/
 SceneNode* backboard;
 SceneNode* frame;
 SceneNode* pieces;
 
 void createEnvironmentSceneGraph()
 {
-	Mesh* cubeMesh = MeshManager::getInstance()->get("cube");
+	Mesh* cubeMesh = MeshManager::getInstance()->get(CUBE_MESH);
 
 	#pragma region backboard
 	backboard = new SceneNode();
@@ -357,7 +350,7 @@ void createEnvironmentSceneGraph()
 void createSceneGraph()
 {
 	Mesh* mesh = new Mesh();
-	MeshManager::getInstance()->add("cube", mesh);
+	MeshManager::getInstance()->add(CUBE_MESH, mesh);
 
 	string s = string("../objs/cube.obj");
 
@@ -372,12 +365,12 @@ void createSceneGraph()
 	SceneGraphManager::getInstance()->add(SLIDING_PUZZLE_SCENE_GRAPH, slidingPuzzleScenegraph);
 
 	SceneNode* n = slidingPuzzleScenegraph->getRoot();
-	n->setShaderProgram(ShaderProgramManager::getInstance()->get("main"));
+	n->setShaderProgram(ShaderProgramManager::getInstance()->get(MAIN_SHADER));
 
 
 	createEnvironmentSceneGraph();
 
-	slidingPuzzleScenegraph->init(*(ShaderProgramManager::getInstance()->get("main")));
+	slidingPuzzleScenegraph->init(*(ShaderProgramManager::getInstance()->get(MAIN_SHADER)));
 }
 
 void drawScene()
@@ -393,7 +386,7 @@ void drawScene()
 
 void window_close_callback(GLFWwindow* win)
 {
-	ShaderProgramManager::getInstance()->get("main")->destroy();
+	ShaderProgramManager::getInstance()->get(MAIN_SHADER)->destroy();
 	SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->destroy();
 	//TODO maybe "delete mesh"
 	//mesh->destroyMeshBufferObjects();
@@ -548,9 +541,9 @@ GLFWwindow* setup(int major, int minor,
 	setupOpenGL(winx, winy);
 
 	ShaderProgram* shaders = new ShaderProgram();
-	shaders->addUniform("Color");
+	shaders->addUniform(COLOR_UNIFORM);
 	shaders->init(vertexShaderPath, fragmentShaderPath);
-	ShaderProgramManager::getInstance()->add("main", shaders);
+	ShaderProgramManager::getInstance()->add(MAIN_SHADER, shaders);
 
 	createSceneGraph();
 
