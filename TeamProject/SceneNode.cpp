@@ -94,9 +94,24 @@ void SceneNode::setPreDrawFun(fptr f)
 	this->preDrawFun = f;
 }
 
+void SceneNode::setTextures(std::vector<TextureInfo*> n_textures)
+{
+	this->textures = n_textures;
+}
+
 std::vector<SceneNode*> SceneNode::getChildren()
 {
 	return this->children;
+}
+
+std::vector<TextureInfo*> SceneNode::getTextures()
+{
+	return this->textures;
+}
+
+void SceneNode::addTexture(TextureInfo* texture)
+{
+	this->textures.push_back(texture);
 }
 
 void SceneNode::draw()
@@ -111,6 +126,13 @@ void SceneNode::draw()
 
 	ShaderProgram* shaders = this->getShader();
 	shaders->bind();
+
+	if (textures.empty() == false) {
+		for (auto& t : textures) {
+			t->updateShader(shaders);
+		}
+	}
+
 	this->mesh->bind();
 
 	//pre-draw function

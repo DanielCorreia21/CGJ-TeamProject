@@ -20,7 +20,9 @@
 #include "SceneNode.h"
 #include "Mesh.h"
 #include "ErrorHandler.h"
-
+#include "Texture.h"
+#include "TextureInfo.h"
+#include "Texture2D.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -201,6 +203,13 @@ SceneNode* backboard;
 SceneNode* frame;
 SceneNode* pieces;
 
+void createTextures() {
+
+	Texture2D* texture_1 = new Texture2D();
+	texture_1->load("../number_1");
+	TextureManager::getInstance()->add("number_1", (Texture*)texture_1);
+}
+
 void createEnvironmentSceneGraph()
 {
 	Mesh* cubeMesh = MeshManager::getInstance()->get(CUBE_MESH);
@@ -286,6 +295,11 @@ void createEnvironmentSceneGraph()
 	piece1->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f,0.4f,0.0f))
 	);
+
+	TextureInfo* tinfo_1 = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("texture_1"));
+	piece1->setShaderProgram(ShaderProgramManager::getInstance()->get(MAIN_SHADER));
+	piece1->addTexture(tinfo_1);
+
 
 	SceneNode* piece2 = new SceneNode();
 	piece2->setParent(pieces);
@@ -543,6 +557,9 @@ GLFWwindow* setup(int major, int minor,
 	ShaderProgram* shaders = new ShaderProgram();
 	shaders->addUniform(COLOR_UNIFORM);
 	shaders->init(vertexShaderPath, fragmentShaderPath);
+
+	shaders->addUniform("Texture1");
+
 	ShaderProgramManager::getInstance()->add(MAIN_SHADER, shaders);
 
 	createSceneGraph();

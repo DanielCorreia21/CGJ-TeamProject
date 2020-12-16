@@ -3,6 +3,7 @@
 #include "Matrix4d.h"
 #include "ShaderProgram.h"
 #include <vector>
+#include "TextureInfo.h"
 
 /*	AUTHORS
 *	Group: 11
@@ -23,6 +24,7 @@ private:
 	std::vector<SceneNode*> children;
 	ShaderProgram *shader = nullptr;
 	fptr preDrawFun = nullptr;
+	std::vector<TextureInfo*> textures;
 
 	ShaderProgram* getShader();
 	SceneGraph* getSceneGraph();
@@ -38,7 +40,10 @@ public:
 	void setMatrix(Matrix4d matrix);
 	void setShaderProgram(ShaderProgram* shader);
 	void setPreDrawFun(fptr f);
+	void setTextures(std::vector<TextureInfo*> textures);
 	std::vector<SceneNode*> getChildren();
+	std::vector<TextureInfo*> getTextures();
+	void addTexture(TextureInfo* texture);
 	void draw();
 };
 
