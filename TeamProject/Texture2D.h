@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Texture.h"
+#include <SOIL.h>
 
 class Texture2D : public Texture
 {

@@ -1,5 +1,4 @@
 #include "Texture2D.h"
-#include "../dependencies/SOIL/src/SOIL.h"
 #include <sstream>
 
 void Texture2D::bind()
