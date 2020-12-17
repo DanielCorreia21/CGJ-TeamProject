@@ -1,0 +1,20 @@
+#version 330 core
+
+uniform mat4 ModelMatrix;
+uniform Camera {
+mat4 ViewMatrix;
+mat4 ProjectionMatrix;
+};
+
+in vec3 inVertex;
+in vec3 inNormal;
+out vec3 exPosition;
+out vec3 exNormal;
+
+void main(void)
+{
+exPosition = inVertex;
+exNormal = inNormal;
+
+gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(inVertex,1.0);
+}

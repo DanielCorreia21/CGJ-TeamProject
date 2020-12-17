@@ -5,6 +5,7 @@
 #include<time.h>
 #include<sstream>
 #include<iostream>
+#include"SOIL.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -137,4 +138,6 @@ namespace engine
 
 		delete[] image;
 	}
+
+	//TEXTURE 3D
 }
