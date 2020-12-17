@@ -65,7 +65,7 @@ void readFragmentShader(const char fragmentShaderPath[]) {
 	sFragmentShader = temp;
 }
 
-void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShaderPath[], bool tcoords)
+void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShaderPath[], bool tcoords, bool normals)
 {
 	readVertexShader(vertexShaderPath);
 	readFragmentShader(fragmentShaderPath);
@@ -90,6 +90,9 @@ void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShade
 
 	if (tcoords) {
 		glBindAttribLocation(ProgramId, TEXCOORDS, "inTexcoord");
+	}
+	if (normals) {
+		glBindAttribLocation(ProgramId, NORMALS, "inNormal");
 	}
 
 	glLinkProgram(ProgramId);

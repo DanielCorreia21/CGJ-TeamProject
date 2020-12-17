@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Atexture.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ErrorHandler.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -150,7 +151,9 @@
     <ClCompile Include="Matrix4d.cpp" />
     <ClCompile Include="MatrixFactory.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Noise.cpp" />
     <ClCompile Include="OutlineSceneNode.cpp" />
+    <ClCompile Include="Perlin.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SceneNode.cpp" />
@@ -164,6 +167,7 @@
     <ClCompile Include="Vector4d.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Atexture.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ErrorHandler.h" />
     <ClInclude Include="GLStatics.h" />
@@ -173,7 +177,9 @@
     <ClInclude Include="Matrix4d.h" />
     <ClInclude Include="MatrixFactory.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Noise.h" />
     <ClInclude Include="OutlineSceneNode.h" />
+    <ClInclude Include="Perlin.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="SceneNode.h" />

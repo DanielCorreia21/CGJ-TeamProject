@@ -1,5 +1,8 @@
 #include "Texture2D.h"
+#include "Noise.h"
+
 #include <sstream>
+#include <time.h>
 
 void Texture2D::bind()
 {
@@ -66,4 +69,31 @@ void Texture2D::loadMipMap(int levels, const std::string& prefix, const std::str
 		SOIL_free_image_data(image);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Texture2D::createPerlinNoise(const unsigned short side, const double scalex, const double scaley, const double alpha, const double beta, const int harmonics)
+{
+	srand((unsigned int)time(0));
+	const unsigned int size = side * side;
+	float* image = new float[size];
+	int idx = 0;
+	double step = 1.0 / (double)side;
+	for (double x = 0.0; x < 1.0; x += step)
+	{
+		for (double y = 0.0; y < 1.0; y += step)
+		{
+			PerlinNoise PN;
+			double noise = PN.noise2D(scalex * x, scaley * y, alpha, beta, harmonics);
+			image[idx++] = static_cast<float>(noise);
+		}
+	}
+	glGenTextures(1, &id);
+	glBindTexture(GL_TEXTURE_2D, id);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, side, side, 0, GL_RED, GL_FLOAT, image);
+
+	delete[] image;
 }
