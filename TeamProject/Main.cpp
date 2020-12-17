@@ -35,10 +35,10 @@ using namespace std;
 *	Daniel Correia - 98745
 */
 
+bool tcoords = true;
 
-
-const char vertexShaderPath[] = "../Resources/vertexShader.glsl";
-const char fragmentShaderPath[] = "../Resources/fragmentShader.glsl";
+const char vertexShaderPath[] = "../Resources/texture_vs.glsl";
+const char fragmentShaderPath[] = "../Resources/texture_fs.glsl";
 const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
 const string MAIN_SHADER = "main";
 const string CUBE_MESH = "cube";
@@ -206,7 +206,7 @@ SceneNode* pieces;
 void createTextures() {
 
 	Texture2D* texture_1 = new Texture2D();
-	texture_1->load("../number_1");
+	texture_1->load("../number_1.png");
 	TextureManager::getInstance()->add("number_1", (Texture*)texture_1);
 }
 
@@ -296,9 +296,9 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(-0.4f,0.4f,0.0f))
 	);
 
-	TextureInfo* tinfo_1 = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("texture_1"));
-	piece1->setShaderProgram(ShaderProgramManager::getInstance()->get(MAIN_SHADER));
-	piece1->addTexture(tinfo_1);
+	//TextureInfo* tinfo_1 = new TextureInfo(GL_TEXTURE0, 0, "Texture1", TextureManager::getInstance()->get("number_1"));
+	////piece1->setShaderProgram(ShaderProgramManager::getInstance()->get(MAIN_SHADER));
+	//piece1->addTexture(tinfo_1);
 
 
 	SceneNode* piece2 = new SceneNode();
@@ -367,7 +367,6 @@ void createSceneGraph()
 	MeshManager::getInstance()->add(CUBE_MESH, mesh);
 
 	string s = string("../objs/cube.obj");
-
 
 	//mesh->createMesh(s);
 	//mesh->createMeshBufferObjects();
@@ -556,12 +555,13 @@ GLFWwindow* setup(int major, int minor,
 
 	ShaderProgram* shaders = new ShaderProgram();
 	shaders->addUniform(COLOR_UNIFORM);
-	shaders->init(vertexShaderPath, fragmentShaderPath);
+	shaders->init(vertexShaderPath, fragmentShaderPath, tcoords);
 
 	shaders->addUniform("Texture1");
 
 	ShaderProgramManager::getInstance()->add(MAIN_SHADER, shaders);
 
+	createTextures();
 	createSceneGraph();
 
 	return win;

@@ -12,7 +12,7 @@ class TextureInfo {
 		GLenum unit;
 		GLuint index;
 		std::string uniform;
-		Texture* texture = nullptr;
+		Texture* texture;
 
 		TextureInfo(GLenum textureunit, GLuint index, const std::string& uniform, Texture* texture);
 		void updateShader(ShaderProgram* shader);

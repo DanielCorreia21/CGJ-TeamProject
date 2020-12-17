@@ -39,7 +39,7 @@ public:
 	void addAttribute(const std::string& name, const GLuint index);
 	void addUniform(const std::string& name);
 	void addUbo(const std::string& name, const GLuint binding_point);
-	void init(const char vertexShaderPath[], const char fragmentShaderPath[]);
+	void init(const char vertexShaderPath[], const char fragmentShaderPath[], bool tcoords);
 	void bind();
 	void unbind();
 	void destroy();

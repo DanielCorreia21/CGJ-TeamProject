@@ -65,7 +65,7 @@ void readFragmentShader(const char fragmentShaderPath[]) {
 	sFragmentShader = temp;
 }
 
-void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShaderPath[])
+void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShaderPath[], bool tcoords)
 {
 	readVertexShader(vertexShaderPath);
 	readFragmentShader(fragmentShaderPath);
@@ -86,7 +86,11 @@ void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShade
 	glAttachShader(ProgramId, FragmentShaderId);
 
 	//--------------------------------------------------------------------------------------
-	glBindAttribLocation(ProgramId, VERTICES, "in_Position");
+	glBindAttribLocation(ProgramId, VERTICES, "inVertex");
+
+	if (tcoords) {
+		glBindAttribLocation(ProgramId, TEXCOORDS, "inTexcoord");
+	}
 
 	glLinkProgram(ProgramId);
 	//TODO ASIGN??!!
