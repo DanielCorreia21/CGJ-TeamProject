@@ -18,6 +18,7 @@
 #include "util.h"
 #include "SceneGraph.h"
 #include "SceneNode.h"
+#include "OutlineSceneNode.h"
 #include "Mesh.h"
 #include "ErrorHandler.h"
 
@@ -37,7 +38,11 @@ using namespace std;
 
 const char vertexShaderPath[] = "../Resources/vertexShader.glsl";
 const char fragmentShaderPath[] = "../Resources/fragmentShader.glsl";
-ShaderProgram shaders;
+const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
+const string MAIN_SHADER = "main";
+const string CUBE_MESH = "cube";
+
+const string COLOR_UNIFORM = "Color";
 Camera camera = Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
 
 #define DEGREES_TO_RADIANS 0.01745329251994329547
@@ -136,7 +141,7 @@ static const std::string errorString(GLenum error)
 	}
 }
 
-static bool isOpenGLError() 
+static bool isOpenGLError()
 {
 	bool isError = false;
 	GLenum errCode;
@@ -160,51 +165,70 @@ static void checkOpenGLError(std::string error)
 ///////////////////////////////////////////////////////////////////// PreDrawFunctions
 
 void setCyanColor() {
-	glUniform4f(shaders.getUniformColorId(), 0, 1, 1, 0);
+	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.find(COLOR_UNIFORM);
+	if (it != ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.end()) {
+		glUniform4f(it->second.index, 0, 1, 1, 0);
+	}
 }
 
 void setRedColor() {
-	glUniform4f(shaders.getUniformColorId(), 1, 0, 0, 0);
+	//glUniform4f(shaders.getUniformColorId(), 1, 0, 0, 0);
+	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.find(COLOR_UNIFORM);
+	if (it != ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.end()) {
+		glUniform4f(it->second.index, 1, 0, 0, 0);
+	}
 }
 
 void setGreenColor() {
-	glUniform4f(shaders.getUniformColorId(), 0, 1, 0, 0);
+	//glUniform4f(shaders.getUniformColorId(), 0, 1, 0, 0);
+	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.find(COLOR_UNIFORM);
+	if (it != ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.end()) {
+		glUniform4f(it->second.index, 0, 1, 0, 0);
+	}
 }
 
 void setBlueColor() {
-	glUniform4f(shaders.getUniformColorId(), 0, 0, 1, 0);
+	//glUniform4f(shaders.getUniformColorId(), 0, 0, 1, 0);
+	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.find(COLOR_UNIFORM);
+	if (it != ShaderProgramManager::getInstance()->get(MAIN_SHADER)->uniforms.end()) {
+		glUniform4f(it->second.index, 0, 0, 1, 0);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////// SCENE
 
-SceneGraph* slidingPuzzleScenegraph;
+
 SceneNode* backboard;
 SceneNode* frame;
 SceneNode* pieces;
 
-Mesh* mesh;
-
 void createEnvironmentSceneGraph()
 {
+	Mesh* cubeMesh = MeshManager::getInstance()->get(CUBE_MESH);
+
 	#pragma region backboard
-	backboard = slidingPuzzleScenegraph->createNode();
+	backboard = new SceneNode();
+	backboard->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
 	backboard->setPreDrawFun(setBlueColor);
-	backboard->setMesh(mesh);
+	backboard->setMesh(cubeMesh);
 	backboard->setMatrix(
 		MatrixFactory::scalingMatrix(Vector3d(11.0f,11.0f,1.0f))
 	);
 #pragma endregion
 
 	#pragma region frame
-
-	frame = slidingPuzzleScenegraph->createNode();
+	frame = new SceneNode();
+	frame->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
+	//frame->setPreDrawFun(setRedColor);
 	frame->setPreDrawFun(setRedColor);
 	frame->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.8f))
 	);
 
-	SceneNode* frameUp = frame->createNode();
-	frameUp->setMesh(mesh);
+	SceneNode* frameUp = new SceneNode();
+	frameUp->setParent(frame);
+	frameUp->setPreDrawFun(setRedColor);
+	frameUp->setMesh(cubeMesh);
 	//Define shape and set Z
 	//UP Frame
 	frameUp->setMatrix(
@@ -214,24 +238,30 @@ void createEnvironmentSceneGraph()
 
 	//Define positions and rotations of other frame components
 	//Down
-	SceneNode* frameDown = frame->createNode();
-	frameDown->setMesh(mesh);
+	SceneNode* frameDown = new SceneNode();
+	frameDown->setParent(frame);
+	frameDown->setPreDrawFun(setRedColor);
+	frameDown->setMesh(cubeMesh);
 	frameDown->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, -2.0f, 0.0f))
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
 
 	//Right
-	SceneNode* frameRight = frame->createNode(); 
-	frameRight->setMesh(mesh);
+	SceneNode* frameRight = new SceneNode();
+	frameRight->setParent(frame);
+	frameRight->setPreDrawFun(setRedColor);
+	frameRight->setMesh(cubeMesh);
 	frameRight->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(2.0f, 0.0f, 0.0f))
 		* MatrixFactory::rotateZMatrix(90)
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
 	//Left
-	SceneNode* frameLeft = frame->createNode(); 
-	frameLeft->setMesh(mesh);
+	SceneNode* frameLeft = new SceneNode();
+	frameLeft->setParent(frame);
+	frameLeft->setPreDrawFun(setRedColor);
+	frameLeft->setMesh(cubeMesh);
 	frameLeft->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-2.0f, 0.0f, 0.0f))
 		* MatrixFactory::rotateZMatrix(90)
@@ -240,59 +270,76 @@ void createEnvironmentSceneGraph()
 
 #pragma endregion
 
-#pragma region pieces
+	#pragma region pieces
 
-	pieces = slidingPuzzleScenegraph->createNode();
-	pieces->setPreDrawFun(setGreenColor);
+	pieces = new SceneNode();
+	pieces->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
+	//pieces->setPreDrawFun(setGreenColor);
 	pieces->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.8f))
 		* MatrixFactory::scalingMatrix(3.0f)
 	);
 
-	SceneNode* piece1 = pieces->createNode();
-	piece1->setMesh(mesh);
+	SceneNode* piece1 = new OutlineSceneNode();
+	piece1->setParent(pieces);
+	piece1->setPreDrawFun(setGreenColor);
+	piece1->setMesh(cubeMesh);
 	piece1->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f,0.4f,0.0f))
 	);
 
-	SceneNode* piece2 = pieces->createNode();
-	piece2->setMesh(mesh);
+	SceneNode* piece2 = new OutlineSceneNode();
+	piece2->setParent(pieces);
+	piece2->setPreDrawFun(setGreenColor);
+	piece2->setMesh(cubeMesh);
 	piece2->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.4f, 0.0f))
 	);
 
-	SceneNode* piece3 = pieces->createNode();
-	piece3->setMesh(mesh);
+	SceneNode* piece3 = new OutlineSceneNode();
+	piece3->setParent(pieces);
+	piece3->setPreDrawFun(setGreenColor);
+	piece3->setMesh(cubeMesh);
 	piece3->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.4f, 0.0f))
 	);
 
-	SceneNode* piece4 = pieces->createNode();
-	piece4->setMesh(mesh);
+	SceneNode* piece4 = new OutlineSceneNode();
+	piece4->setParent(pieces);
+	piece4->setPreDrawFun(setGreenColor);
+	piece4->setMesh(cubeMesh);
 	piece4->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, 0.0f, 0.0f))
 	);
 
-	SceneNode* piece5 = pieces->createNode();
-	piece5->setMesh(mesh);
+	SceneNode* piece5 = new OutlineSceneNode();
+	piece5->setParent(pieces);
+	piece5->setPreDrawFun(setGreenColor);
+	piece5->setMesh(cubeMesh);
 	piece5->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.0f))
 	);
 
-	SceneNode* piece6 = pieces->createNode();
-	piece6->setMesh(mesh);
+	SceneNode* piece6 = new OutlineSceneNode();
+	piece6->setParent(pieces);
+	piece6->setPreDrawFun(setGreenColor);
+	piece6->setMesh(cubeMesh);
 	piece6->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.0f, 0.0f))
 	);
 
-	SceneNode* piece7 = pieces->createNode();
-	piece7->setMesh(mesh);
+	SceneNode* piece7 = new OutlineSceneNode();
+	piece7->setParent(pieces);
+	piece7->setPreDrawFun(setGreenColor);
+	piece7->setMesh(cubeMesh);
 	piece7->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, -0.4f, 0.0f))
 	);
 
-	SceneNode* piece8 = pieces->createNode();
-	piece8->setMesh(mesh);
+	SceneNode* piece8 = new OutlineSceneNode();
+	piece8->setParent(pieces);
+	piece8->setPreDrawFun(setGreenColor);
+	piece8->setMesh(cubeMesh);
 	piece8->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, -0.4f, 0.0f))
 	);
@@ -303,28 +350,33 @@ void createEnvironmentSceneGraph()
 
 void createSceneGraph()
 {
-	mesh = new Mesh();
+	Mesh* mesh = new Mesh();
+	MeshManager::getInstance()->add(CUBE_MESH, mesh);
 
 	string s = string("../objs/cube.obj");
 
-	mesh->createMesh(s);
-	mesh->createMeshBufferObjects();
 
-	slidingPuzzleScenegraph = new SceneGraph();
+	//mesh->createMesh(s);
+	//mesh->createMeshBufferObjects();
+	mesh->init(s);
+
+
+	SceneGraph* slidingPuzzleScenegraph = new SceneGraph();
 	slidingPuzzleScenegraph->setCamera(&camera);
+	SceneGraphManager::getInstance()->add(SLIDING_PUZZLE_SCENE_GRAPH, slidingPuzzleScenegraph);
 
 	SceneNode* n = slidingPuzzleScenegraph->getRoot();
-	n->setShaderProgram(&shaders);
+	n->setShaderProgram(ShaderProgramManager::getInstance()->get(MAIN_SHADER));
 
 
 	createEnvironmentSceneGraph();
 
-	slidingPuzzleScenegraph->init(shaders);
+	slidingPuzzleScenegraph->init(*(ShaderProgramManager::getInstance()->get(MAIN_SHADER)));
 }
 
 void drawScene()
 {
-	slidingPuzzleScenegraph->draw();
+	SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->draw();
 
 #ifndef ERROR_CALLBACK
 	ErrorHandler::checkOpenGLError("ERROR: Could not draw scene.");
@@ -335,9 +387,10 @@ void drawScene()
 
 void window_close_callback(GLFWwindow* win)
 {
-	shaders.destroy();
-	slidingPuzzleScenegraph->destroy();
-	mesh->destroyMeshBufferObjects();
+	ShaderProgramManager::getInstance()->get(MAIN_SHADER)->destroy();
+	SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->destroy();
+	//TODO maybe "delete mesh"
+	//mesh->destroyMeshBufferObjects();
 }
 
 void window_size_callback(GLFWwindow* win, int winx, int winy)
@@ -391,7 +444,7 @@ void mouse_button_callback(GLFWwindow* win, int button, int action, int mods)
 
 ///////////////////////////////////////////////////////////////////////// SETUP
 
-GLFWwindow* setupWindow(int winx, int winy, const char* title, 
+GLFWwindow* setupWindow(int winx, int winy, const char* title,
 	int is_fullscreen, int is_vsync)
 {
 	GLFWmonitor* monitor = is_fullscreen ? glfwGetPrimaryMonitor() : 0;
@@ -416,7 +469,7 @@ void setupCallbacks(GLFWwindow* win)
 	glfwSetMouseButtonCallback(win, mouse_button_callback);
 }
 
-GLFWwindow* setupGLFW(int gl_major, int gl_minor, 
+GLFWwindow* setupGLFW(int gl_major, int gl_minor,
 	int winx, int winy, const char* title, int is_fullscreen, int is_vsync)
 {
 	glfwSetErrorCallback(glfw_error_callback);
@@ -443,7 +496,7 @@ void setupGLEW()
 	// Allow extension entry points to be loaded even if the extension isn't 
 	// present in the driver's extensions string.
 	GLenum result = glewInit();
-	if (result != GLEW_OK) 
+	if (result != GLEW_OK)
 	{
 		std::cerr << "ERROR glewInit: " << glewGetString(result) << std::endl;
 		exit(EXIT_FAILURE);
@@ -480,15 +533,19 @@ void setupOpenGL(int winx, int winy)
 	glViewport(0, 0, winx, winy);
 }
 
-GLFWwindow* setup(int major, int minor, 
+GLFWwindow* setup(int major, int minor,
 	int winx, int winy, const char* title, int is_fullscreen, int is_vsync)
 {
-	GLFWwindow* win = 
+	GLFWwindow* win =
 		setupGLFW(major, minor, winx, winy, title, is_fullscreen, is_vsync);
 	setupGLEW();
 	setupOpenGL(winx, winy);
 
-	shaders.init(vertexShaderPath, fragmentShaderPath);
+	ShaderProgram* shaders = new ShaderProgram();
+	shaders->addUniform(COLOR_UNIFORM);
+	shaders->init(vertexShaderPath, fragmentShaderPath);
+	ShaderProgramManager::getInstance()->add(MAIN_SHADER, shaders);
+
 	createSceneGraph();
 
 	return win;
@@ -538,7 +595,7 @@ int main(int argc, char* argv[])
 	int is_fullscreen = 0;
 	int is_vsync = 1;
 
-	GLFWwindow* win = setup(gl_major, gl_minor, 
+	GLFWwindow* win = setup(gl_major, gl_minor,
 		640, 640, "Team project", is_fullscreen, is_vsync);
 	run(win);
 

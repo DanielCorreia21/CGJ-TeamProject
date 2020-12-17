@@ -2,6 +2,7 @@
 #include "SceneNode.h"
 #include "Camera.h"
 #include "ShaderProgram.h"
+#include "Manager.h"
 
 /*	AUTHORS
 *	Group: 11
@@ -19,9 +20,9 @@ public:
 	void setCamera(Camera *camera);
 	Camera *getCamera();
 	SceneNode *getRoot();
-	SceneNode *createNode();
 	void init(ShaderProgram shaders);
 	void destroy();
 	void draw();
 };
 
+class SceneGraphManager : public Manager<SceneGraph> {};

@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "Manager.h"
+
 /*	AUTHORS
 *	Group: 11
 *	Bernardo Pinto - 98734
@@ -19,15 +21,15 @@ class Mesh
 	public:
 
 		Mesh();
-		//~Mesh();
+		~Mesh();
+		void init(std::string& filename);
 		void bind();
 		void unbind();
 		void draw();
-		const void createMesh(std::string& filename);
-		void createMeshBufferObjects();
-		void destroyMeshBufferObjects();
 
 	private:
+		void createMeshBufferObjects();
+		void destroyMeshBufferObjects();
 
 		void loadMeshData(std::string& filename);
 		void processMeshData();
@@ -39,3 +41,4 @@ class Mesh
 		void parseVertex(std::stringstream& sin);
 };
 
+class MeshManager : public Manager<Mesh> {};

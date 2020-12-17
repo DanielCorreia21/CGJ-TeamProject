@@ -150,6 +150,7 @@
     <ClCompile Include="Matrix4d.cpp" />
     <ClCompile Include="MatrixFactory.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="OutlineSceneNode.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SceneNode.cpp" />
@@ -163,11 +164,13 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ErrorHandler.h" />
     <ClInclude Include="GLStatics.h" />
+    <ClInclude Include="Manager.h" />
     <ClInclude Include="Matrix2d.h" />
     <ClInclude Include="Matrix3d.h" />
     <ClInclude Include="Matrix4d.h" />
     <ClInclude Include="MatrixFactory.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="OutlineSceneNode.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="SceneNode.h" />
@@ -176,6 +179,10 @@
     <ClInclude Include="Vector2d.h" />
     <ClInclude Include="Vector3d.h" />
     <ClInclude Include="Vector4d.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Resources\fragmentShader.glsl" />
+    <None Include="..\Resources\vertexShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

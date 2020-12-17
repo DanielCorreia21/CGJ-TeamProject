@@ -5,25 +5,46 @@
 #include "Vector4d.h"
 #include "ErrorHandler.h"
 
-//estrutura de vectores e matrizes melhor glsl ou *glm*
 
 //passar argumentos com UniformLocation ou Block
 /*
-in_posistion
-in_color
+in_position
 in_texture
 shared_matrices
 model_matrix
+
+in_color
 */
 //new ones -> inhereted shaderProgram
 //bindAttributeLocation tmb para todos?
 
 
-//UBO_BP should be defined in a nother statics class
 //nesses casos getUniformId() etc ja nao guardamos do nosso lado?
 
 ShaderProgram::ShaderProgram(){
-	VertexShaderId = FragmentShaderId = ProgramId = UniformId = UniformColorId = UboId = 0;
+	VertexShaderId = FragmentShaderId = ProgramId = UniformId = UboId = 0;
+}
+
+void ShaderProgram::addAttribute(const std::string& name, const GLuint index)
+{
+	AttributeInfo att;
+	att.index = index;
+	this->attributes.insert(std::make_pair(name, att));
+}
+
+void ShaderProgram::addUniform(const std::string& name)
+{
+	UniformInfo uni;
+	//-1 by default, after binding will be updated
+	uni.index = -1;
+	this->uniforms.insert(std::make_pair(name, uni));
+}
+
+void ShaderProgram::addUbo(const std::string& name, const GLuint binding_point)
+{
+	UboInfo ubo;
+	ubo.binding_point = binding_point;
+	this->ubos.insert(std::make_pair(name, ubo));
 }
 
 std::string sVertexShader;
@@ -66,14 +87,36 @@ void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShade
 
 	//--------------------------------------------------------------------------------------
 	glBindAttribLocation(ProgramId, VERTICES, "in_Position");
-	glBindAttribLocation(ProgramId, COLORS, "in_Color");
 
 	glLinkProgram(ProgramId);
 	//TODO ASIGN??!!
 	this->UniformId = glGetUniformLocation(ProgramId, "ModelMatrix");
-	this->UniformColorId = glGetUniformLocation(ProgramId, "Color");
 	this->UboId = glGetUniformBlockIndex(ProgramId, "SharedMatrices");
 	glUniformBlockBinding(ProgramId, this->UboId, UBO_BP);
+
+
+	std::map<std::string, AttributeInfo>::iterator it = this->attributes.begin();
+	while (it != this->attributes.end())
+	{
+		glBindAttribLocation(ProgramId, it->second.index, it->first.c_str());
+		it++;
+	}
+
+	//this->UniformColorId = glGetUniformLocation(ProgramId, "Color");
+	std::map<std::string, UniformInfo>::iterator it2 = this->uniforms.begin();
+	while (it2 != this->uniforms.end())
+	{
+		it2->second.index = glGetUniformLocation(ProgramId, it2->first.c_str());
+		it2++;
+	}
+
+	std::map<std::string, UboInfo>::iterator it3 = this->ubos.begin();
+	while (it3 != this->ubos.end())
+	{
+		it3->second.index = glGetUniformBlockIndex(ProgramId, it3->first.c_str());
+		glUniformBlockBinding(ProgramId, it3->second.index, it3->second.binding_point);
+		it3++;
+	}
 	//--------------------------------------------------------------------------------------
 
 	glDetachShader(ProgramId, VertexShaderId);
@@ -111,22 +154,12 @@ GLint ShaderProgram::getUniformId()
 	return this->UniformId;
 }
 
-GLint ShaderProgram::getUBO()
+/*GLint ShaderProgram::getUBO()
 {
 	return UBO_BP;
-}
+}*/
 
-GLint ShaderProgram::getUniformColorId()
-{
-	return this->UniformColorId;
-}
 
-void ShaderProgram::setMat4(const std::string& name, const Matrix4d& mat) const
-{
-	float opengl_mat[16];
-	mat.toColumnMajorArray(opengl_mat);
-	glUniformMatrix4fv(glGetUniformLocation(UniformId, name.c_str()), 1, GL_FALSE, opengl_mat);
-}
 
 
 

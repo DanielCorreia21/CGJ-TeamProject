@@ -8,7 +8,7 @@
 
 SceneGraph::SceneGraph()
 {
-	this->root = new SceneNode(nullptr);
+	this->root = new SceneNode();
 	this->root->setSceneGraph(this);
 	this->camera = nullptr;
 }
@@ -26,11 +26,6 @@ Camera* SceneGraph::getCamera()
 SceneNode* SceneGraph::getRoot()
 {
 	return this->root;
-}
-
-SceneNode* SceneGraph::createNode()
-{
-	return this->root->createNode();
 }
 
 void SceneGraph::init(ShaderProgram shaders)

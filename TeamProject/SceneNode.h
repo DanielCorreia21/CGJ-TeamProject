@@ -15,7 +15,7 @@ typedef void (*fptr)();
 
 class SceneNode
 {
-private:
+protected:
 	SceneGraph *sceneGraph = nullptr;
 	SceneNode *parent = nullptr;
 	Mesh* mesh = nullptr;
@@ -25,18 +25,20 @@ private:
 	fptr preDrawFun = nullptr;
 
 	ShaderProgram* getShader();
-	fptr getPreDrawFun();
+	SceneGraph* getSceneGraph();
 public:
 	Matrix4d getModelMatrix();
-	SceneNode(SceneNode *parent);
-	SceneNode *createNode();
-	void addNode(SceneNode *node);
+	SceneNode(SceneNode* parent);
+	SceneNode();
+	void setParent(SceneNode* parent);
+	//SceneNode *createNode();
+	//void addNode(SceneNode *node);
 	void setSceneGraph(SceneGraph *sceneGraph);
 	void setMesh(Mesh* mesh);
 	void setMatrix(Matrix4d matrix);
 	void setShaderProgram(ShaderProgram* shader);
 	void setPreDrawFun(fptr f);
 	std::vector<SceneNode*> getChildren();
-	void draw();
+	virtual void draw();
 };
 
