@@ -150,6 +150,7 @@
     <ClCompile Include="Matrix4d.cpp" />
     <ClCompile Include="MatrixFactory.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="OutlineSceneNode.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SceneNode.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="Matrix4d.h" />
     <ClInclude Include="MatrixFactory.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="OutlineSceneNode.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="SceneNode.h" />
