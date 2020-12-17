@@ -18,6 +18,7 @@
 #include "util.h"
 #include "SceneGraph.h"
 #include "SceneNode.h"
+#include "OutlineSceneNode.h"
 #include "Mesh.h"
 #include "ErrorHandler.h"
 
@@ -279,7 +280,7 @@ void createEnvironmentSceneGraph()
 		* MatrixFactory::scalingMatrix(3.0f)
 	);
 
-	SceneNode* piece1 = new SceneNode();
+	SceneNode* piece1 = new OutlineSceneNode();
 	piece1->setParent(pieces);
 	piece1->setPreDrawFun(setGreenColor);
 	piece1->setMesh(cubeMesh);
@@ -287,7 +288,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(-0.4f,0.4f,0.0f))
 	);
 
-	SceneNode* piece2 = new SceneNode();
+	SceneNode* piece2 = new OutlineSceneNode();
 	piece2->setParent(pieces);
 	piece2->setPreDrawFun(setGreenColor);
 	piece2->setMesh(cubeMesh);
@@ -295,7 +296,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.4f, 0.0f))
 	);
 
-	SceneNode* piece3 = new SceneNode();
+	SceneNode* piece3 = new OutlineSceneNode();
 	piece3->setParent(pieces);
 	piece3->setPreDrawFun(setGreenColor);
 	piece3->setMesh(cubeMesh);
@@ -303,7 +304,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.4f, 0.0f))
 	);
 
-	SceneNode* piece4 = new SceneNode();
+	SceneNode* piece4 = new OutlineSceneNode();
 	piece4->setParent(pieces);
 	piece4->setPreDrawFun(setGreenColor);
 	piece4->setMesh(cubeMesh);
@@ -311,7 +312,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, 0.0f, 0.0f))
 	);
 
-	SceneNode* piece5 = new SceneNode();
+	SceneNode* piece5 = new OutlineSceneNode();
 	piece5->setParent(pieces);
 	piece5->setPreDrawFun(setGreenColor);
 	piece5->setMesh(cubeMesh);
@@ -319,7 +320,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.0f))
 	);
 
-	SceneNode* piece6 = new SceneNode();
+	SceneNode* piece6 = new OutlineSceneNode();
 	piece6->setParent(pieces);
 	piece6->setPreDrawFun(setGreenColor);
 	piece6->setMesh(cubeMesh);
@@ -327,7 +328,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.0f, 0.0f))
 	);
 
-	SceneNode* piece7 = new SceneNode();
+	SceneNode* piece7 = new OutlineSceneNode();
 	piece7->setParent(pieces);
 	piece7->setPreDrawFun(setGreenColor);
 	piece7->setMesh(cubeMesh);
@@ -335,7 +336,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, -0.4f, 0.0f))
 	);
 
-	SceneNode* piece8 = new SceneNode();
+	SceneNode* piece8 = new OutlineSceneNode();
 	piece8->setParent(pieces);
 	piece8->setPreDrawFun(setGreenColor);
 	piece8->setMesh(cubeMesh);

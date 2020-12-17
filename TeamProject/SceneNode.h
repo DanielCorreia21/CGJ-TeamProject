@@ -15,7 +15,7 @@ typedef void (*fptr)();
 
 class SceneNode
 {
-private:
+protected:
 	SceneGraph *sceneGraph = nullptr;
 	SceneNode *parent = nullptr;
 	Mesh* mesh = nullptr;
@@ -39,6 +39,6 @@ public:
 	void setShaderProgram(ShaderProgram* shader);
 	void setPreDrawFun(fptr f);
 	std::vector<SceneNode*> getChildren();
-	void draw();
+	virtual void draw();
 };
 
