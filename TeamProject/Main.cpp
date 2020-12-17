@@ -23,6 +23,7 @@
 #include "Texture.h"
 #include "TextureInfo.h"
 #include "Texture2D.h"
+#include "Texture3D.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -35,11 +36,11 @@ using namespace std;
 *	Daniel Correia - 98745
 */
 
-bool tcoords = false;
-bool normals = true;
+bool tcoords = true;
+bool normals = false;
 
-const char vertexShaderPath[] = "../Resources/GraniteVS.glsl";
-const char fragmentShaderPath[] = "../Resources/GraniteFS.glsl";
+const char vertexShaderPath[] = "../Resources/texture_vs.glsl";
+const char fragmentShaderPath[] = "../Resources/texture_fs.glsl";
 const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
 const string MAIN_SHADER = "main";
 const string CUBE_MESH = "cube";
@@ -208,8 +209,14 @@ void createTextures() {
 
 	Texture2D* texture_1 = new Texture2D();
 	texture_1->load("../number_1.png");
-	texture_1->createPerlinNoise(256, 10, 10, 2, 2, 8);
+	//texture_1->createPerlinNoise(256, 10, 10, 2, 2, 5);
 	TextureManager::getInstance()->add("number_1", (Texture*)texture_1);
+
+	//Texture2D* texture_2 = new Texture2D();
+	//texture_2->load("../number_2.png");
+	////texture_2->createPerlinNoise(256, 10, 10, 2, 2, 8);
+	//TextureManager::getInstance()->add("number_2", (Texture*)texture_2);
+
 }
 
 void createEnvironmentSceneGraph()
@@ -224,6 +231,7 @@ void createEnvironmentSceneGraph()
 	backboard->setMatrix(
 		MatrixFactory::scalingMatrix(Vector3d(11.0f,11.0f,1.0f))
 	);
+
 #pragma endregion
 
 	#pragma region frame
@@ -299,9 +307,8 @@ void createEnvironmentSceneGraph()
 	);
 
 	TextureInfo* tinfo_1 = new TextureInfo(GL_TEXTURE0, 0, "Texture1", TextureManager::getInstance()->get("number_1"));
-	piece1->setShaderProgram(ShaderProgramManager::getInstance()->get(MAIN_SHADER));
+	//piece1->setShaderProgram(ShaderProgramManager::getInstance()->get(MAIN_SHADER));
 	piece1->addTexture(tinfo_1);
-
 
 	SceneNode* piece2 = new SceneNode();
 	piece2->setParent(pieces);
@@ -310,6 +317,10 @@ void createEnvironmentSceneGraph()
 	piece2->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.4f, 0.0f))
 	);
+
+	//TextureInfo* tinfo_2 = new TextureInfo(GL_TEXTURE0, 0, "Texture2", TextureManager::getInstance()->get("number_2"));
+	////piece2->setShaderProgram(ShaderProgramManager::getInstance()->get(MAIN_SHADER));
+	//piece2->addTexture(tinfo_2);
 
 	SceneNode* piece3 = new SceneNode();
 	piece3->setParent(pieces);

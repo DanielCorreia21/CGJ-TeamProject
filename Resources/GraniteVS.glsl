@@ -1,9 +1,9 @@
 #version 330 core
 
 uniform mat4 ModelMatrix;
-uniform Camera {
-mat4 ViewMatrix;
-mat4 ProjectionMatrix;
+uniform SharedMatrices {
+	mat4 ViewMatrix;
+	mat4 ProjectionMatrix;
 };
 
 in vec3 inVertex;

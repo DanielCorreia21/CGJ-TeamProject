@@ -16,7 +16,7 @@ typedef void (*fptr)();
 
 class SceneNode
 {
-private:
+protected:
 	SceneGraph *sceneGraph = nullptr;
 	SceneNode *parent = nullptr;
 	Mesh* mesh = nullptr;
@@ -44,6 +44,6 @@ public:
 	std::vector<SceneNode*> getChildren();
 	std::vector<TextureInfo*> getTextures();
 	void addTexture(TextureInfo* texture);
-	void draw();
+	virtual void draw();
 };
 

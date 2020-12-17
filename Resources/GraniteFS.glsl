@@ -1,13 +1,15 @@
 #version 330 core
-uniform sampler3D NoiseTexture;
+
+uniform sampler2D NoiseTexture;
 uniform vec3 LightPosition;
 uniform float Levers[5];
 
 uniform mat4 ModelMatrix;
 uniform mat3 NormalMatrix;
-uniform Camera {
-mat4 ViewMatrix;
-mat4 ProjectionMatrix;
+uniform SharedMatrices 
+{
+	mat4 ViewMatrix;
+	mat4 ProjectionMatrix;
 };
 
 in vec3 exPosition;
@@ -28,5 +30,5 @@ float intensity = max(dot(L,N),0.0)*k_diffuse+k_ambient;
 vec3 wcPosition = vec3(ModelMatrix*vec4(exPosition,1.0));
 vec3 p = wcPosition*0.5+0.5;
 float noise = texture(NoiseTexture,p).r*0.5+0.5;
-FragmentColor = vec4(vec3(noise*intensity),1.0);
+FragmentColor = vec4(vec3(noise*intensity+0.5),1.0);
 }

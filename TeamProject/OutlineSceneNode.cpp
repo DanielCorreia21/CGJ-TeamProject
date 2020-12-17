@@ -26,6 +26,13 @@ void OutlineSceneNode::draw()
 
 	ShaderProgram* shaders = this->getShader();
 	shaders->bind();
+
+	if (textures.empty() == false) {
+		for (auto& t : textures) {
+			t->updateShader(shaders);
+		}
+	}
+
 	this->mesh->bind();
 
 	//------------

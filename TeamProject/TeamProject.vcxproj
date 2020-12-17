@@ -142,7 +142,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Atexture.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ErrorHandler.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -153,13 +152,13 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Noise.cpp" />
     <ClCompile Include="OutlineSceneNode.cpp" />
-    <ClCompile Include="Perlin.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Texture2D.cpp" />
+    <ClCompile Include="Texture3D.cpp" />
     <ClCompile Include="TextureInfo.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="Vector2d.cpp" />
@@ -186,6 +185,7 @@
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="Texture3D.h" />
     <ClInclude Include="TextureInfo.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="Vector2d.h" />
