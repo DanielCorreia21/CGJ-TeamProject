@@ -158,6 +158,7 @@
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="Texture3D.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="Vector2d.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ErrorHandler.h" />
     <ClInclude Include="GLStatics.h" />
+    <ClInclude Include="Texture3D.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Matrix2d.h" />
     <ClInclude Include="Matrix3d.h" />
