@@ -1,7 +1,7 @@
 #include "OutlineSceneNode.h"
 #include "MatrixFactory.h"
 
-OutlineSceneNode::OutlineSceneNode()
+OutlineSceneNode::OutlineSceneNode() : SceneNode()
 {
 
 }
