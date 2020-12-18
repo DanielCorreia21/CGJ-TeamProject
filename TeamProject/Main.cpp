@@ -40,7 +40,8 @@ bool tcoords = true;
 bool normals = false;
 
 const char vertexShaderPath[] = "../Resources/GraniteVS.glsl";
-const char fragmentShaderPath[] = "../Resources/GraniteFS.glsl";
+const char fragmentShaderPath[] = "../Resources/GraniteFS_Normal.glsl";
+const char fragmentShaderPath_Texture[] = "../Resources/GraniteFS.glsl";
 const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
 const string MAIN_SHADER = "main";
 const string CUBE_MESH = "cube";
@@ -209,7 +210,7 @@ void createTextures() {
 
 	Texture2D* texture_1 = new Texture2D();
 	texture_1->load("../marble.png");
-	texture_1->createPerlinNoise(256, 5, 5, 2, 2, 8);
+	texture_1->createPerlinNoise(256, 10, 10, 5, 5, 8);
 	TextureManager::getInstance()->add("number_1", (Texture*)texture_1);
 
 	Texture2D* texture_2 = new Texture2D();
@@ -237,7 +238,7 @@ void createEnvironmentSceneGraph()
 	);
 
 	TextureInfo* tinfo_1 = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("number_1"));
-	//piece1->setShaderProgram(ShaderProgramManager::getInstance()->get(MAIN_SHADER));
+	backboard->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
 	backboard->addTexture(tinfo_1);
 
 #pragma endregion
@@ -580,14 +581,17 @@ GLFWwindow* setup(int major, int minor,
 	shaders->addUniform(COLOR_UNIFORM);
 	shaders->addUniform("Texture_1");
 	shaders->addUniform("NoiseTexture");
-	shaders->addUniform("LightPosition");
-	shaders->addUniform("Levers");
-	shaders->addUniform("NormalMatrix");
-
 	shaders->init(vertexShaderPath, fragmentShaderPath, tcoords, normals);
-
-
 	ShaderProgramManager::getInstance()->add(MAIN_SHADER, shaders);
+
+
+	ShaderProgram* g_shaders = new ShaderProgram();
+	g_shaders->addUniform(COLOR_UNIFORM);
+	g_shaders->addUniform("Texture_1");
+	g_shaders->addUniform("NoiseTexture");
+
+	g_shaders->init(vertexShaderPath, fragmentShaderPath_Texture, tcoords, normals);
+	ShaderProgramManager::getInstance()->add("Granite", g_shaders);
 
 	createTextures();
 	createSceneGraph();

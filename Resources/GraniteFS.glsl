@@ -13,7 +13,7 @@ void main(void)
 	
 	float noise = texture(NoiseTexture, exTexcoord).r*0.5+0.5;
 	float intensity = clamp(noise, 0.0, 1.0);
-	vec3 color = mix(colour1, colour2, intensity);
+	vec3 color = mix(colour1, colour2, intensity*2);
 	FragmentColor = vec4(color,1.0);
 
 }

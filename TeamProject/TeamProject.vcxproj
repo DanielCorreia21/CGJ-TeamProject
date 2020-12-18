@@ -195,6 +195,7 @@
   <ItemGroup>
     <None Include="..\Resources\fragmentShader.glsl" />
     <None Include="..\Resources\GraniteFS.glsl" />
+    <None Include="..\Resources\GraniteFS_Normal.glsl" />
     <None Include="..\Resources\GraniteVS.glsl" />
     <None Include="..\Resources\texture_fs.glsl" />
     <None Include="..\Resources\texture_vs.glsl" />
