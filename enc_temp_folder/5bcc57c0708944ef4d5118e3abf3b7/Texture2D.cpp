@@ -17,14 +17,14 @@ void Texture2D::unbind()
 void Texture2D::load(const std::string& filename)
 {
 	int width, height, channels;
-	std::cout << " Loading Image" << filename;
+	std::cout << "Loading Image" << filename;
 	unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA);
 	if (image == nullptr) {
-		std::cout << " Error: Image is a nullptr" << std::endl;
+		std::cout << "Error: Image is a nullptr" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	else {
-		std::cout << " Image loaded." << std::endl;
+		std::cout << "Image loaded." << std::endl;
 	}
 
 	glGenTextures(1, &id);

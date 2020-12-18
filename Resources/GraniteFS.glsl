@@ -1,34 +1,19 @@
 #version 330 core
 
 uniform sampler2D NoiseTexture;
-uniform vec3 LightPosition;
-uniform float Levers[5];
 
-uniform mat4 ModelMatrix;
-uniform mat3 NormalMatrix;
-uniform SharedMatrices 
-{
-	mat4 ViewMatrix;
-	mat4 ProjectionMatrix;
-};
-
-in vec3 exPosition;
-in vec3 exNormal;
+in vec2 exTexcoord;
 out vec4 FragmentColor;
+const vec3 colour1 = vec3(0.5, 0.25, 0.3);
+const vec3 colour2 = vec3(0.85, 0.7, 0.75);
 
 void main(void)
 {
-float k_diffuse = Levers[0];
-float k_ambient = 1.0-k_diffuse;
 
-vec3 V = vec3(ViewMatrix*ModelMatrix*vec4(exPosition,1.0));
-vec3 N = normalize(NormalMatrix*exNormal);
-vec3 Lpos = vec3(ViewMatrix*vec4(LightPosition,1.0));
-vec3 L = normalize(Lpos-V);
-float intensity = max(dot(L,N),0.0)*k_diffuse+k_ambient;
+	
+	float noise = texture(NoiseTexture, exTexcoord).r*0.5+0.5;
+	float intensity = clamp(noise, 0.0, 1.0);
+	vec3 color = mix(colour1, colour2, intensity);
+	FragmentColor = vec4(color,1.0);
 
-vec3 wcPosition = vec3(ModelMatrix*vec4(exPosition,1.0));
-vec3 p = wcPosition*0.5+0.5;
-float noise = texture(NoiseTexture,p).r*0.5+0.5;
-FragmentColor = vec4(vec3(noise*intensity+0.5),1.0);
 }

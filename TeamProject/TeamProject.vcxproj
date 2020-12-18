@@ -194,6 +194,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\fragmentShader.glsl" />
+    <None Include="..\Resources\GraniteFS.glsl" />
+    <None Include="..\Resources\GraniteVS.glsl" />
+    <None Include="..\Resources\texture_fs.glsl" />
+    <None Include="..\Resources\texture_vs.glsl" />
     <None Include="..\Resources\vertexShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

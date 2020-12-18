@@ -13,7 +13,7 @@ out vec2 exTexcoord;
 
 void main(void)
 {
-	exTexcoord = inTexcoord;
+	exTexcoord = inTexcoord.st;
 	
 	vec4 MCPosition = vec4(inVertex, 1.0);
 	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * MCPosition;

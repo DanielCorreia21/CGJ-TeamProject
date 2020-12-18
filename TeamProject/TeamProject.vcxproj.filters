@@ -172,5 +172,17 @@
     <None Include="..\Resources\vertexShader.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\Resources\GraniteFS.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\GraniteVS.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\texture_fs.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\texture_vs.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -147,5 +147,12 @@ void SceneNode::draw()
 	this->mesh->draw();
 
 	this->mesh->unbind();
+
+	if (textures.empty() == false) {
+		for (auto& t : textures) {
+			t->texture->unbind();
+		}
+	}
+
 	shaders->unbind();
 }
