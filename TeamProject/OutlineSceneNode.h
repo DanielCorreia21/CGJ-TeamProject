@@ -4,8 +4,9 @@
 
 class OutlineSceneNode : public SceneNode
 {
+protected:
+	void duringDraw();
 public:
 	OutlineSceneNode();
-	void draw();
 };
 

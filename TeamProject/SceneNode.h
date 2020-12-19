@@ -26,6 +26,10 @@ protected:
 
 	ShaderProgram* getShader();
 	SceneGraph* getSceneGraph();
+
+	virtual void preDraw();
+	virtual void duringDraw();
+	virtual void postDraw();
 public:
 	Matrix4d getModelMatrix();
 	SceneNode(SceneNode* parent);
@@ -39,6 +43,6 @@ public:
 	void setShaderProgram(ShaderProgram* shader);
 	void setPreDrawFun(fptr f);
 	std::vector<SceneNode*> getChildren();
-	virtual void draw();
+	void draw();
 };
 

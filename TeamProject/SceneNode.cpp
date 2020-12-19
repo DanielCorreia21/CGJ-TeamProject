@@ -55,20 +55,6 @@ void SceneNode::setParent(SceneNode* parent)
 	parent->children.push_back(this);
 }
 
-/*SceneNode* SceneNode::createNode()
-{
-	SceneNode* result = new SceneNode(this);
-	result->setSceneGraph(this->sceneGraph);
-	result->setShaderProgram(this->shader);
-	this->children.push_back(result);
-	return result;
-}
-
-void SceneNode::addNode(SceneNode* node)
-{
-	this->children.push_back(node);
-}*/
-
 void SceneNode::setSceneGraph(SceneGraph* sceneGraph)
 {
 	this->sceneGraph = sceneGraph;
@@ -99,31 +85,43 @@ std::vector<SceneNode*> SceneNode::getChildren()
 	return this->children;
 }
 
-void SceneNode::draw()
+void SceneNode::preDraw()
 {
-	for (SceneNode* child : this->children) {
-		child->draw();
-	}
 
-	if (this->mesh == nullptr) {
-		return;
-	}
-
-	ShaderProgram* shaders = this->getShader();
-	shaders->bind();
+	this->getShader()->bind();
 	this->mesh->bind();
 
 	//pre-draw function
 	if (this->preDrawFun != nullptr) {
 		this->preDrawFun();
 	}
+}
 
+void SceneNode::duringDraw()
+{
 	float opengl_model_matrix[16];
 	this->getModelMatrix().toColumnMajorArray(opengl_model_matrix);
-	glUniformMatrix4fv(shaders->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
+	glUniformMatrix4fv(this->getShader()->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
+}
 
+void SceneNode::postDraw()
+{
 	this->mesh->draw();
 
 	this->mesh->unbind();
-	shaders->unbind();
+	this->getShader()->unbind();
+}
+
+void SceneNode::draw()
+{
+	for (SceneNode* child : this->children) {
+		child->draw();
+	}
+	if (this->mesh == nullptr) {
+		return;
+	}
+
+	preDraw();
+	duringDraw();
+	postDraw();
 }
