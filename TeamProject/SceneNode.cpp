@@ -80,6 +80,11 @@ void SceneNode::setPreDrawFun(fptr f)
 	this->preDrawFun = f;
 }
 
+void SceneNode::setPostDrawFun(fptr f)
+{
+	this->postDrawFun = f;
+}
+
 std::vector<SceneNode*> SceneNode::getChildren()
 {
 	return this->children;
@@ -102,12 +107,14 @@ void SceneNode::duringDraw()
 	float opengl_model_matrix[16];
 	this->getModelMatrix().toColumnMajorArray(opengl_model_matrix);
 	glUniformMatrix4fv(this->getShader()->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
+	this->mesh->draw();
 }
 
 void SceneNode::postDraw()
 {
-	this->mesh->draw();
-
+	if (this->postDrawFun != nullptr) {
+		this->postDrawFun();
+	}
 	this->mesh->unbind();
 	this->getShader()->unbind();
 }

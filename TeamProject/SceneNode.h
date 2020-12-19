@@ -23,6 +23,7 @@ protected:
 	std::vector<SceneNode*> children;
 	ShaderProgram *shader = nullptr;
 	fptr preDrawFun = nullptr;
+	fptr postDrawFun = nullptr;
 
 	ShaderProgram* getShader();
 	SceneGraph* getSceneGraph();
@@ -42,6 +43,7 @@ public:
 	void setMatrix(Matrix4d matrix);
 	void setShaderProgram(ShaderProgram* shader);
 	void setPreDrawFun(fptr f);
+	void setPostDrawFun(fptr f);
 	std::vector<SceneNode*> getChildren();
 	void draw();
 };
