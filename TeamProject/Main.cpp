@@ -220,7 +220,7 @@ void createTextures() {
 
 	Texture2D* texture_2 = new Texture2D();
 	texture_2->load("../number_2.png");
-	//texture_2->createPerlinNoise(256, 10, 10, 2, 2, 1);
+	//texture_2->createPerlinNoise(128, 10, 10, 2, 2, 1);
 	TextureManager::getInstance()->add("number_2", (Texture*)texture_2);
 
 	Texture2D* texture_3 = new Texture2D();
@@ -241,6 +241,11 @@ void createEnvironmentSceneGraph()
 	backboard->setMatrix(
 		MatrixFactory::scalingMatrix(Vector3d(11.0f,11.0f,1.0f))
 	);
+
+
+	TextureInfo* tinfo_0 = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("number_0"));
+	backboard->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	backboard->addTexture(tinfo_0);
 
 #pragma endregion
 
@@ -320,10 +325,6 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(-0.4f,0.4f,0.0f))
 	);
 
-	//TextureInfo* tinfo_2 = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("number_2"));
-	////piece2->setShaderProgram(ShaderProgramManager::getInstance()->get(MAIN_SHADER));
-	//piece1->addTexture(tinfo_2);
-
 	SceneNode* piece2 = new SceneNode();
 	piece2->setParent(pieces);
 	piece2->setPreDrawFun(setGreenColor);
@@ -397,7 +398,7 @@ void createSceneGraph()
 	Mesh* mesh = new Mesh();
 	MeshManager::getInstance()->add(CUBE_MESH, mesh);
 
-	string s = string("../objs/cube.obj");
+	string s = string("../objs/cube5.obj");
 
 	//mesh->createMesh(s);
 	//mesh->createMeshBufferObjects();

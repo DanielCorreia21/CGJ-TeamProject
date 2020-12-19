@@ -19,7 +19,7 @@ void main(void)
 	vec3 p = wcPosition * 0.5 + 0.5;
 	float noise = texture(NoiseTexture, p).r * 0.5 + 0.5;
 
-	vec4 tex = texture(Texture_1, exTexcoord);
+	vec4 tex = texture(Texture_1, 0.25 * exTexcoord);
 
 	float intensity = clamp(noise, 0.0, 1.0);
 	vec3 color = mix(colour1, colour2, intensity*2);

@@ -196,5 +196,8 @@
     <None Include="..\Resources\GraniteFS_3D.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\Resources\GraniteFS _Tiles.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -194,6 +194,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\fragmentShader.glsl" />
+    <None Include="..\Resources\GraniteFS _Tiles.glsl" />
     <None Include="..\Resources\GraniteFS.glsl" />
     <None Include="..\Resources\GraniteFS_3D.glsl" />
     <None Include="..\Resources\GraniteFS_Normal.glsl" />
