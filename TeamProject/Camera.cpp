@@ -60,8 +60,8 @@ Camera::Camera(Vector3d initialPos, Vector3d cameraOrientation, Vector3d up)
 	this->up = up;
 	this->cameraOrientation = cameraOrientation;
 	this->translationVector = initialPos;
-	this->currentType = PERSPECTIVE;
-	this->currentRotation = EULER;
+	this->currentType = CameraType::PERSPECTIVE;
+	this->currentRotation = RotationMode::EULER;
 	this->VboId[0] = 0;
 
 	orthoMatrix = getOrthoProj(-2, 2, -2, 2, 1, 100);
@@ -82,7 +82,7 @@ Matrix4d Camera::getViewMatrix()
 
 Matrix4d Camera::getProjectionMatrix()
 {
-	if (this->currentType == ORTHOGONAL) {
+	if (this->currentType == CameraType::ORTHOGONAL) {
 		return orthoMatrix;
 	}
 	else {
@@ -100,7 +100,7 @@ void Camera::applyRotation(float angleAroundX, float angleAroundY, float angleAr
 
 Matrix4d Camera::getRotationMatrix()
 {
-	if (this->currentRotation == EULER) {
+	if (this->currentRotation == RotationMode::EULER) {
 		Matrix4d yawMatrix = MatrixFactory::rotateYMatrix(yaw);
 		Matrix4d pitchMatrix = MatrixFactory::rotateZMatrix(pitch);
 		Matrix4d rollMatrix = MatrixFactory::rotateXMatrix(roll);
@@ -249,22 +249,22 @@ void Camera::updateCamera() {
 }
 
 void Camera::changeProjectionType() {
-	if (currentType == ORTHOGONAL) {
-		currentType = PERSPECTIVE;
+	if (currentType == CameraType::ORTHOGONAL) {
+		currentType = CameraType::PERSPECTIVE;
 	}
 	else {
-		currentType = ORTHOGONAL;
+		currentType = CameraType::ORTHOGONAL;
 	}
 }
 
 void Camera::changeRotationType()
 {
-	if (currentRotation == EULER) {
+	if (currentRotation == RotationMode::EULER) {
 		std::cout << "CHANGE TO QUATERNION\n";
-		currentRotation = QUATERNION;
+		currentRotation = RotationMode::QUATERNION;
 	}
 	else {
 		std::cout << "CHANGE TO EULER\n";
-		currentRotation = EULER;
+		currentRotation = RotationMode::EULER;
 	}
 }

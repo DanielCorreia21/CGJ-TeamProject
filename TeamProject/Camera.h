@@ -13,28 +13,23 @@
 *	Daniel Correia - 98745
 */
 
-enum Camera_Type {
-	ORTHOGONAL,
-	PERSPECTIVE
-};
 
-enum Rotation_Mode {
-	EULER,
-	QUATERNION
-};
+
+
 
 class Camera
 {
-private:
-	Vector3d up, cameraOrientation;
-	Vector3d translationVector;
-	Camera_Type currentType;
-	Rotation_Mode currentRotation;
-	Matrix4d orthoMatrix, persectiveMatrix;
-	GLuint VboId[1];
-	float CAMERA_SPEED = 0.05f;
-	Matrix4d getRotationMatrix();
 public:
+	enum class CameraType {
+		ORTHOGONAL,
+		PERSPECTIVE
+	};
+
+	enum class RotationMode {
+		EULER,
+		QUATERNION
+	};
+
 	Camera(Vector3d eye, Vector3d front, Vector3d up);
 	Matrix4d getViewMatrix();
 	Matrix4d getProjectionMatrix();
@@ -47,5 +42,14 @@ public:
 	void changeProjectionType();
 	void changeRotationType();
 	void updateCamera();
+private:
+	Vector3d up, cameraOrientation;
+	Vector3d translationVector;
+	CameraType currentType;
+	RotationMode currentRotation;
+	Matrix4d orthoMatrix, persectiveMatrix;
+	GLuint VboId[1];
+	float CAMERA_SPEED = 0.05f;
+	Matrix4d getRotationMatrix();
 };
 
