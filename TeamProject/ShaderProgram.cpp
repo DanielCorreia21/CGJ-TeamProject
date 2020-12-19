@@ -22,7 +22,7 @@ in_color
 //nesses casos getUniformId() etc ja nao guardamos do nosso lado?
 
 ShaderProgram::ShaderProgram(){
-	VertexShaderId = FragmentShaderId = ProgramId = UniformId = UboId = 0;
+	VertexShaderId = FragmentShaderId = ProgramId = ModelMatrixIndex = UboId = 0;
 }
 
 ShaderProgram::~ShaderProgram()
@@ -96,7 +96,7 @@ void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShade
 
 	glLinkProgram(ProgramId);
 	//TODO ASIGN??!!
-	this->UniformId = glGetUniformLocation(ProgramId, "ModelMatrix");
+	this->ModelMatrixIndex = glGetUniformLocation(ProgramId, "ModelMatrix");
 	this->UboId = glGetUniformBlockIndex(ProgramId, "SharedMatrices");
 	glUniformBlockBinding(ProgramId, this->UboId, UBO_BP);
 
@@ -155,9 +155,9 @@ void ShaderProgram::destroy()
 #endif
 }
 
-GLint ShaderProgram::getUniformId()
+GLint ShaderProgram::getModelMatrixIndex()
 {
-	return this->UniformId;
+	return this->ModelMatrixIndex;
 }
 
 /*GLint ShaderProgram::getUBO()

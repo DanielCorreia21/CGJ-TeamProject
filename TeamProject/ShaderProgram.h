@@ -16,7 +16,7 @@ class ShaderProgram
 {
 private:
 	GLuint VertexShaderId, FragmentShaderId, ProgramId;
-	GLint UniformId, UboId;
+	GLint ModelMatrixIndex, UboId;
 
 	void destroy();
 public:
@@ -45,7 +45,7 @@ public:
 	void bind();
 	void unbind();
 	//void addUniformBlock(const std::string& name, const GLuint binding_point);
-	GLint getUniformId();
+	GLint getModelMatrixIndex();
 	//GLint getUBO();
 	//GLint getUniformColorId();
 };

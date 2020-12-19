@@ -95,8 +95,8 @@ bool Vector4d::isEqual(Vector4d vec) const {
 		&& util::equalFloats(this->k, vec.getK());
 }
 float Vector4d::norm() {
-	return sqrt(pow(this->x, 2) + pow(this->y, 2) 
-		+ pow(this->z, 2) + pow(this->k, 2));
+	return (float) (sqrt(pow(this->x, 2) + pow(this->y, 2)
+		+ pow(this->z, 2) + pow(this->k, 2)));
 }
 Vector4d Vector4d::normalize()
 {

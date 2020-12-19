@@ -26,13 +26,13 @@ Matrix4d getOrthoProj(double left, double right, double bottom, double top, doub
 			result_array[i][j] = 0;
 		}
 	}
-	result_array[0][0] = 2 / (right - left);
-	result_array[1][1] = 2 / (top - bottom);
-	result_array[2][2] = 2 / (near - far);
-	result_array[0][3] = (left + right) / (left - right);
-	result_array[1][3] = (bottom + top) / (bottom - top);
-	result_array[2][3] = (near + far) / (near - far);
-	result_array[3][3] = 1;
+	result_array[0][0] = (float) (2 / (right - left));
+	result_array[1][1] = (float) (2 / (top - bottom));
+	result_array[2][2] = (float) (2 / (near - far));
+	result_array[0][3] = (float) ((left + right) / (left - right));
+	result_array[1][3] = (float) ((bottom + top) / (bottom - top));
+	result_array[2][3] = (float) ((near + far) / (near - far));
+	result_array[3][3] = (float) 1;
 
 	return Matrix4d(result_array);
 }
@@ -40,7 +40,7 @@ Matrix4d getOrthoProj(double left, double right, double bottom, double top, doub
 Matrix4d getPerspectiveProj(float fov, float aspect, float near, float far) {
 
 	float theta = fov / 2;
-	float d = 1 / (tan(theta * PI / 180));
+	float d = (float) (1 / (tan(theta * PI / 180)));
 	//float aspect = aspect;
 	float A = (near + far) / (near - far);
 	float B = (2 * near * far) / (near - far);
@@ -206,7 +206,7 @@ void Camera::draw()
 }
 
 float toRadians(float value) {
-	return value * PI / 180;
+	return value * ((float) PI) / 180;
 }
 
 void Camera::look(float xpos, float ypos, bool pressed)

@@ -32,7 +32,7 @@ private:
 	Rotation_Mode currentRotation;
 	Matrix4d orthoMatrix, persectiveMatrix;
 	GLuint VboId[1];
-	float CAMERA_SPEED = 0.05;
+	float CAMERA_SPEED = 0.05f;
 	Matrix4d getRotationMatrix();
 public:
 	Camera(Vector3d eye, Vector3d front, Vector3d up);

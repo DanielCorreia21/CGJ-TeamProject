@@ -439,7 +439,7 @@ int mouse_pressed = 0;
 
 void mouse_callback(GLFWwindow* win, double xpos, double ypos)
 {
-	camera.look(xpos, ypos, mouse_pressed);
+	camera.look((float) xpos, (float) ypos, mouse_pressed);
 
 }
 
