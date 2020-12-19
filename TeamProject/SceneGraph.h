@@ -15,13 +15,14 @@ class SceneGraph
 private:
 	SceneNode *root;
 	Camera *camera;
+	void destroy();
 public:
 	SceneGraph();
+	~SceneGraph();
 	void setCamera(Camera *camera);
 	Camera *getCamera();
 	SceneNode *getRoot();
-	void init(ShaderProgram shaders);
-	void destroy();
+	void init(ShaderProgram* shaders);
 	void draw();
 };
 

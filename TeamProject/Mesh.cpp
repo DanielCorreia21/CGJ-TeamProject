@@ -21,6 +21,7 @@ Mesh::Mesh() { }
 
 Mesh::~Mesh()
 {
+	std::cout << "Destroying mesh\n";
 	destroyMeshBufferObjects();
 }
 

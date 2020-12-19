@@ -25,6 +25,12 @@ ShaderProgram::ShaderProgram(){
 	VertexShaderId = FragmentShaderId = ProgramId = UniformId = UboId = 0;
 }
 
+ShaderProgram::~ShaderProgram()
+{
+	std::cout << "\nDestroying shaders\n";
+	this->destroy();
+}
+
 void ShaderProgram::addAttribute(const std::string& name, const GLuint index)
 {
 	AttributeInfo att;

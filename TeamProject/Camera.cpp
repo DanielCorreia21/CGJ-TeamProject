@@ -159,7 +159,7 @@ void Camera::updateCameraPos(int key, int action)
 	}
 }
 
-void Camera::initBuffer(ShaderProgram shaders)
+void Camera::initBuffer(ShaderProgram* shaders)
 {
 	glGenBuffers(1, VboId);
 

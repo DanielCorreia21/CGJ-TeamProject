@@ -18,6 +18,7 @@ private:
 	GLuint VertexShaderId, FragmentShaderId, ProgramId;
 	GLint UniformId, UboId;
 
+	void destroy();
 public:
 	struct AttributeInfo {
 		GLuint index;
@@ -36,13 +37,13 @@ public:
 	std::map<std::string, UboInfo> ubos;
 
 	ShaderProgram();
+	~ShaderProgram();
 	void addAttribute(const std::string& name, const GLuint index);
 	void addUniform(const std::string& name);
 	void addUbo(const std::string& name, const GLuint binding_point);
 	void init(const char vertexShaderPath[], const char fragmentShaderPath[]);
 	void bind();
 	void unbind();
-	void destroy();
 	//void addUniformBlock(const std::string& name, const GLuint binding_point);
 	GLint getUniformId();
 	//GLint getUBO();

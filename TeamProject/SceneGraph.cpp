@@ -13,6 +13,12 @@ SceneGraph::SceneGraph()
 	this->camera = nullptr;
 }
 
+SceneGraph::~SceneGraph()
+{
+	std::cout << "Destroying SceneGraph\n";
+	this->destroy();
+}
+
 void SceneGraph::setCamera(Camera* camera)
 {
 	this->camera = camera;
@@ -28,7 +34,7 @@ SceneNode* SceneGraph::getRoot()
 	return this->root;
 }
 
-void SceneGraph::init(ShaderProgram shaders)
+void SceneGraph::init(ShaderProgram* shaders)
 {
 	this->camera->initBuffer(shaders);
 }

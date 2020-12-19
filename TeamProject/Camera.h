@@ -40,7 +40,7 @@ public:
 	Matrix4d getProjectionMatrix();
 	void applyRotation(float angleAroundX, float angleAroundY, float angleAroundZ);
 	void updateCameraPos(int key, int action);
-	void initBuffer(ShaderProgram shaders);
+	void initBuffer(ShaderProgram* shaders);
 	void destroyBuffer();
 	void draw();
 	void look(float xpos, float ypos, bool pressed);

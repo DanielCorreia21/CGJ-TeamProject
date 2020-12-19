@@ -371,7 +371,7 @@ void createSceneGraph()
 
 	createEnvironmentSceneGraph();
 
-	slidingPuzzleScenegraph->init(*(ShaderProgramManager::getInstance()->get(MAIN_SHADER)));
+	slidingPuzzleScenegraph->init(ShaderProgramManager::getInstance()->get(MAIN_SHADER));
 }
 
 void drawScene()
@@ -387,10 +387,18 @@ void drawScene()
 
 void window_close_callback(GLFWwindow* win)
 {
-	ShaderProgramManager::getInstance()->get(MAIN_SHADER)->destroy();
-	SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->destroy();
+	//ShaderProgramManager::getInstance()->get(MAIN_SHADER)->destroy();
+	//delete ShaderProgramManager::getInstance()->get(MAIN_SHADER);
+	delete ShaderProgramManager::getInstance();
+
+	//SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->destroy();
+	//delete SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH);
+	delete SceneGraphManager::getInstance();
+
 	//TODO maybe "delete mesh"
 	//mesh->destroyMeshBufferObjects();
+	//delete MeshManager::getInstance()->get(CUBE_MESH);
+	delete MeshManager::getInstance();
 }
 
 void window_size_callback(GLFWwindow* win, int winx, int winy)
@@ -598,6 +606,7 @@ int main(int argc, char* argv[])
 	GLFWwindow* win = setup(gl_major, gl_minor,
 		640, 640, "Team project", is_fullscreen, is_vsync);
 	run(win);
+
 
 	exit(EXIT_SUCCESS);
 }

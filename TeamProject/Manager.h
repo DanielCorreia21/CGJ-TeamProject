@@ -42,7 +42,12 @@ Manager<E>::Manager() {
 
 template<class E>
 Manager<E>::~Manager() {
-
+	typename std::map<std::string, E*>::iterator it = this->map.begin();
+	while (it != this->map.end())
+	{
+		delete it->second;
+		it++;
+	}
 }
 
 template<class E>
