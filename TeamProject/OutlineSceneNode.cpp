@@ -14,35 +14,49 @@ void setBlackColor() {
 	}
 }
 
+//void OutlineSceneNode::duringDraw()
+//{
+//	//SceneNode::draw();
+//
+//	//NORMAL OBJECT
+//	ShaderProgram* shaders = this->getShader();
+//	Matrix4d modelMatrix = this->getModelMatrix();
+//	float opengl_model_matrix[16];
+//	glDisable(GL_CULL_FACE);
+//	//scale down a bit
+//	modelMatrix = modelMatrix * MatrixFactory::scalingMatrix(0.98f);
+//	//prepare draw
+//	modelMatrix.toColumnMajorArray(opengl_model_matrix);
+//	glUniformMatrix4fv(shaders->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
+//	//draw 
+//	this->mesh->draw();
+//	
+//	//BLACK OUTLINE
+//	glEnable(GL_CULL_FACE);
+//	glCullFace(GL_FRONT);
+//	
+//	//Scale
+//	modelMatrix = this->getModelMatrix();
+//	//Set black color
+//	setBlackColor();
+//	
+//	//prepare draw
+//	modelMatrix.toColumnMajorArray(opengl_model_matrix);
+//	glUniformMatrix4fv(shaders->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
+//	//draw
+//	this->mesh->draw();
+//}
+
 void OutlineSceneNode::duringDraw()
 {
-	//SceneNode::draw();
-
-	//NORMAL OBJECT
-	ShaderProgram* shaders = this->getShader();
-	Matrix4d modelMatrix = this->getModelMatrix();
-	float opengl_model_matrix[16];
 	glDisable(GL_CULL_FACE);
-	//scale down a bit
-	modelMatrix = modelMatrix * MatrixFactory::scalingMatrix(0.98f);
-	//prepare draw
-	modelMatrix.toColumnMajorArray(opengl_model_matrix);
-	glUniformMatrix4fv(shaders->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
-	//draw 
-	this->mesh->draw();
-	
-	//BLACK OUTLINE
+	Matrix4d initialMatrix = this->matrix;
+	this->matrix *= MatrixFactory::scalingMatrix(0.98f);
+	SceneNode::duringDraw();
+
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
-	
-	//Scale
-	modelMatrix = this->getModelMatrix();
-	//Set black color
+	this->matrix = initialMatrix;
 	setBlackColor();
-	
-	//prepare draw
-	modelMatrix.toColumnMajorArray(opengl_model_matrix);
-	glUniformMatrix4fv(shaders->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
-	//draw
-	this->mesh->draw();
+	SceneNode::duringDraw();
 }
