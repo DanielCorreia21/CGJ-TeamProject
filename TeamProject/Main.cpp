@@ -39,8 +39,9 @@ using namespace std;
 bool tcoords = true;
 bool normals = true;
 
-const char vertexShaderPath[] = "../Resources/GraniteVS.glsl";
-const char fragmentShaderPath[] = "../Resources/GraniteFS_Normal.glsl";
+const char vertexShaderPath[] = "../Resources/vertexShader.glsl";
+const char vertexShaderPath_Texture[] = "../Resources/GraniteVS.glsl";
+const char fragmentShaderPath[] = "../Resources/fragmentShader.glsl";
 const char fragmentShaderPath_Texture[] = "../Resources/GraniteFS_3D.glsl";
 
 const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
@@ -351,7 +352,6 @@ void createEnvironmentSceneGraph()
 
 	SceneNode* piece1 = new SceneNode();
 	piece1->setParent(pieces);
-	piece1->setPreDrawFun(setGreenColor);
 	piece1->setMesh(cubeMesh);
 	piece1->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f,0.4f,0.0f))
@@ -364,7 +364,6 @@ void createEnvironmentSceneGraph()
 
 	SceneNode* piece2 = new SceneNode();
 	piece2->setParent(pieces);
-	piece2->setPreDrawFun(setGreenColor);
 	piece2->setMesh(cubeMesh);
 	piece2->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.4f, 0.0f))
@@ -376,7 +375,6 @@ void createEnvironmentSceneGraph()
 
 	SceneNode* piece3 = new SceneNode();
 	piece3->setParent(pieces);
-	piece3->setPreDrawFun(setGreenColor);
 	piece3->setMesh(cubeMesh);
 	piece3->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.4f, 0.0f))
@@ -388,7 +386,6 @@ void createEnvironmentSceneGraph()
 
 	SceneNode* piece4 = new SceneNode();
 	piece4->setParent(pieces);
-	piece4->setPreDrawFun(setGreenColor);
 	piece4->setMesh(cubeMesh);
 	piece4->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, 0.0f, 0.0f))
@@ -400,7 +397,6 @@ void createEnvironmentSceneGraph()
 
 	SceneNode* piece5 = new SceneNode();
 	piece5->setParent(pieces);
-	piece5->setPreDrawFun(setGreenColor);
 	piece5->setMesh(cubeMesh);
 	piece5->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.0f))
@@ -412,7 +408,6 @@ void createEnvironmentSceneGraph()
 
 	SceneNode* piece6 = new SceneNode();
 	piece6->setParent(pieces);
-	piece6->setPreDrawFun(setGreenColor);
 	piece6->setMesh(cubeMesh);
 	piece6->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.0f, 0.0f))
@@ -424,7 +419,6 @@ void createEnvironmentSceneGraph()
 
 	SceneNode* piece7 = new SceneNode();
 	piece7->setParent(pieces);
-	piece7->setPreDrawFun(setGreenColor);
 	piece7->setMesh(cubeMesh);
 	piece7->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, -0.4f, 0.0f))
@@ -436,7 +430,6 @@ void createEnvironmentSceneGraph()
 
 	SceneNode* piece8 = new SceneNode();
 	piece8->setParent(pieces);
-	piece8->setPreDrawFun(setGreenColor);
 	piece8->setMesh(cubeMesh);
 	piece8->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, -0.4f, 0.0f))
@@ -659,7 +652,7 @@ GLFWwindow* setup(int major, int minor,
 	g_shaders->addUniform("Texture_1");
 	g_shaders->addUniform("NoiseTexture");
 
-	g_shaders->init(vertexShaderPath, fragmentShaderPath_Texture, tcoords, normals);
+	g_shaders->init(vertexShaderPath_Texture, fragmentShaderPath_Texture, tcoords, normals);
 	ShaderProgramManager::getInstance()->add("Granite", g_shaders);
 
 	createTextures();

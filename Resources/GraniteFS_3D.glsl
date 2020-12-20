@@ -23,6 +23,6 @@ void main(void)
 
 	float intensity = clamp(noise, 0.0, 1.0);
 	vec3 color = mix(colour1, colour2, intensity*2);
-	FragmentColor = mix(tex, vec4(color,1.0), 0.8);
+	FragmentColor = mix(tex, vec4(color,1.0), 0.7);
 
 }
