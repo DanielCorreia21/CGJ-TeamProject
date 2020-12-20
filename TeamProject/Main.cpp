@@ -5,6 +5,13 @@
 //
 // (c)2013-20 by Carlos Martinho
 //
+// MODIFIED BY
+// Group: 4
+// Bernardo Pinto - 98734
+// Daniel Correia - 98745
+// Antoine Pontallier - 98316
+// André Santos - 91000
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -30,14 +37,6 @@
 #include <GLFW/glfw3.h>
 
 using namespace std;
-
-/*	MODIFIED BY
-*	Group: 4
-*	Bernardo Pinto - 98734
-*	Daniel Correia - 98745
-*	Antoine Pontallier - 98316
-*	André Santos - 91000
-*/
 
 const char colorVertexShaderPath[] = "../Resources/color_vs.glsl";
 const char colorFragmentShaderPath[] = "../Resources/color_fs.glsl";
