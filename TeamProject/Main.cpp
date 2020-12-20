@@ -41,7 +41,7 @@ bool normals = true;
 
 const char vertexShaderPath[] = "../Resources/GraniteVS.glsl";
 const char fragmentShaderPath[] = "../Resources/GraniteFS_Normal.glsl";
-const char fragmentShaderPath_Texture[] = "../Resources/GraniteFS_2D.glsl";
+const char fragmentShaderPath_Texture[] = "../Resources/GraniteFS_3D.glsl";
 
 const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
 const string MAIN_SHADER = "main";
@@ -209,8 +209,8 @@ SceneNode* pieces;
 
 void createTextures() {
 
-	Texture2D* texture_0 = new Texture2D();
-	texture_0->createPerlinNoise(128, 5, 5, 2, 2, 8);
+	Texture3D* texture_0 = new Texture3D();
+	texture_0->createPerlinNoise(128, 5, 5, 5, 2, 2, 8);
 	TextureManager::getInstance()->add("number_0", (Texture*)texture_0);
 
 	Texture2D* texture_1 = new Texture2D();
