@@ -41,7 +41,7 @@ bool normals = true;
 
 const char vertexShaderPath[] = "../Resources/GraniteVS.glsl";
 const char fragmentShaderPath[] = "../Resources/GraniteFS_Normal.glsl";
-const char fragmentShaderPath_Texture[] = "../Resources/GraniteFS_3D.glsl";
+const char fragmentShaderPath_Texture[] = "../Resources/GraniteFS_2D.glsl";
 
 const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
 const string MAIN_SHADER = "main";
@@ -209,22 +209,50 @@ SceneNode* pieces;
 
 void createTextures() {
 
-	Texture3D* texture_0 = new Texture3D();
-	texture_0->createPerlinNoise(128, 5, 5, 5, 2, 2, 8);
+	Texture2D* texture_0 = new Texture2D();
+	texture_0->createPerlinNoise(128, 5, 5, 2, 2, 8);
 	TextureManager::getInstance()->add("number_0", (Texture*)texture_0);
 
 	Texture2D* texture_1 = new Texture2D();
-	texture_1->load("../number_1.png");
+	texture_1->load("../numbers/1.png");
 	TextureManager::getInstance()->add("number_1", (Texture*)texture_1);
 
 	Texture2D* texture_2 = new Texture2D();
-	texture_2->load("../number_2.png");
+	texture_2->load("../numbers/2.png");
 	TextureManager::getInstance()->add("number_2", (Texture*)texture_2);
 
 	Texture2D* texture_3 = new Texture2D();
-	texture_3->load("../number_3.png");
-	//texture_3->createPerlinNoise(256, 10, 10, 2, 2, 8);
+	texture_3->load("../numbers/3.png");
 	TextureManager::getInstance()->add("number_3", (Texture*)texture_3);
+
+	Texture2D* texture_4 = new Texture2D();
+	texture_4->load("../numbers/4.png");
+	TextureManager::getInstance()->add("number_4", (Texture*)texture_4);
+
+	Texture2D* texture_5 = new Texture2D();
+	texture_5->load("../numbers/5.png");
+	TextureManager::getInstance()->add("number_5", (Texture*)texture_5);
+
+	Texture2D* texture_6 = new Texture2D();
+	texture_6->load("../numbers/6.png");
+	TextureManager::getInstance()->add("number_6", (Texture*)texture_6);
+
+	Texture2D* texture_7 = new Texture2D();
+	texture_7->load("../numbers/7.png");
+	TextureManager::getInstance()->add("number_7", (Texture*)texture_7);
+
+	Texture2D* texture_8 = new Texture2D();
+	texture_8->load("../numbers/8.png");
+	TextureManager::getInstance()->add("number_8", (Texture*)texture_8);
+	
+	//Texture2D* backb = new Texture2D();
+	//backb->load("../numbers/backb.png");
+	//TextureManager::getInstance()->add("backb", (Texture*)backb);
+
+	//Texture2D* fram = new Texture2D();
+	//fram->load("../numbers/fram.png");
+	//TextureManager::getInstance()->add("fram", (Texture*)fram);
+
 }
 
 void createEnvironmentSceneGraph()
@@ -240,13 +268,15 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::scalingMatrix(Vector3d(11.0f,11.0f,1.0f))
 	);
 
-	TextureInfo* tinfo_0 = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("number_0"));
-	backboard->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
-	backboard->addTexture(tinfo_0);
+	//TextureInfo* tinfo_b = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("backb"));
+	//backboard->addTexture(tinfo_b);
 
 #pragma endregion
 
 	#pragma region frame
+
+	//TextureInfo* tinfo_f = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("fram"));
+
 	frame = new SceneNode();
 	frame->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
 	//frame->setPreDrawFun(setRedColor);
@@ -254,6 +284,7 @@ void createEnvironmentSceneGraph()
 	frame->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.8f))
 	);
+	//frame->addTexture(tinfo_f);
 
 	SceneNode* frameUp = new SceneNode();
 	frameUp->setParent(frame);
@@ -265,6 +296,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 2.0f, 0.0f))
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
+	//frameUp->addTexture(tinfo_f);
 
 	//Define positions and rotations of other frame components
 	//Down
@@ -276,6 +308,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.0f, -2.0f, 0.0f))
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
+	//frameDown->addTexture(tinfo_f);
 
 	//Right
 	SceneNode* frameRight = new SceneNode();
@@ -287,6 +320,8 @@ void createEnvironmentSceneGraph()
 		* MatrixFactory::rotateZMatrix(90)
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
+	//frameRight->addTexture(tinfo_f);
+
 	//Left
 	SceneNode* frameLeft = new SceneNode();
 	frameLeft->setParent(frame);
@@ -297,6 +332,7 @@ void createEnvironmentSceneGraph()
 		* MatrixFactory::rotateZMatrix(90)
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
+	//frameLeft->addTexture(tinfo_f);
 
 #pragma endregion
 
@@ -310,6 +346,9 @@ void createEnvironmentSceneGraph()
 		* MatrixFactory::scalingMatrix(3.0f)
 	);
 
+
+	TextureInfo* tinfo_0 = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("number_0"));
+
 	SceneNode* piece1 = new SceneNode();
 	piece1->setParent(pieces);
 	piece1->setPreDrawFun(setGreenColor);
@@ -318,11 +357,10 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(-0.4f,0.4f,0.0f))
 	);
 
-	TextureInfo* tinfo_1 = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("number_1"));
-	TextureInfo* tinfo_2 = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("number_0"));
+	TextureInfo* tinfo_1 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_1"));
 	piece1->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece1->addTexture(tinfo_0);
 	piece1->addTexture(tinfo_1);
-	piece1->addTexture(tinfo_2);
 
 	SceneNode* piece2 = new SceneNode();
 	piece2->setParent(pieces);
@@ -331,6 +369,10 @@ void createEnvironmentSceneGraph()
 	piece2->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.4f, 0.0f))
 	);
+	TextureInfo* tinfo_2 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_2"));
+	piece2->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece2->addTexture(tinfo_0);
+	piece2->addTexture(tinfo_2);
 
 	SceneNode* piece3 = new SceneNode();
 	piece3->setParent(pieces);
@@ -339,6 +381,10 @@ void createEnvironmentSceneGraph()
 	piece3->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.4f, 0.0f))
 	);
+	TextureInfo* tinfo_3 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_3"));
+	piece3->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece3->addTexture(tinfo_0);
+	piece3->addTexture(tinfo_3);
 
 	SceneNode* piece4 = new SceneNode();
 	piece4->setParent(pieces);
@@ -347,6 +393,10 @@ void createEnvironmentSceneGraph()
 	piece4->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, 0.0f, 0.0f))
 	);
+	TextureInfo* tinfo_4 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_4"));
+	piece4->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece4->addTexture(tinfo_0);
+	piece4->addTexture(tinfo_4);
 
 	SceneNode* piece5 = new SceneNode();
 	piece5->setParent(pieces);
@@ -355,6 +405,10 @@ void createEnvironmentSceneGraph()
 	piece5->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.0f))
 	);
+	TextureInfo* tinfo_5 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_5"));
+	piece5->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece5->addTexture(tinfo_0);
+	piece5->addTexture(tinfo_5);
 
 	SceneNode* piece6 = new SceneNode();
 	piece6->setParent(pieces);
@@ -363,12 +417,10 @@ void createEnvironmentSceneGraph()
 	piece6->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.0f, 0.0f))
 	);
-
-	TextureInfo* tinfo_3 = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("number_2"));
-	TextureInfo* tinfo_4 = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("number_0"));
+	TextureInfo* tinfo_6 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_6"));
 	piece6->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
-	piece6->addTexture(tinfo_3);
-	piece6->addTexture(tinfo_4);
+	piece6->addTexture(tinfo_0);
+	piece6->addTexture(tinfo_6);
 
 	SceneNode* piece7 = new SceneNode();
 	piece7->setParent(pieces);
@@ -377,6 +429,10 @@ void createEnvironmentSceneGraph()
 	piece7->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, -0.4f, 0.0f))
 	);
+	TextureInfo* tinfo_7 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_7"));
+	piece7->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece7->addTexture(tinfo_0);
+	piece7->addTexture(tinfo_7);
 
 	SceneNode* piece8 = new SceneNode();
 	piece8->setParent(pieces);
@@ -385,14 +441,10 @@ void createEnvironmentSceneGraph()
 	piece8->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, -0.4f, 0.0f))
 	);
-
-	TextureInfo* tinfo_5 = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("number_3"));
-	TextureInfo* tinfo_6 = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("number_0"));
+	TextureInfo* tinfo_8 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_8"));
 	piece8->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
-	piece8->addTexture(tinfo_5);
-	piece8->addTexture(tinfo_6);
-
-
+	piece8->addTexture(tinfo_0);
+	piece8->addTexture(tinfo_8);
 
 #pragma endregion
 }
@@ -592,8 +644,8 @@ GLFWwindow* setup(int major, int minor,
 
 	ShaderProgram* shaders = new ShaderProgram();
 	shaders->addUniform(COLOR_UNIFORM);
-	shaders->addUniform("Texture_1");
-	shaders->addUniform("NoiseTexture");
+	//shaders->addUniform("Texture_1");
+	//shaders->addUniform("NoiseTexture");
 	shaders->init(vertexShaderPath, fragmentShaderPath, tcoords, normals);
 	ShaderProgramManager::getInstance()->add(MAIN_SHADER, shaders);
 
@@ -603,7 +655,7 @@ GLFWwindow* setup(int major, int minor,
 	//g_shaders->addAttribute("inTexcoords", TEXCOORDS);
 	//g_shaders->addAttribute("inNormal", NORMALS);
 	g_shaders->addUniform(COLOR_UNIFORM);
-	g_shaders->addUniform("ModelMatrix");
+	//g_shaders->addUniform("ModelMatrix");
 	g_shaders->addUniform("Texture_1");
 	g_shaders->addUniform("NoiseTexture");
 
