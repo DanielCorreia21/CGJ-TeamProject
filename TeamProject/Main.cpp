@@ -303,7 +303,6 @@ void createEnvironmentSceneGraph()
 #pragma endregion
 }
 
-
 void createSceneGraph()
 {
 	Mesh* mesh = new Mesh();
