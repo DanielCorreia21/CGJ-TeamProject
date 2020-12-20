@@ -1,2 +1,0 @@
-C:\Users\Utsuro\source\repos\CGJ-TeamProject\dependencies\SOIL\projects\VC9\x64\Debug\SOIL.lib
-C:\Users\Utsuro\source\repos\CGJ-TeamProject\dependencies\SOIL\projects\VC9\x64\Debug\SOIL.pdb
