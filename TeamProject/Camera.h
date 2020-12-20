@@ -8,44 +8,46 @@
 #include "ShaderProgram.h"
 
 /*	AUTHORS
-*	Group: 11
+*	Group: 4
 *	Bernardo Pinto - 98734
 *	Daniel Correia - 98745
+*	Antoine Pontallier - 98316
+*	André Santos - 91000
 */
-
-enum Camera_Type {
-	ORTHOGONAL,
-	PERSPECTIVE
-};
-
-enum Rotation_Mode {
-	EULER,
-	QUATERNION
-};
 
 class Camera
 {
-private:
-	Vector3d up, cameraOrientation;
-	Vector3d translationVector;
-	Camera_Type currentType;
-	Rotation_Mode currentRotation;
-	Matrix4d orthoMatrix, persectiveMatrix;
-	GLuint VboId[1];
-	float CAMERA_SPEED = 0.05;
-	Matrix4d getRotationMatrix();
 public:
+	enum class CameraType {
+		ORTHOGONAL,
+		PERSPECTIVE
+	};
+
+	enum class RotationMode {
+		EULER,
+		QUATERNION
+	};
+
 	Camera(Vector3d eye, Vector3d front, Vector3d up);
 	Matrix4d getViewMatrix();
 	Matrix4d getProjectionMatrix();
 	void applyRotation(float angleAroundX, float angleAroundY, float angleAroundZ);
 	void updateCameraPos(int key, int action);
-	void initBuffer(ShaderProgram shaders);
+	void initBuffer(ShaderProgram* shaders);
 	void destroyBuffer();
 	void draw();
 	void look(float xpos, float ypos, bool pressed);
 	void changeProjectionType();
 	void changeRotationType();
 	void updateCamera();
+private:
+	Vector3d up, cameraOrientation;
+	Vector3d translationVector;
+	CameraType currentType;
+	RotationMode currentRotation;
+	Matrix4d orthoMatrix, persectiveMatrix;
+	GLuint VboId[1];
+	float CAMERA_SPEED = 0.05f;
+	Matrix4d getRotationMatrix();
 };
 

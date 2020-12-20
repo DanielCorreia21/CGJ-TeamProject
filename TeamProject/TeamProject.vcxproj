@@ -166,7 +166,6 @@
     <ClCompile Include="Vector4d.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Atexture.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ErrorHandler.h" />
     <ClInclude Include="GLStatics.h" />
@@ -193,18 +192,10 @@
     <ClInclude Include="Vector4d.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\fragmentShader.glsl" />
-    <None Include="..\Resources\GraniteFS _Tiles.glsl" />
-    <None Include="..\Resources\GraniteFS.glsl" />
-    <None Include="..\Resources\GraniteFS_2D.glsl" />
-    <None Include="..\Resources\GraniteFS_3D.glsl" />
-    <None Include="..\Resources\GraniteFS_Normal.glsl" />
-    <None Include="..\Resources\GraniteVS.glsl" />
-    <None Include="..\Resources\texture_fs.glsl" />
-    <None Include="..\Resources\texture_vs.glsl" />
-    <None Include="..\Resources\vertexShader.glsl" />
-    <None Include="..\Resources\wtv_fs.glsl" />
-    <None Include="..\Resources\wtv_fs_3D.glsl" />
+    <None Include="..\Resources\color_fs.glsl" />
+    <None Include="..\Resources\marble_fs.glsl" />
+    <None Include="..\Resources\marble_vs.glsl" />
+    <None Include="..\Resources\color_vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

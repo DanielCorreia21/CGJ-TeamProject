@@ -7,17 +7,20 @@
 #include "Manager.h"
 
 /*	AUTHORS
-*	Group: 11
+*	Group: 4
 *	Bernardo Pinto - 98734
 *	Daniel Correia - 98745
+*	Antoine Pontallier - 98316
+*	André Santos - 91000
 */
 
 class ShaderProgram
 {
 private:
 	GLuint VertexShaderId, FragmentShaderId, ProgramId;
-	GLint UniformId, UboId;
+	GLint ModelMatrixIndex, UboId;
 
+	void destroy();
 public:
 	struct AttributeInfo {
 		GLuint index;
@@ -36,15 +39,20 @@ public:
 	std::map<std::string, UboInfo> ubos;
 
 	ShaderProgram();
+	~ShaderProgram();
 	void addAttribute(const std::string& name, const GLuint index);
 	void addUniform(const std::string& name);
 	void addUbo(const std::string& name, const GLuint binding_point);
-	void init(const char vertexShaderPath[], const char fragmentShaderPath[], bool tcoords, bool normals);
+
+	AttributeInfo getAttribute(const std::string& name);
+	UniformInfo* getUniform(const std::string& name);
+	UboInfo getUbo(const std::string& name);
+
+	void init(const char vertexShaderPath[], const char fragmentShaderPath[]);
 	void bind();
 	void unbind();
-	void destroy();
 	//void addUniformBlock(const std::string& name, const GLuint binding_point);
-	GLint getUniformId();
+	GLint getModelMatrixIndex();
 	//GLint getUBO();
 	//GLint getUniformColorId();
 };

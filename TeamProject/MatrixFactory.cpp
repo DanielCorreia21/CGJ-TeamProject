@@ -7,7 +7,7 @@
 *	Daniel Correia - 98745
 */
 
-const float PI = 3.141592;
+const float PI = 3.141592f;
 
 Matrix2d MatrixFactory::identityMatrix2d()
 {
@@ -84,8 +84,8 @@ Matrix4d MatrixFactory::rotateXMatrix(float angle)
     float radianAngle = angle * PI / 180;
     float result[4][4] = {
         {1, 0, 0, 0},
-        {0, cos(radianAngle), -sin(radianAngle), 0},
-        {0, sin(radianAngle), cos(radianAngle), 0},
+        {0, (float) cos(radianAngle), (float)-sin(radianAngle), 0},
+        {0, (float)sin(radianAngle), (float) cos(radianAngle), 0},
         {0, 0, 0, 1},
     };
     return Matrix4d(result);
@@ -96,9 +96,9 @@ Matrix4d MatrixFactory::rotateYMatrix(float angle)
     float radianAngle = angle * PI / 180;
 
     float result[4][4] = {
-        {cos(radianAngle), 0, sin(radianAngle), 0},
+        {(float) cos(radianAngle), 0,(float)sin(radianAngle), 0},
         {0, 1, 0, 0},
-        {-sin(radianAngle), 0, cos(radianAngle), 0},
+        {(float) -sin(radianAngle), 0,(float)cos(radianAngle), 0},
         {0, 0, 0, 1},
     };
     return Matrix4d(result);
@@ -109,8 +109,8 @@ Matrix4d MatrixFactory::rotateZMatrix(float angle)
     float radianAngle = angle * PI / 180;
 
     float result[4][4] = {
-        {cos(radianAngle), -sin(radianAngle), 0, 0},
-        {sin(radianAngle), cos(radianAngle), 0, 0},
+        {(float) cos(radianAngle),(float) -sin(radianAngle), 0, 0},
+        {(float) sin(radianAngle),(float) cos(radianAngle), 0, 0},
         {0, 0, 1, 0},
         {0, 0, 0, 1},
     };

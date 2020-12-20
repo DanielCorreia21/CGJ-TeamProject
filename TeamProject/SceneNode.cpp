@@ -3,9 +3,11 @@
 #include "MatrixFactory.h"
 
 /*	AUTHORS
-*	Group: 11
+*	Group: 4
 *	Bernardo Pinto - 98734
 *	Daniel Correia - 98745
+*	Antoine Pontallier - 98316
+*	André Santos - 91000
 */
 
 Matrix4d SceneNode::getModelMatrix()
@@ -47,27 +49,10 @@ SceneNode::SceneNode()
 
 void SceneNode::setParent(SceneNode* parent)
 {
-	//this->setSceneGraph(parent->sceneGraph);
-	//this->setShaderProgram(parent->shader);
-
 	//TODO if parent exists
 	this->parent = parent;
 	parent->children.push_back(this);
 }
-
-/*SceneNode* SceneNode::createNode()
-{
-	SceneNode* result = new SceneNode(this);
-	result->setSceneGraph(this->sceneGraph);
-	result->setShaderProgram(this->shader);
-	this->children.push_back(result);
-	return result;
-}
-
-void SceneNode::addNode(SceneNode* node)
-{
-	this->children.push_back(node);
-}*/
 
 void SceneNode::setSceneGraph(SceneGraph* sceneGraph)
 {
@@ -99,6 +84,11 @@ void SceneNode::setTextures(std::vector<TextureInfo*> n_textures)
 	this->textures = n_textures;
 }
 
+void SceneNode::setPostDrawFun(fptr f)
+{
+	this->postDrawFun = f;
+}
+
 std::vector<SceneNode*> SceneNode::getChildren()
 {
 	return this->children;
@@ -114,16 +104,8 @@ void SceneNode::addTexture(TextureInfo* texture)
 	this->textures.push_back(texture);
 }
 
-void SceneNode::draw()
+void SceneNode::preDraw()
 {
-	for (SceneNode* child : this->children) {
-		child->draw();
-	}
-
-	if (this->mesh == nullptr) {
-		return;
-	}
-
 	ShaderProgram* shaders = this->getShader();
 	shaders->bind();
 
@@ -133,19 +115,29 @@ void SceneNode::draw()
 		}
 	}
 
+	this->getShader()->bind();
+
 	this->mesh->bind();
 
 	//pre-draw function
 	if (this->preDrawFun != nullptr) {
 		this->preDrawFun();
 	}
+}
 
+void SceneNode::duringDraw()
+{
 	float opengl_model_matrix[16];
 	this->getModelMatrix().toColumnMajorArray(opengl_model_matrix);
-	glUniformMatrix4fv(shaders->getUniformId(), 1, GL_FALSE, opengl_model_matrix);
-
+	glUniformMatrix4fv(this->getShader()->getModelMatrixIndex(), 1, GL_FALSE, opengl_model_matrix);
 	this->mesh->draw();
+}
 
+void SceneNode::postDraw()
+{
+	if (this->postDrawFun != nullptr) {
+		this->postDrawFun();
+	}
 	this->mesh->unbind();
 
 	if (textures.empty() == false) {
@@ -154,5 +146,19 @@ void SceneNode::draw()
 		}
 	}
 
-	shaders->unbind();
+	this->getShader()->unbind();
+}
+
+void SceneNode::draw()
+{
+	for (SceneNode* child : this->children) {
+		child->draw();
+	}
+	if (this->mesh == nullptr) {
+		return;
+	}
+
+	preDraw();
+	duringDraw();
+	postDraw();
 }

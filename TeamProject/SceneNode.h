@@ -6,9 +6,11 @@
 #include "TextureInfo.h"
 
 /*	AUTHORS
-*	Group: 11
+*	Group: 4
 *	Bernardo Pinto - 98734
 *	Daniel Correia - 98745
+*	Antoine Pontallier - 98316
+*	André Santos - 91000
 */
 
 class SceneGraph;
@@ -25,9 +27,14 @@ protected:
 	ShaderProgram *shader = nullptr;
 	fptr preDrawFun = nullptr;
 	std::vector<TextureInfo*> textures;
+	fptr postDrawFun = nullptr;
 
 	ShaderProgram* getShader();
 	SceneGraph* getSceneGraph();
+
+	virtual void preDraw();
+	virtual void duringDraw();
+	virtual void postDraw();
 public:
 	Matrix4d getModelMatrix();
 	SceneNode(SceneNode* parent);
@@ -44,6 +51,7 @@ public:
 	std::vector<SceneNode*> getChildren();
 	std::vector<TextureInfo*> getTextures();
 	void addTexture(TextureInfo* texture);
+	void setPostDrawFun(fptr f);
 	virtual void draw();
 };
 

@@ -1,9 +1,11 @@
 #include "Quaternion.h"
 
 /*	AUTHORS
-*	Group: 11
+*	Group: 4
 *	Bernardo Pinto - 98734
 *	Daniel Correia - 98745
+*	Antoine Pontallier - 98316
+*	André Santos - 91000
 */
 
 #define DEGREES_TO_RADIANS 0.01745329251994329547
@@ -42,7 +44,7 @@ Quaternion Quaternion::getInverse() {
 }
 
 float Quaternion::norm() {
-	return sqrt(quadrance());
+	return (float) sqrt(quadrance());
 }
 
 float Quaternion::quadrance()
@@ -87,8 +89,8 @@ Matrix4d Quaternion::toMatrix4d() {
 
 void Quaternion::toAngleAxis(float& theta, Vector4d& axis) {
 	Quaternion qn = normalize();
-	theta = 2.0f * acos(qn.w) * (float)RADIANS_TO_DEGREES;
-	float s = sqrt(1.0f - (double)qn.w * qn.w);
+	theta = (float) (2.0f * acos(qn.w) * (float)RADIANS_TO_DEGREES);
+	float s = (float) (sqrt(1.0f - (double)qn.w * qn.w));
 	if (s < qThreshold) {
 		axis.setX(1.0f);
 		axis.setY(0.0f);
@@ -118,10 +120,10 @@ Quaternion Quaternion::fromEuler(Vector3d angles) {
 	double sr = sin(roll * DEGREES_TO_RADIANS * 0.5);
 
 	Quaternion q;
-	q.w = cr * cp * cy + sr * sp * sy;
-	q.x = sr * cp * cy - cr * sp * sy;
-	q.y = cr * sp * cy + sr * cp * sy;
-	q.z = cr * cp * sy - sr * sp * cy;
+	q.w = (float) (cr * cp * cy + sr * sp * sy);
+	q.x = (float) (sr * cp * cy - cr * sp * sy);
+	q.y = (float) (cr * sp * cy + sr * cp * sy);
+	q.z = (float) (cr * cp * sy - sr * sp * cy);
 
 	return q;
 }
@@ -131,8 +133,8 @@ Quaternion Quaternion::fromAngleAxis(float theta, Vector4d axis) {
 
 	Quaternion q;
 	float a = theta * (float)DEGREES_TO_RADIANS;
-	q.w = cos(a / 2.0f);
-	float s = sin(a / 2.0f);
+	q.w = (float) (cos(a / 2.0f));
+	float s = (float) sin(a / 2.0f);
 	q.x = axisn.getX() * s;
 	q.y = axisn.getY() * s;
 	q.z = axisn.getZ() * s;
@@ -238,9 +240,9 @@ Quaternion operator*(const float scalar, const Quaternion& q) {
 //Interpolation
 Quaternion Quaternion::slerp(const Quaternion& q1, float k)
 {
-	float angle = acos(this->x * q1.x + this->y * q1.y + this->z * q1.z + this->w * q1.w);
-	float k0 = sin((1 - k) * angle) / sin(angle);
-	float k1 = sin(k * angle) / sin(angle);
+	float angle = (float) acosf(this->x * q1.x + this->y * q1.y + this->z * q1.z + this->w * q1.w);
+	float k0 = (float) (sinf((1 - k) * angle) / sinf(angle));
+	float k1 = (float) (sinf(k * angle) / sinf(angle));
 	Quaternion qi = (*this * k0) + (q1 * k1);
 	return qi.normalize();
 }

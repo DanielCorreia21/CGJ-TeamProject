@@ -3,9 +3,11 @@
 #include <iostream>
 
 /*	AUTHORS
-*	Group: 11
+*	Group: 4
 *	Bernardo Pinto - 98734
 *	Daniel Correia - 98745
+*	Antoine Pontallier - 98316
+*	André Santos - 91000
 */
 
 bool was_pressed = false;
@@ -26,13 +28,13 @@ Matrix4d getOrthoProj(double left, double right, double bottom, double top, doub
 			result_array[i][j] = 0;
 		}
 	}
-	result_array[0][0] = 2 / (right - left);
-	result_array[1][1] = 2 / (top - bottom);
-	result_array[2][2] = 2 / (near - far);
-	result_array[0][3] = (left + right) / (left - right);
-	result_array[1][3] = (bottom + top) / (bottom - top);
-	result_array[2][3] = (near + far) / (near - far);
-	result_array[3][3] = 1;
+	result_array[0][0] = (float) (2 / (right - left));
+	result_array[1][1] = (float) (2 / (top - bottom));
+	result_array[2][2] = (float) (2 / (near - far));
+	result_array[0][3] = (float) ((left + right) / (left - right));
+	result_array[1][3] = (float) ((bottom + top) / (bottom - top));
+	result_array[2][3] = (float) ((near + far) / (near - far));
+	result_array[3][3] = (float) 1;
 
 	return Matrix4d(result_array);
 }
@@ -40,7 +42,7 @@ Matrix4d getOrthoProj(double left, double right, double bottom, double top, doub
 Matrix4d getPerspectiveProj(float fov, float aspect, float near, float far) {
 
 	float theta = fov / 2;
-	float d = 1 / (tan(theta * PI / 180));
+	float d = (float) (1 / (tan(theta * PI / 180)));
 	//float aspect = aspect;
 	float A = (near + far) / (near - far);
 	float B = (2 * near * far) / (near - far);
@@ -60,8 +62,8 @@ Camera::Camera(Vector3d initialPos, Vector3d cameraOrientation, Vector3d up)
 	this->up = up;
 	this->cameraOrientation = cameraOrientation;
 	this->translationVector = initialPos;
-	this->currentType = PERSPECTIVE;
-	this->currentRotation = EULER;
+	this->currentType = CameraType::PERSPECTIVE;
+	this->currentRotation = RotationMode::EULER;
 	this->VboId[0] = 0;
 
 	orthoMatrix = getOrthoProj(-2, 2, -2, 2, 1, 100);
@@ -82,7 +84,7 @@ Matrix4d Camera::getViewMatrix()
 
 Matrix4d Camera::getProjectionMatrix()
 {
-	if (this->currentType == ORTHOGONAL) {
+	if (this->currentType == CameraType::ORTHOGONAL) {
 		return orthoMatrix;
 	}
 	else {
@@ -100,7 +102,7 @@ void Camera::applyRotation(float angleAroundX, float angleAroundY, float angleAr
 
 Matrix4d Camera::getRotationMatrix()
 {
-	if (this->currentRotation == EULER) {
+	if (this->currentRotation == RotationMode::EULER) {
 		Matrix4d yawMatrix = MatrixFactory::rotateYMatrix(yaw);
 		Matrix4d pitchMatrix = MatrixFactory::rotateZMatrix(pitch);
 		Matrix4d rollMatrix = MatrixFactory::rotateXMatrix(roll);
@@ -159,7 +161,7 @@ void Camera::updateCameraPos(int key, int action)
 	}
 }
 
-void Camera::initBuffer(ShaderProgram shaders)
+void Camera::initBuffer(ShaderProgram* shaders)
 {
 	glGenBuffers(1, VboId);
 
@@ -206,7 +208,7 @@ void Camera::draw()
 }
 
 float toRadians(float value) {
-	return value * PI / 180;
+	return value * ((float) PI) / 180;
 }
 
 void Camera::look(float xpos, float ypos, bool pressed)
@@ -249,22 +251,22 @@ void Camera::updateCamera() {
 }
 
 void Camera::changeProjectionType() {
-	if (currentType == ORTHOGONAL) {
-		currentType = PERSPECTIVE;
+	if (currentType == CameraType::ORTHOGONAL) {
+		currentType = CameraType::PERSPECTIVE;
 	}
 	else {
-		currentType = ORTHOGONAL;
+		currentType = CameraType::ORTHOGONAL;
 	}
 }
 
 void Camera::changeRotationType()
 {
-	if (currentRotation == EULER) {
+	if (currentRotation == RotationMode::EULER) {
 		std::cout << "CHANGE TO QUATERNION\n";
-		currentRotation = QUATERNION;
+		currentRotation = RotationMode::QUATERNION;
 	}
 	else {
 		std::cout << "CHANGE TO EULER\n";
-		currentRotation = EULER;
+		currentRotation = RotationMode::EULER;
 	}
 }

@@ -3,13 +3,13 @@
 #include "GLStatics.h"
 #include "ErrorHandler.h"
 
-//Questions: prof na teorica criou interface drawable, should I too?
-//melhor createMesh(filename) ou *contrutor() e init(filename)*
-//melhor createMeshBufferObjects e destroyMeshBufferObjects ou o create fica dentro do init/create
-
-//TODO
-//contructor(filename), init(){loadMeshData, loadBuffers}
-//~Mesh(){destroybuffers}
+/*	AUTHORS
+*	Group: 4
+*	Bernardo Pinto - 98734
+*	Daniel Correia - 98745
+*	Antoine Pontallier - 98316
+*	André Santos - 91000
+*/
 
 bool TexcoordsLoaded, NormalsLoaded;
 
@@ -21,6 +21,7 @@ Mesh::Mesh() { }
 
 Mesh::~Mesh()
 {
+	std::cout << "Destroying mesh\n";
 	destroyMeshBufferObjects();
 }
 

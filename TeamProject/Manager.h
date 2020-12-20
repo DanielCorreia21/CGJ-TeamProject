@@ -2,6 +2,14 @@
 #include <map>
 #include <iostream>
 
+/*	AUTHORS
+*	Group: 4
+*	Bernardo Pinto - 98734
+*	Daniel Correia - 98745
+*	Antoine Pontallier - 98316
+*	André Santos - 91000
+*/
+
 template<class E>
 class Manager
 {
@@ -16,12 +24,6 @@ public:
 	E* get(const std::string& id);
 	void remove(const std::string& id);
 	void clear();
-
-	//static instance
-	//add
-	//get
-	//remove
-	//clear
 };
 
 template<class E>
@@ -42,7 +44,12 @@ Manager<E>::Manager() {
 
 template<class E>
 Manager<E>::~Manager() {
-
+	typename std::map<std::string, E*>::iterator it = this->map.begin();
+	while (it != this->map.end())
+	{
+		delete it->second;
+		it++;
+	}
 }
 
 template<class E>
