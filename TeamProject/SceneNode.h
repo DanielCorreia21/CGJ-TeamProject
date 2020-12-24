@@ -37,6 +37,7 @@ protected:
 	virtual void postDraw();
 public:
 	Matrix4d getModelMatrix();
+	Matrix4d getMatrix();
 	SceneNode(SceneNode* parent);
 	SceneNode();
 	void setParent(SceneNode* parent);

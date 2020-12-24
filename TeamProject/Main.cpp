@@ -32,6 +32,7 @@
 #include "Texture2D.h"
 #include "Texture3D.h"
 #include "OutlineSceneNode.h"
+#include "GameSlidingPuzzle.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -56,7 +57,7 @@ const string TEXTURE_UNIFORM_COLOR = "Texture";
 const string TEXTURE_UNIFORM_NOISE = "NoiseTexture";
 
 Camera* camera;
-
+GameSlidingPuzzle* game;
 
 ///////////////////////////////////////////////////////////////////// PreDrawFunctions
 
@@ -361,6 +362,8 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 		window_close_callback(win);
 	}
 
+	game->handleInput(key, action);
+
 	if (action == GLFW_PRESS || action == GLFW_RELEASE) {
 		camera->updateCameraPos(key, action);
 	}
@@ -509,6 +512,10 @@ GLFWwindow* setup(int major, int minor,
 
 	createTextures();
 	createSceneGraph();
+
+	game = new GameSlidingPuzzle(
+		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2)
+		,8);
 
 	return win;
 
