@@ -9,9 +9,11 @@
 
 
 /*
-*@requires piecesRoot to have its children by the correct order. Meaning, piece at pos 0 is the top leftmost one
+*@requires piecesRoot to have its children by the winning order.
+* TODO: The pieces will then be scrambled
 * 
 */
+map<int, int> stencilToGameIndex; //First is the stencilIndex, second is the game index
 GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 {
 	this->emptyPos = pos;
@@ -21,6 +23,7 @@ GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 	for (int i = 0; i < auxPieces.size() + 1; i++) {
 		if (i != this->emptyPos) {
 			v->push_back(auxPieces.at(i));
+			stencilToGameIndex.insert(pair<int, int>(i,i));
 		}
 		else {
 			v->push_back(NULL);
@@ -31,11 +34,10 @@ GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 	this->totalSlots = this->pieces.size();
 }
 
-void GameSlidingPuzzle::handleInput(int key, int action)
+void GameSlidingPuzzle::handleKeyboardInput(int key, int action)
 {
 	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
 	{
-		
 		SceneNode* piece = getLeftPiece();
 		movePiece(MOVE_RIGHT, piece);
 	}
@@ -56,6 +58,68 @@ void GameSlidingPuzzle::handleInput(int key, int action)
 	}
 }
 
+int selectedPieceIndex = -1;
+bool was_pressed = false;
+bool firstMouse = true;
+float lastX = 0;
+float lastY = 0;
+
+void GameSlidingPuzzle::handleMouseDrag(float xpos, float ypos, int pressed)
+{
+	if (!pressed) {
+		was_pressed = false;
+		selectedPieceIndex = -1;
+		return;
+	}
+	if (firstMouse || !was_pressed)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+		was_pressed = true;
+	}
+
+
+	float xoffset = xpos - lastX;
+	float yoffset = ypos - lastY;
+	lastX = xpos;
+	lastY = ypos;
+
+	/*float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;*/
+}
+
+void GameSlidingPuzzle::handleMouseClick(float xpos, float ypos, int pieceIndex)
+{	
+	pieceIndex--; //Stencil index for pieces goes from 1 to X. We decrement it to match the game index
+	int gamePieceIndex = stencilToGameIndex[pieceIndex];
+	SceneNode* pieceToMove = NULL;
+
+	if ((this->emptyPos % 3) - (gamePieceIndex % 3) == 1 && this->emptyPos - gamePieceIndex == 1) {
+		stencilToGameIndex[pieceIndex] = this->emptyPos;
+		pieceToMove = getLeftPiece();
+		movePiece(MOVE_RIGHT, pieceToMove);
+	}
+	else if ((gamePieceIndex % 3) - (this->emptyPos % 3) == 1 && gamePieceIndex - this->emptyPos == 1) {
+		stencilToGameIndex[pieceIndex] = this->emptyPos;
+		pieceToMove = getRightPiece();
+		movePiece(MOVE_LEFT, pieceToMove);
+	}
+	else if (gamePieceIndex - this-> emptyPos == 3) {
+		stencilToGameIndex[pieceIndex] = this->emptyPos;
+		pieceToMove = getDownPiece();
+		movePiece(MOVE_UP, pieceToMove);
+	}
+	else if (this->emptyPos - gamePieceIndex == 3) {
+		stencilToGameIndex[pieceIndex] = this->emptyPos;
+		pieceToMove = getUpPiece();
+		movePiece(MOVE_DOWN, pieceToMove);
+	}
+
+}
+
+#pragma region keyboardHelpers
 SceneNode* GameSlidingPuzzle::getRightPiece()
 {
 	if ((this->emptyPos % 3) + 1 > 2) return NULL;
@@ -96,7 +160,6 @@ SceneNode* GameSlidingPuzzle::getDownPiece()
 
 	return piece;
 }
-
 void GameSlidingPuzzle::movePiece(Vector3d translation,SceneNode* piece)
 {
 	if (piece == NULL) return;
@@ -106,4 +169,8 @@ void GameSlidingPuzzle::movePiece(Vector3d translation,SceneNode* piece)
 		* piece->getMatrix()
 	);
 }
+#pragma endregion
 
+#pragma region mouseHelpers
+
+#pragma engregion

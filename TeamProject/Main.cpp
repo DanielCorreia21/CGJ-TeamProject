@@ -32,6 +32,7 @@
 #include "Texture2D.h"
 #include "Texture3D.h"
 #include "OutlineSceneNode.h"
+#include "SlidePuzzleSceneNode.h"
 #include "GameSlidingPuzzle.h"
 
 #include <GL/glew.h>
@@ -205,7 +206,7 @@ void createEnvironmentSceneGraph()
 	TextureInfo* tinfo_0 = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_NOISE, TextureManager::getInstance()->get("marble"));
 	ShaderProgram* piecesShader = ShaderProgramManager::getInstance()->get(PIECES_SHADER);
 	//---------------Piece 1------------------
-	SceneNode* piece1 = new OutlineSceneNode();
+	SceneNode* piece1 = new SlidePuzzleSceneNode(1);
 	piece1->setParent(pieces);
 	piece1->setMesh(cubeMesh);
 	piece1->setMatrix(
@@ -218,7 +219,7 @@ void createEnvironmentSceneGraph()
 	piece1->addTexture(tinfo_1);
 
 	//---------------Piece 2------------------
-	SceneNode* piece2 = new OutlineSceneNode();
+	SceneNode* piece2 = new SlidePuzzleSceneNode(2);
 	piece2->setParent(pieces);
 	piece2->setMesh(cubeMesh);
 	piece2->setMatrix(
@@ -230,7 +231,7 @@ void createEnvironmentSceneGraph()
 	piece2->addTexture(tinfo_2);
 
 	//---------------Piece 3------------------
-	SceneNode* piece3 = new OutlineSceneNode();
+	SceneNode* piece3 = new SlidePuzzleSceneNode(3);
 	piece3->setParent(pieces);
 	piece3->setMesh(cubeMesh);
 	piece3->setMatrix(
@@ -242,7 +243,7 @@ void createEnvironmentSceneGraph()
 	piece3->addTexture(tinfo_3);
 
 	//---------------Piece 4------------------
-	SceneNode* piece4 = new OutlineSceneNode();
+	SceneNode* piece4 = new SlidePuzzleSceneNode(4);
 	piece4->setParent(pieces);
 	piece4->setMesh(cubeMesh);
 	piece4->setMatrix(
@@ -254,7 +255,7 @@ void createEnvironmentSceneGraph()
 	piece4->addTexture(tinfo_4);
 
 	//---------------Piece 5------------------
-	SceneNode* piece5 = new OutlineSceneNode();
+	SceneNode* piece5 = new SlidePuzzleSceneNode(5);
 	piece5->setParent(pieces);
 	piece5->setMesh(cubeMesh);
 	piece5->setMatrix(
@@ -266,7 +267,7 @@ void createEnvironmentSceneGraph()
 	piece5->addTexture(tinfo_5);
 
 	//---------------Piece 6------------------
-	SceneNode* piece6 = new OutlineSceneNode();
+	SceneNode* piece6 = new SlidePuzzleSceneNode(6);
 	piece6->setParent(pieces);
 	piece6->setMesh(cubeMesh);
 	piece6->setMatrix(
@@ -278,7 +279,7 @@ void createEnvironmentSceneGraph()
 	piece6->addTexture(tinfo_6);
 
 	//---------------Piece 7------------------
-	SceneNode* piece7 = new OutlineSceneNode();
+	SceneNode* piece7 = new SlidePuzzleSceneNode(7);
 	piece7->setParent(pieces);
 	piece7->setMesh(cubeMesh);
 	piece7->setMatrix(
@@ -290,7 +291,7 @@ void createEnvironmentSceneGraph()
 	piece7->addTexture(tinfo_7);
 
 	//---------------Piece 8------------------
-	SceneNode* piece8 = new OutlineSceneNode();
+	SceneNode* piece8 = new SlidePuzzleSceneNode(8);
 	piece8->setParent(pieces);
 	piece8->setMesh(cubeMesh);
 	piece8->setMatrix(
@@ -361,8 +362,7 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 		glfwSetWindowShouldClose(win, GLFW_TRUE);
 		window_close_callback(win);
 	}
-
-	game->handleInput(key, action);
+	game->handleKeyboardInput(key, action);
 
 	if (action == GLFW_PRESS || action == GLFW_RELEASE) {
 		camera->updateCameraPos(key, action);
@@ -380,18 +380,34 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 
 }
 
-int mouse_pressed = 0;
+int right_mouse_pressed = 0;
+int left_mouse_pressed = 0;
 
 void mouse_callback(GLFWwindow* win, double xpos, double ypos)
 {
-	camera->look((float) xpos, (float) ypos, mouse_pressed);
-
+	camera->look((float) xpos, (float) ypos, right_mouse_pressed);
+	game->handleMouseDrag((float)xpos, (float)ypos, left_mouse_pressed);
 }
 
 void mouse_button_callback(GLFWwindow* win, int button, int action, int mods)
 {
-	if (button == 0) {
-		mouse_pressed = action;
+	if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+		right_mouse_pressed = action;
+	}
+	else if (button == GLFW_MOUSE_BUTTON_LEFT) {
+		if (action == GLFW_PRESS) {
+			double xpos, ypos;
+			glfwGetCursorPos(win, &xpos, &ypos);
+
+			int viewport[4];
+			glGetIntegerv(GL_VIEWPORT, viewport);
+
+			GLint index;
+			glReadPixels(xpos, viewport[3] - ypos, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+
+			game->handleMouseClick(xpos, ypos, index);
+		}
+		left_mouse_pressed = action;
 	}
 }
 
@@ -541,8 +557,11 @@ void run(GLFWwindow* win)
 		double elapsed_time = time - last_time;
 		last_time = time;
 
+		glClearStencil(0);
 		// Double Buffers
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glEnable(GL_STENCIL_TEST);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 		//updates camera position
 		camera->updateCamera();
 		display(win, elapsed_time);

@@ -103,7 +103,7 @@ void Mesh::parseLine(std::stringstream& sin)
 
 void Mesh::loadMeshData(std::string& filename)
 {
-	std::cout << "Filename: " + filename;
+	std::cout << "Filename: " + filename + "\n";
 	std::ifstream ifile(filename);
 	std::string line;
 	while (std::getline(ifile, line))

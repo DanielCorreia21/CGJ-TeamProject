@@ -1,12 +1,24 @@
 #pragma once
 #include "SceneNode.h"
+
+
 class GameSlidingPuzzle
 {
 
 public:
 	GameSlidingPuzzle(SceneNode* pieces, int emptyPos);
-	void handleInput(int key, int action);
+	void handleKeyboardInput(int key, int action);
+	void handleMouseDrag(float xpos, float ypos, int action);
+	void handleMouseClick(float xpos, float ypos, int index);
 private:
+	enum class MouseMoveDirection {
+		None,
+		Up,
+		Down,
+		Left,
+		Right
+	};
+	SceneNode* getMouseMoveDirection(int pieceIndex);
 	vector<SceneNode*> pieces;
 	int totalSlots;
 	int emptyPos;
