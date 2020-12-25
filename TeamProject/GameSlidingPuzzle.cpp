@@ -141,6 +141,7 @@ void GameSlidingPuzzle::releasePiece()
 		selectedPiece->setMatrix(
 			savedMatrix
 		);
+		this->selectedPiece = NULL;
 	}
 	else if(selectedPiece != NULL){
 		switch (this->mouseMoveDir) {
@@ -239,7 +240,7 @@ SlidePuzzleSceneNode* GameSlidingPuzzle::getRightPiece()
 
 	SlidePuzzleSceneNode* piece = this->pieces[(size_t)this->emptyPos + 1];
 	std::swap(pieces[(size_t)emptyPos + 1], pieces[emptyPos]);
-	this->stencilToGameIndex[piece->stencil_index] = this->emptyPos;
+	this->stencilToGameIndex[piece->stencil_index - 1] = this->emptyPos;
 	this->emptyPos += 1;
 
 	return piece;
@@ -250,7 +251,7 @@ SlidePuzzleSceneNode* GameSlidingPuzzle::getLeftPiece()
 
 	SlidePuzzleSceneNode* piece = this->pieces[(size_t)this->emptyPos - 1];
 	std::swap(pieces[(size_t)emptyPos - 1], pieces[emptyPos]);
-	this->stencilToGameIndex[piece->stencil_index] = this->emptyPos;
+	this->stencilToGameIndex[piece->stencil_index - 1] = this->emptyPos;
 	this->emptyPos -= 1;
 
 	return piece;
@@ -261,7 +262,7 @@ SlidePuzzleSceneNode* GameSlidingPuzzle::getUpPiece()
 
 	SlidePuzzleSceneNode* piece = this->pieces[(size_t)this->emptyPos - 3];
 	std::swap(pieces[(size_t)emptyPos - 3], pieces[emptyPos]);
-	this->stencilToGameIndex[piece->stencil_index] = this->emptyPos;
+	this->stencilToGameIndex[piece->stencil_index - 1] = this->emptyPos;
 	this->emptyPos -= 3;
 
 	return piece;
@@ -272,7 +273,7 @@ SlidePuzzleSceneNode* GameSlidingPuzzle::getDownPiece()
 
 	SlidePuzzleSceneNode* piece = this->pieces[(size_t)this->emptyPos + 3];
 	std::swap(pieces[(size_t)emptyPos + 3], pieces[emptyPos]);
-	this->stencilToGameIndex[piece->stencil_index] = this->emptyPos;
+	this->stencilToGameIndex[piece->stencil_index - 1] = this->emptyPos;
 	this->emptyPos += 3;
 
 	return piece;
