@@ -12,10 +12,10 @@
 class SlidePuzzleSceneNode : public OutlineSceneNode
 {
 protected:
-	int stencil_index;
 	void duringDraw();
 
 public:
+	int stencil_index;
 	SlidePuzzleSceneNode(int stencil_index);
 };
 

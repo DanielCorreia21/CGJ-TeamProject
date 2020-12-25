@@ -407,6 +407,9 @@ void mouse_button_callback(GLFWwindow* win, int button, int action, int mods)
 
 			game->handleMouseClick(xpos, ypos, index);
 		}
+		else if (action == GLFW_RELEASE) {
+			game->releasePiece();
+		}
 		left_mouse_pressed = action;
 	}
 }
@@ -532,6 +535,7 @@ GLFWwindow* setup(int major, int minor,
 	game = new GameSlidingPuzzle(
 		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2)
 		,8);
+	game->setMouseMode(GameSlidingPuzzle::MouseMode::Drag);
 
 	return win;
 
