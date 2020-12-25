@@ -92,9 +92,13 @@ void GameSlidingPuzzle::handleMouseDrag(float xpos, float ypos, int pressed)
 
 void GameSlidingPuzzle::handleMouseClick(float xpos, float ypos, int pieceIndex)
 {	
+	//If we didn't click on a piece, we return
+	if (pieceIndex <= 0 || pieceIndex > this->pieces.size()) return;
+
 	pieceIndex--; //Stencil index for pieces goes from 1 to X. We decrement it to match the game index
 	int gamePieceIndex = stencilToGameIndex[pieceIndex];
 	SceneNode* pieceToMove = NULL;
+
 
 	if ((this->emptyPos % 3) - (gamePieceIndex % 3) == 1 && this->emptyPos - gamePieceIndex == 1) {
 		stencilToGameIndex[pieceIndex] = this->emptyPos;
