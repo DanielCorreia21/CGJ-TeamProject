@@ -1,5 +1,4 @@
 #include "GameSlidingPuzzle.h"
-#include "MatrixFactory.h"
 
 #define MOVE_AMOUNT 0.4f
 #define MOVE_UP Vector3d(0.0f, MOVE_AMOUNT, 0.0f)
@@ -19,17 +18,19 @@ GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 
 	vector<SlidePuzzleSceneNode*>* v = new vector<SlidePuzzleSceneNode*>();
 	vector<SceneNode*> auxPieces = piecesRoot->getChildren();
+	this->winningOrder = new int[auxPieces.size()];
+
 	for (int i = 0; i < auxPieces.size() + 1; i++) {
-		if (i != this->emptyPos) {
-			v->push_back(((SlidePuzzleSceneNode*) auxPieces.at(i)));
-			stencilToGameIndex.insert(pair<int, int>(i,i));
-		}
+		if (i == this->emptyPos) { v->push_back(NULL); }
 		else {
-			v->push_back(NULL);
+			v->push_back(((SlidePuzzleSceneNode*) auxPieces.at(i)));
+			int stencilIndex = v->at(i)->stencil_index-1;
+			stencilToGameIndex.insert(pair<int, int>(stencilIndex,i));
+			this->winningOrder[i] = stencilIndex;
 		}
 	}
-	
 	this->pieces = *v;
+	scramblePieces();
 }
 
 #pragma region keyboardExternalMethods
@@ -63,7 +64,7 @@ void GameSlidingPuzzle::handleMouseClick(float xpos, float ypos, int pieceIndex)
 {	
 	//If we didn't click on a piece, we return
 	if (pieceIndex <= 0 || pieceIndex > this->pieces.size()) {
-		this->selectedPiece == NULL;
+		this->selectedPiece = NULL;
 		return;
 	}
 
@@ -77,6 +78,7 @@ void GameSlidingPuzzle::handleMouseClick(float xpos, float ypos, int pieceIndex)
 		simpleMouseMove(pieceIndex,gamePieceIndex);
 	}
 }
+
 void GameSlidingPuzzle::handleMouseDrag(float xpos, float ypos, int pressed)
 {
 	if (!pressed) {return;}
@@ -139,6 +141,7 @@ void GameSlidingPuzzle::handleMouseDrag(float xpos, float ypos, int pressed)
 	
 	if(mouseMoveDir != MouseMoveDir::None) totalMoved += moveAmount;
 }
+
 void GameSlidingPuzzle::releasePiece()
 {
 	if (this->mouseMoveDir == MouseMoveDir::None || this->selectedPiece == NULL) return;
@@ -187,13 +190,14 @@ void GameSlidingPuzzle::releasePiece()
 		stencilToGameIndex[selectedPieceStencilIndex] = this->emptyPos;
 		this->emptyPos = selectedPieceGameIndex;
 		this->selectedPiece = NULL;
+		checkWinningState();
 	}
 	totalMoved = 0;
 }
 #pragma endregion
 
 #pragma region mouseHelpers
-void GameSlidingPuzzle::initMouseDrag(int xpos,int ypos, int pieceIndex, int gamePieceIndex) {
+void GameSlidingPuzzle::initMouseDrag(float xpos, float ypos, int pieceIndex, int gamePieceIndex) {
 	this->selectedPiece = this->pieces[gamePieceIndex];
 	this->selectedPieceGameIndex = gamePieceIndex;
 	this->selectedPieceStencilIndex = pieceIndex;
@@ -202,6 +206,7 @@ void GameSlidingPuzzle::initMouseDrag(int xpos,int ypos, int pieceIndex, int gam
 	this->lastX = xpos;
 	this->lastY = ypos;
 }
+
 void GameSlidingPuzzle::simpleMouseMove(int pieceIndex, int gamePieceIndex) {
 	SlidePuzzleSceneNode* pieceToMove = NULL;
 	if ((this->emptyPos % 3) - (gamePieceIndex % 3) == 1 && this->emptyPos - gamePieceIndex == 1) {
@@ -225,9 +230,11 @@ void GameSlidingPuzzle::simpleMouseMove(int pieceIndex, int gamePieceIndex) {
 		movePiece(MOVE_DOWN, pieceToMove);
 	}
 }
+
 void GameSlidingPuzzle::setMouseMode(MouseMode mode) {
 	this->mouseMode = mode;
 }
+
 void GameSlidingPuzzle::setNewMouseMoveDir(int gamePieceIndex) {
 	if ((this->emptyPos % 3) - (gamePieceIndex % 3) == 1 && this->emptyPos - gamePieceIndex == 1) {
 		this->mouseMoveDir = MouseMoveDir::Right;
@@ -261,6 +268,7 @@ SlidePuzzleSceneNode* GameSlidingPuzzle::getRightPiece()
 
 	return piece;
 }
+
 SlidePuzzleSceneNode* GameSlidingPuzzle::getLeftPiece()
 {
 	if ((this->emptyPos % 3) - 1 < 0) return NULL;
@@ -272,6 +280,7 @@ SlidePuzzleSceneNode* GameSlidingPuzzle::getLeftPiece()
 
 	return piece;
 }
+
 SlidePuzzleSceneNode* GameSlidingPuzzle::getUpPiece()
 {
 	if (this->emptyPos - 3 < 0) return NULL;
@@ -283,6 +292,7 @@ SlidePuzzleSceneNode* GameSlidingPuzzle::getUpPiece()
 
 	return piece;
 }
+
 SlidePuzzleSceneNode* GameSlidingPuzzle::getDownPiece()
 {
 	if ((size_t)this->emptyPos + 3 >= this->pieces.size()) return NULL;
@@ -294,6 +304,7 @@ SlidePuzzleSceneNode* GameSlidingPuzzle::getDownPiece()
 
 	return piece;
 }
+
 void GameSlidingPuzzle::movePiece(Vector3d translation,SlidePuzzleSceneNode* piece)
 {
 	if (piece == NULL) return;
@@ -302,5 +313,74 @@ void GameSlidingPuzzle::movePiece(Vector3d translation,SlidePuzzleSceneNode* pie
 		MatrixFactory::translationMatrix(translation) 
 		* piece->getMatrix()
 	);
+	checkWinningState();
+}
+
+void GameSlidingPuzzle::scramblePieces()
+{
+	int piecesSize = (int)pieces.size();
+	int totalSwaps = piecesSize * 3;
+
+	//Next time think about impossible puzzles first instead of spending 15mins like a retard.
+	//https://puzzling.stackexchange.com/questions/25563/do-i-have-an-unsolvable-15-puzzle
+	if (totalSwaps % 2 != 0) totalSwaps--;
+
+	int randomNumber1;
+	int randomNumber2;
+
+	for (int i = 0; i < totalSwaps; i++) {
+		randomNumber1 = getRandomIntDifferentFromTwo(this->emptyPos, -1, piecesSize);
+		randomNumber2 = getRandomIntDifferentFromTwo(this->emptyPos, randomNumber1, piecesSize);
+		
+		swapPieces(randomNumber1, randomNumber2);
+	}
+}
+
+int GameSlidingPuzzle::getRandomIntDifferentFromTwo(int x,int y, int range) {
+	int randomNumber = rand() % range;
+	while (randomNumber == x || randomNumber == y) {
+		randomNumber = rand() % range;
+	}
+	return randomNumber;
+}
+
+void GameSlidingPuzzle::swapPieces(int randomNumber1, int randomNumber2) {
+
+	/* Things to swap: 
+		- Local matrixes
+		- GameIndexes
+	*/
+	
+	SlidePuzzleSceneNode* piece1 = pieces.at(randomNumber1);
+	SlidePuzzleSceneNode* piece2 = pieces.at(randomNumber2);
+	Matrix4d piece1Matrix = piece1->getMatrix();
+
+	int piece1GameIndex = this->stencilToGameIndex[piece1->stencil_index-1];
+	int piece2GameIndex = this->stencilToGameIndex[piece2->stencil_index-1];
+
+	this->stencilToGameIndex[piece1->stencil_index-1] = piece2GameIndex;
+	this->stencilToGameIndex[piece2->stencil_index-1] = piece1GameIndex;
+
+	piece1->setMatrix(piece2->getMatrix());
+	piece2->setMatrix(piece1Matrix);
+	std::swap(pieces[randomNumber1], pieces[randomNumber2]);
+}
+
+bool GameSlidingPuzzle::checkWinningState() {
+	bool puzzleSolved = true;
+	for (int i = 0; i < this->pieces.size(); i++) {
+		if (i == this->emptyPos) { continue; }
+		if (this->winningOrder[i] != this->pieces.at(i)->stencil_index) {
+			puzzleSolved = false;
+		}
+	}
+
+	if (puzzleSolved) {
+		cout << "**************\n"
+			<< "You won! :)\n"
+			<< "**************\n";
+	}
+
+	return puzzleSolved;
 }
 #pragma endregion

@@ -1,6 +1,8 @@
 #pragma once
-#include "SlidePuzzleSceneNode.h"
+#include <stdlib.h>
 
+#include "SlidePuzzleSceneNode.h"
+#include "MatrixFactory.h"
 
 class GameSlidingPuzzle
 {
@@ -30,13 +32,18 @@ private:
 	#pragma endregion
 	vector<SlidePuzzleSceneNode*> pieces;
 	int emptyPos;
+	int* winningOrder;
 	void simpleMouseMove(int pieceIndex, int gamePieceIndex);
-	void initMouseDrag(int xpos, int ypos, int pieceIndex, int gamePieceIndex);
+	void initMouseDrag(float xpos, float ypos, int pieceIndex, int gamePieceIndex);
 	void setNewMouseMoveDir(int gamePieceIndex);
 	SlidePuzzleSceneNode* getRightPiece();
 	SlidePuzzleSceneNode* getLeftPiece();
 	SlidePuzzleSceneNode* getUpPiece();
 	SlidePuzzleSceneNode* getDownPiece();
 	void movePiece(Vector3d translation,SlidePuzzleSceneNode* piece);
+	void scramblePieces();
+	int getRandomIntDifferentFromTwo(int x, int y, int range);
+	void swapPieces(int randomNumber1, int randomNumber2);
+	bool checkWinningState();
 };
 

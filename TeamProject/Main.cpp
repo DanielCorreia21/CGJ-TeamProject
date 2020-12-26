@@ -60,6 +60,8 @@ const string TEXTURE_UNIFORM_NOISE = "NoiseTexture";
 Camera* camera;
 GameSlidingPuzzle* game;
 
+///////////////////////////////////////////////////////////////////// GAME?
+
 ///////////////////////////////////////////////////////////////////// PreDrawFunctions
 
 void setRedColor() {
@@ -403,9 +405,9 @@ void mouse_button_callback(GLFWwindow* win, int button, int action, int mods)
 			glGetIntegerv(GL_VIEWPORT, viewport);
 
 			GLint index;
-			glReadPixels(xpos, viewport[3] - ypos, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+			glReadPixels((GLint)xpos, (GLint)(viewport[3] - ypos), 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
 
-			game->handleMouseClick(xpos, ypos, index);
+			game->handleMouseClick((float)xpos, (float)ypos, index);
 		}
 		else if (action == GLFW_RELEASE) {
 			game->releasePiece();
