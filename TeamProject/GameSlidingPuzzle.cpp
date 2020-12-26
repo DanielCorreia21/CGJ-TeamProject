@@ -8,9 +8,7 @@
 
 /*
 *@requires piecesRoot to have its children by the winning order.
-* @param pos : the position that has no piece, from 0 to amountOfPieces - 1 
-* TODO: Scramble the pieces
-* 
+*@param pos : the position that has no piece, from 0 to amountOfPieces - 1 
 */
 GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 {
