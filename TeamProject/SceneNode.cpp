@@ -19,6 +19,10 @@ Matrix4d SceneNode::getModelMatrix()
 	return result;
 }
 
+Matrix4d SceneNode::getMatrix(){
+	return this->matrix.copy();
+}
+
 ShaderProgram* SceneNode::getShader()
 {
 	//caso nos nao tivermos shader vemos se o no pai tem shader

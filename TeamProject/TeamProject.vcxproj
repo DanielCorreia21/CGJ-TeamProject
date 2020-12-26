@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ErrorHandler.cpp" />
+    <ClCompile Include="GameSlidingPuzzle.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Matrix2d.cpp" />
     <ClCompile Include="Matrix3d.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="SlidePuzzleSceneNode.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Texture3D.cpp" />
@@ -171,6 +173,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ErrorHandler.h" />
+    <ClInclude Include="GameSlidingPuzzle.h" />
     <ClInclude Include="GLStatics.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Matrix2d.h" />
@@ -185,6 +188,7 @@
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="SlidePuzzleSceneNode.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Texture3D.h" />

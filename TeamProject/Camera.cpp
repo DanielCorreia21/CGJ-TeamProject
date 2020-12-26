@@ -10,10 +10,7 @@
 *	André Santos - 91000
 */
 
-bool was_pressed = false;
-bool firstMouse = true;
-float lastX = 0;
-float lastY = 0;
+
 
 float yaw, pitch, roll;
 

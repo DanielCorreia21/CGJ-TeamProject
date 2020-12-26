@@ -27,6 +27,7 @@ void setDifferentColor() {
 
 void OutlineSceneNode::duringDraw()
 {
+
 	glDisable(GL_CULL_FACE);
 	Matrix4d initialMatrix = this->matrix;
 	setDifferentColor();

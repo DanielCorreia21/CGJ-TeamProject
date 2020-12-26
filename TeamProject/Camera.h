@@ -41,6 +41,10 @@ public:
 	void changeRotationType();
 	void updateCamera();
 private:
+	bool was_pressed = false;
+	bool firstMouse = true;
+	float lastX = 0;
+	float lastY = 0;
 	Vector3d up, cameraOrientation;
 	Vector3d translationVector;
 	CameraType currentType;

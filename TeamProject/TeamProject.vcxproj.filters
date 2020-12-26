@@ -99,6 +99,12 @@
     <ClCompile Include="OutlineSceneNode.cpp">
       <Filter>Source Files\SceneGraph</Filter>
     </ClCompile>
+    <ClCompile Include="GameSlidingPuzzle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SlidePuzzleSceneNode.cpp">
+      <Filter>Source Files\SceneGraph</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderProgram.h">
@@ -171,6 +177,12 @@
       <Filter>Header Files\SceneGraph</Filter>
     </ClInclude>
     <ClInclude Include="OutlineSceneNode.h">
+      <Filter>Header Files\SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSlidingPuzzle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SlidePuzzleSceneNode.h">
       <Filter>Header Files\SceneGraph</Filter>
     </ClInclude>
   </ItemGroup>
