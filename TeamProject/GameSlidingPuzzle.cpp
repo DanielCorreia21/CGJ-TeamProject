@@ -9,7 +9,8 @@
 
 /*
 *@requires piecesRoot to have its children by the winning order.
-* TODO: The pieces will then be scrambled
+* @param pos : the position that has no piece, from 0 to amountOfPieces - 1 
+* TODO: Scramble the pieces
 * 
 */
 GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
@@ -29,9 +30,9 @@ GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 	}
 	
 	this->pieces = *v;
-	this->totalSlots = this->pieces.size();
 }
 
+#pragma region keyboardExternalMethods
 void GameSlidingPuzzle::handleKeyboardInput(int key, int action)
 {
 	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
@@ -55,12 +56,27 @@ void GameSlidingPuzzle::handleKeyboardInput(int key, int action)
 		movePiece(MOVE_DOWN, piece);
 	}
 }
+#pragma endregion
 
+#pragma region mouseExternalMethods
+void GameSlidingPuzzle::handleMouseClick(float xpos, float ypos, int pieceIndex)
+{	
+	//If we didn't click on a piece, we return
+	if (pieceIndex <= 0 || pieceIndex > this->pieces.size()) {
+		this->selectedPiece == NULL;
+		return;
+	}
 
-Matrix4d savedMatrix;
-float totalMoved = 0;
-float baseMovementValue = 0.008f;
-float moveAmount;
+	pieceIndex--; //Stencil index for pieces goes from 1 to X. We decrement it to match the game index
+	int gamePieceIndex = stencilToGameIndex[pieceIndex];
+
+	if (mouseMode == MouseMode::Drag) {
+		initMouseDrag(xpos, ypos, pieceIndex, gamePieceIndex);
+	}
+	else if (mouseMode == MouseMode::Click) {
+		simpleMouseMove(pieceIndex,gamePieceIndex);
+	}
+}
 void GameSlidingPuzzle::handleMouseDrag(float xpos, float ypos, int pressed)
 {
 	if (!pressed) {return;}
@@ -72,6 +88,8 @@ void GameSlidingPuzzle::handleMouseDrag(float xpos, float ypos, int pressed)
 	float yoffset = ypos - lastY;
 	lastX = xpos;
 	lastY = ypos;
+
+	float moveAmount;
 
 	if (mouseMoveDir == MouseMoveDir::Right || mouseMoveDir == MouseMoveDir::Left) {
 		moveAmount = baseMovementValue * xoffset/2; //trial and error...
@@ -121,8 +139,6 @@ void GameSlidingPuzzle::handleMouseDrag(float xpos, float ypos, int pressed)
 	
 	if(mouseMoveDir != MouseMoveDir::None) totalMoved += moveAmount;
 }
-
-
 void GameSlidingPuzzle::releasePiece()
 {
 	if (this->mouseMoveDir == MouseMoveDir::None || this->selectedPiece == NULL) return;
@@ -167,9 +183,6 @@ void GameSlidingPuzzle::releasePiece()
 				);
 				break;
 		}
-		cout << "\\Release Piece// \n";
-		cout << "selectedPieceStencilIndex : " << selectedPieceStencilIndex << "\n";
-		cout << "emptyPos : " << emptyPos << "\n";
 		std::swap(pieces[selectedPieceGameIndex], pieces[emptyPos]);
 		stencilToGameIndex[selectedPieceStencilIndex] = this->emptyPos;
 		this->emptyPos = selectedPieceGameIndex;
@@ -177,32 +190,19 @@ void GameSlidingPuzzle::releasePiece()
 	}
 	totalMoved = 0;
 }
+#pragma endregion
 
-
-void GameSlidingPuzzle::handleMouseClick(float xpos, float ypos, int pieceIndex)
-{	
-	//If we didn't click on a piece, we return
-	if (pieceIndex <= 0 || pieceIndex > this->pieces.size()) {
-		this->selectedPiece == NULL;
-		cout << "NULL piece\n";
-		return;
-	}
-
-	pieceIndex--; //Stencil index for pieces goes from 1 to X. We decrement it to match the game index
-	int gamePieceIndex = stencilToGameIndex[pieceIndex];
-
-	if (mouseMode == MouseMode::Drag) {
-		this -> selectedPiece = this->pieces[gamePieceIndex];
-		this->selectedPieceGameIndex = gamePieceIndex;
-		this->selectedPieceStencilIndex = pieceIndex;
-		savedMatrix = selectedPiece->getMatrix();
-		setNewMouseMoveDir(gamePieceIndex);
-		this->lastX = xpos;
-		this->lastY = ypos;
-		return;
-	}
-
-	#pragma region simpleMouseMove
+#pragma region mouseHelpers
+void GameSlidingPuzzle::initMouseDrag(int xpos,int ypos, int pieceIndex, int gamePieceIndex) {
+	this->selectedPiece = this->pieces[gamePieceIndex];
+	this->selectedPieceGameIndex = gamePieceIndex;
+	this->selectedPieceStencilIndex = pieceIndex;
+	savedMatrix = selectedPiece->getMatrix();
+	setNewMouseMoveDir(gamePieceIndex);
+	this->lastX = xpos;
+	this->lastY = ypos;
+}
+void GameSlidingPuzzle::simpleMouseMove(int pieceIndex, int gamePieceIndex) {
 	SlidePuzzleSceneNode* pieceToMove = NULL;
 	if ((this->emptyPos % 3) - (gamePieceIndex % 3) == 1 && this->emptyPos - gamePieceIndex == 1) {
 		stencilToGameIndex[pieceIndex] = this->emptyPos;
@@ -214,7 +214,7 @@ void GameSlidingPuzzle::handleMouseClick(float xpos, float ypos, int pieceIndex)
 		pieceToMove = getRightPiece();
 		movePiece(MOVE_LEFT, pieceToMove);
 	}
-	else if (gamePieceIndex - this-> emptyPos == 3) {
+	else if (gamePieceIndex - this->emptyPos == 3) {
 		stencilToGameIndex[pieceIndex] = this->emptyPos;
 		pieceToMove = getDownPiece();
 		movePiece(MOVE_UP, pieceToMove);
@@ -224,9 +224,32 @@ void GameSlidingPuzzle::handleMouseClick(float xpos, float ypos, int pieceIndex)
 		pieceToMove = getUpPiece();
 		movePiece(MOVE_DOWN, pieceToMove);
 	}
-	#pragma endregion
 }
+void GameSlidingPuzzle::setMouseMode(MouseMode mode) {
+	this->mouseMode = mode;
+}
+void GameSlidingPuzzle::setNewMouseMoveDir(int gamePieceIndex) {
+	if ((this->emptyPos % 3) - (gamePieceIndex % 3) == 1 && this->emptyPos - gamePieceIndex == 1) {
+		this->mouseMoveDir = MouseMoveDir::Right;
+	}
+	else if ((gamePieceIndex % 3) - (this->emptyPos % 3) == 1 && gamePieceIndex - this->emptyPos == 1) {
+		this->mouseMoveDir = MouseMoveDir::Left;
+	}
+	else if (gamePieceIndex - this->emptyPos == 3) {
+		this->mouseMoveDir = MouseMoveDir::Up;
+	}
+	else if (this->emptyPos - gamePieceIndex == 3) {
+		this->mouseMoveDir = MouseMoveDir::Down;
+	}
+	else {
+		this->mouseMoveDir = MouseMoveDir::None;
+	}
+}
+#pragma endregion
 
+#pragma region helperMethods
+//Get DirectionPiece gets the piece in the direction FROM the empty position.
+//e.g: getRightPiece gets the piece on the right of the emptyPos
 SlidePuzzleSceneNode* GameSlidingPuzzle::getRightPiece()
 {
 	if ((this->emptyPos % 3) + 1 > 2) return NULL;
@@ -262,7 +285,7 @@ SlidePuzzleSceneNode* GameSlidingPuzzle::getUpPiece()
 }
 SlidePuzzleSceneNode* GameSlidingPuzzle::getDownPiece()
 {
-	if (this->emptyPos + 3 >= this->totalSlots) return NULL;
+	if ((size_t)this->emptyPos + 3 >= this->pieces.size()) return NULL;
 
 	SlidePuzzleSceneNode* piece = this->pieces[(size_t)this->emptyPos + 3];
 	std::swap(pieces[(size_t)emptyPos + 3], pieces[emptyPos]);
@@ -280,24 +303,4 @@ void GameSlidingPuzzle::movePiece(Vector3d translation,SlidePuzzleSceneNode* pie
 		* piece->getMatrix()
 	);
 }
-
-void GameSlidingPuzzle::setMouseMode(MouseMode mode) {
-	this->mouseMode = mode;
-}
-void GameSlidingPuzzle::setNewMouseMoveDir(int gamePieceIndex) {
-	if ((this->emptyPos % 3) - (gamePieceIndex % 3) == 1 && this->emptyPos - gamePieceIndex == 1) {
-		this->mouseMoveDir = MouseMoveDir::Right;
-	}
-	else if ((gamePieceIndex % 3) - (this->emptyPos % 3) == 1 && gamePieceIndex - this->emptyPos == 1) {
-		this->mouseMoveDir = MouseMoveDir::Left;
-	}
-	else if (gamePieceIndex - this->emptyPos == 3) {
-		this->mouseMoveDir = MouseMoveDir::Up;
-	}
-	else if (this->emptyPos - gamePieceIndex == 3) {
-		this->mouseMoveDir = MouseMoveDir::Down;
-	}
-	else {
-		this->mouseMoveDir = MouseMoveDir::None;
-	}
-}
+#pragma endregion
