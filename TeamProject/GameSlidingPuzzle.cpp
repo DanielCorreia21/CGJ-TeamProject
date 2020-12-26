@@ -73,8 +73,6 @@ void GameSlidingPuzzle::handleMouseDrag(float xpos, float ypos, int pressed)
 	lastX = xpos;
 	lastY = ypos;
 
-	//cout << "yoffset : " << yoffset << "\n";
-
 	if (mouseMoveDir == MouseMoveDir::Right || mouseMoveDir == MouseMoveDir::Left) {
 		moveAmount = baseMovementValue * xoffset/2; //trial and error...
 	}
@@ -129,7 +127,6 @@ void GameSlidingPuzzle::releasePiece()
 {
 	if (this->mouseMoveDir == MouseMoveDir::None || this->selectedPiece == NULL) return;
 	
-
 	bool positiveMoveNotDone =
 		(this->mouseMoveDir == MouseMoveDir::Right ||this->mouseMoveDir == MouseMoveDir::Up) 
 		&& totalMoved < 0.4f;
@@ -193,10 +190,6 @@ void GameSlidingPuzzle::handleMouseClick(float xpos, float ypos, int pieceIndex)
 
 	pieceIndex--; //Stencil index for pieces goes from 1 to X. We decrement it to match the game index
 	int gamePieceIndex = stencilToGameIndex[pieceIndex];
-
-	/*cout << "pieceIndex : " << pieceIndex << "\n";
-	cout << "gamePieceIndex : " << gamePieceIndex << "\n";
-	cout << "--------------------------------------\n";*/
 
 	if (mouseMode == MouseMode::Drag) {
 		this -> selectedPiece = this->pieces[gamePieceIndex];
@@ -291,7 +284,6 @@ void GameSlidingPuzzle::movePiece(Vector3d translation,SlidePuzzleSceneNode* pie
 void GameSlidingPuzzle::setMouseMode(MouseMode mode) {
 	this->mouseMode = mode;
 }
-
 void GameSlidingPuzzle::setNewMouseMoveDir(int gamePieceIndex) {
 	if ((this->emptyPos % 3) - (gamePieceIndex % 3) == 1 && this->emptyPos - gamePieceIndex == 1) {
 		this->mouseMoveDir = MouseMoveDir::Right;
