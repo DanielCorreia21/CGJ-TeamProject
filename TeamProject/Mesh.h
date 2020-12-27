@@ -28,6 +28,7 @@ class Mesh
 		void bind();
 		void unbind();
 		void draw();
+		std::string meshPath;
 
 	private:
 		bool TexcoordsLoaded, NormalsLoaded;

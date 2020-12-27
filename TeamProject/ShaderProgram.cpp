@@ -82,6 +82,8 @@ void ShaderProgram::readFragmentShader(const char fragmentShaderPath[]) {
 
 void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShaderPath[])
 {
+	this->vertexPath = vertexShaderPath;
+	this->fragmentPath = fragmentShaderPath;
 	readVertexShader(vertexShaderPath);
 	readFragmentShader(fragmentShaderPath);
 	const char* VertexShader = sVertexShader.c_str();

@@ -1,5 +1,5 @@
 SlidingPuzzle
-angles -431602080.000000 -431602080.000000 -431602080.000000
+angles 0.000000 0.000000 0.000000
 projectionType perspective
 rotationType euler
 translationVector 0.000000 0.000000 -10.000000

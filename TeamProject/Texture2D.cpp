@@ -25,6 +25,7 @@ void Texture2D::unbind()
 void Texture2D::load(const std::string& filename)
 {
 	int width, height, channels;
+	this->texture_path = filename;
 	std::cout << " Loading Image" << filename;
 	unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA);
 	if (image == nullptr) {
@@ -38,6 +39,7 @@ void Texture2D::load(const std::string& filename)
 	glGenTextures(1, &id);
 	glBindTexture(GL_TEXTURE_2D, id);
 
+	//TODO why aren't the texture_wraps set?
 	//filtro é o mesmo para a u e v coordenada
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);

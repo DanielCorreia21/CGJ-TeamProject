@@ -32,7 +32,7 @@ private:
 	#pragma endregion
 	vector<SlidePuzzleSceneNode*> pieces;
 	int emptyPos;
-	int* winningOrder;
+	vector<int> winningOrder;
 	void simpleMouseMove(int pieceIndex, int gamePieceIndex);
 	void initMouseDrag(float xpos, float ypos, int pieceIndex, int gamePieceIndex);
 	void setNewMouseMoveDir(int gamePieceIndex);

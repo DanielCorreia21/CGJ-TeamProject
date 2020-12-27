@@ -16,10 +16,13 @@ GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 
 	vector<SlidePuzzleSceneNode*>* v = new vector<SlidePuzzleSceneNode*>();
 	vector<SceneNode*> auxPieces = piecesRoot->getChildren();
-	this->winningOrder = new int[auxPieces.size()];
+	this->winningOrder = vector<int>(auxPieces.size()+1);
 
 	for (int i = 0; i < auxPieces.size() + 1; i++) {
-		if (i == this->emptyPos) { v->push_back(NULL); }
+		if (i == this->emptyPos) { 
+			v->push_back(NULL);
+			this->winningOrder[i] = -1;
+		}
 		else {
 			v->push_back(((SlidePuzzleSceneNode*) auxPieces.at(i)));
 			int stencilIndex = v->at(i)->stencil_index-1;
@@ -367,8 +370,10 @@ void GameSlidingPuzzle::swapPieces(int randomNumber1, int randomNumber2) {
 bool GameSlidingPuzzle::checkWinningState() {
 	bool puzzleSolved = true;
 	for (int i = 0; i < this->pieces.size(); i++) {
-		if (i == this->emptyPos) { continue; }
-		if (this->winningOrder[i] != this->pieces.at(i)->stencil_index) {
+		if (i == this->emptyPos) { 
+			if (this->winningOrder.at(i) != -1) { puzzleSolved = false; }
+		}
+		else if (this->winningOrder.at(i) != this->pieces.at(i)->stencil_index-1) {
 			puzzleSolved = false;
 		}
 	}

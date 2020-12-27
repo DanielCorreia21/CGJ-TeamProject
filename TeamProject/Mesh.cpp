@@ -87,6 +87,7 @@ void Mesh::parseLine(std::stringstream& sin)
 
 void Mesh::loadMeshData(std::string& filename)
 {
+	this->meshPath = filename;
 	std::cout << "Filename: " + filename + "\n";
 	std::ifstream ifile(filename);
 	std::string line;
