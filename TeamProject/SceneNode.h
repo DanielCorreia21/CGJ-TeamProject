@@ -36,17 +36,23 @@ protected:
 	virtual void duringDraw();
 	virtual void postDraw();
 public:
+	enum class NodeType{NORMAL,OUTLINE,SLIDEPUZZLE};
+	NodeType nodeType;
 	Matrix4d getModelMatrix();
 	Matrix4d getMatrix();
 	SceneNode(SceneNode* parent);
 	SceneNode();
 	void setParent(SceneNode* parent);
+	SceneNode* getParent();
 	//SceneNode *createNode();
 	//void addNode(SceneNode *node);
 	void setSceneGraph(SceneGraph *sceneGraph);
+	SceneGraph* getLocalSceneGraph();
 	void setMesh(Mesh* mesh);
+	Mesh* getMesh();
 	void setMatrix(Matrix4d matrix);
 	void setShaderProgram(ShaderProgram* shader);
+	ShaderProgram* getLocalShaderProgram();
 	void setPreDrawFun(fptr f);
 	void setTextures(std::vector<TextureInfo*> textures);
 	std::vector<SceneNode*> getChildren();

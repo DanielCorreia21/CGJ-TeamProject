@@ -49,7 +49,7 @@ const char textureFragmentShaderPath[] = "../Resources/marble_fs.glsl";
 const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
 
 const string COLOR_SHADER = "color";
-const string PIECES_SHADER = "Marble Shader";
+const string PIECES_SHADER = "MarbleShader";
 
 const string cubeMeshPath = "../objs/cube5.obj";
 const string discMeshPath = "../objs/disc.obj";
@@ -607,7 +607,6 @@ int main(int argc, char* argv[])
 	GLFWwindow* win = setup(gl_major, gl_minor,
 		640, 640, "Team project", is_fullscreen, is_vsync);
 	run(win);
-
 
 	exit(EXIT_SUCCESS);
 }

@@ -4,12 +4,11 @@ using namespace std;
 
 SceneFileHandler::SceneFileHandler() {}
 
-void SceneFileHandler::saveScene(SceneGraph* scene) {
+//TODO handle multiple sceneGraphs
 
+void SceneFileHandler::saveScene(SceneGraph* scene) {
 	vector<string> outputBuffer;
 
-	string sceneGraphName = SceneGraphManager::getInstance()->get(scene);
-	outputBuffer.push_back(sceneGraphName);
 #pragma region camera
 	Camera* camera = scene->getCamera();
 	Vector3d angles = camera->getEulerAngles();
@@ -22,10 +21,96 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 	string translationVector = "translationVector " + to_string(camera->translationVector.getX()) + " "
 		+ to_string(camera->translationVector.getY()) + " "
 		+ to_string(camera->translationVector.getZ());
+	outputBuffer.push_back("#camera");
 	outputBuffer.push_back(eulerAngles);
 	outputBuffer.push_back(projectionType);
 	outputBuffer.push_back(rotationType);
 	outputBuffer.push_back(translationVector);
+	outputBuffer.push_back("#endcamera\n");
+
+#pragma endregion
+
+#pragma region sceneGraph
+	string sceneGraphName = SceneGraphManager::getInstance()->get(scene);
+	outputBuffer.push_back("#sceneGraph");
+	outputBuffer.push_back(sceneGraphName);
+	outputBuffer.push_back("#endsceneGraph\n");
+#pragma endregion
+
+#pragma region sceneNodes
+
+	//helper vars
+	map<int, SceneNode*> indexToNode;
+	int nodeIndx = 0;
+
+	SceneNode* node = scene->getRoot();
+	vector<SceneNode*> nodes = getAllNodes(node);
+	for (int i = 0; i < nodes.size(); i++) {
+		node = nodes.at(i);
+		string nodeIndex = "nodeIndex " + to_string(nodeIndx);
+		indexToNode.insert(pair<int, SceneNode*>(nodeIndx, node));
+		nodeIndx++;
+
+		string auxParentIdx = "";
+		if (node->getParent() != NULL) {
+			auxParentIdx = to_string(getIndexFromNode(indexToNode,node->getParent()));
+		}
+		else { auxParentIdx = to_string(-1); }
+		string parentIndex = "parentIndex " + auxParentIdx;
+
+		string auxType = "";
+		if (node->nodeType == SceneNode::NodeType::NORMAL) { auxType = "normal"; }
+		else if (node->nodeType == SceneNode::NodeType::OUTLINE) { auxType = "outline"; }
+		else if (node->nodeType == SceneNode::NodeType::SLIDEPUZZLE) { auxType = "slidepuzzle"; }
+		string nodeType = "nodeType " + auxType;
+
+		string auxHasSceneGraph = "";
+		if (node->getLocalSceneGraph() != NULL) { auxHasSceneGraph = "true"; } else { auxHasSceneGraph = "false"; }
+		string hasSceneGraph = "hasSceneGraph " + auxHasSceneGraph;
+
+		string auxMeshPath = "";
+		if (node->getMesh() != NULL) { auxMeshPath = node->getMesh()->meshPath; }
+		else { auxMeshPath = "NONE"; }
+		string meshPath = "meshPath " + auxMeshPath;
+
+		string auxLocalMatrix = "";
+		float matrix[16]; node->getMatrix().toColumnMajorArray(matrix);
+		for (int i = 0; i < 16; i++) {
+			auxLocalMatrix = auxLocalMatrix + to_string(matrix[i]) + " ";
+		}
+		string localMatrix = "localMatrix " + auxLocalMatrix;
+
+		string auxTexturePaths = "";
+		vector<TextureInfo*> textures = node->getTextures();
+		if (textures.size() > 0) { 
+			for (int i = 0; i < textures.size(); i++) {
+
+				auxTexturePaths = auxTexturePaths + textures.at(i)->texture->texture_path + " ";
+			}
+		}
+		else { auxTexturePaths = "NONE"; }
+		string texturePaths = "texturePaths " + auxTexturePaths;
+
+		string auxShaderProgramName =
+			ShaderProgramManager::getInstance()->get(node->getLocalShaderProgram()) == "" ? "NONE" :
+				ShaderProgramManager::getInstance()->get(node->getLocalShaderProgram());
+		string shaderProgramName = "shaderProgramName " + auxShaderProgramName;
+
+		//TODO pre and post drawFun
+
+		outputBuffer.push_back("#sceneNode");
+		outputBuffer.push_back(nodeIndex);
+		outputBuffer.push_back(parentIndex);
+		outputBuffer.push_back(nodeType);
+		outputBuffer.push_back(hasSceneGraph);
+		outputBuffer.push_back(meshPath);
+		outputBuffer.push_back(localMatrix);
+		outputBuffer.push_back(texturePaths);
+		outputBuffer.push_back(shaderProgramName);
+		outputBuffer.push_back("#endsceneNode\n");
+	}
+
+
 #pragma endregion
 
 #pragma region writeToFile
@@ -42,4 +127,36 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		my_file.close();
 	}
 #pragma endregion
+}
+
+
+vector<SceneNode*> allNodes;
+vector<SceneNode*> SceneFileHandler::getAllNodes(SceneNode* node) {
+
+	if (node->getChildren().size() == 0) {
+		allNodes.push_back(node);
+	}
+	else {
+		allNodes.push_back(node);
+		for (int i = 0; i < node->getChildren().size(); i++) {
+			getAllNodes(node->getChildren().at(i));
+		}
+	}
+	if(node->getParent() == NULL) return allNodes;
+
+	vector<SceneNode*> empty;
+	return empty;
+}
+
+int SceneFileHandler::getIndexFromNode(map<int,SceneNode*> nodeMap, SceneNode* node) {
+	typename map<int, SceneNode*>::iterator it = nodeMap.begin();
+
+	while (it != nodeMap.end()) {
+
+		if (it->second == node) {
+			return it->first;
+		}
+		it++;
+	}
+	return -1;
 }

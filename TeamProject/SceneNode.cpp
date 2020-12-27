@@ -42,12 +42,14 @@ SceneGraph* SceneNode::getSceneGraph()
 
 SceneNode::SceneNode(SceneNode* parent)
 {
+	this->nodeType = NodeType::NORMAL;
 	this->parent = parent;
 	this->matrix = MatrixFactory::identityMatrix4d();
 }
 
 SceneNode::SceneNode()
 {
+	this->nodeType = NodeType::NORMAL;
 	this->matrix = MatrixFactory::identityMatrix4d();
 }
 
@@ -58,14 +60,27 @@ void SceneNode::setParent(SceneNode* parent)
 	parent->children.push_back(this);
 }
 
+SceneNode* SceneNode::getParent() {
+	return this->parent;
+}
+
 void SceneNode::setSceneGraph(SceneGraph* sceneGraph)
 {
 	this->sceneGraph = sceneGraph;
 }
 
+SceneGraph* SceneNode::getLocalSceneGraph() {
+	return this->sceneGraph;
+}
+
 void SceneNode::setMesh(Mesh* mesh)
 {
 	this->mesh = mesh;
+}
+
+Mesh* SceneNode::getMesh()
+{
+	return this->mesh;
 }
 
 void SceneNode::setMatrix(Matrix4d matrix)
@@ -76,6 +91,11 @@ void SceneNode::setMatrix(Matrix4d matrix)
 void SceneNode::setShaderProgram(ShaderProgram* shader)
 {
 	this->shader = shader;
+}
+
+ShaderProgram* SceneNode::getLocalShaderProgram() {
+
+	return this->shader;
 }
 
 void SceneNode::setPreDrawFun(fptr f)

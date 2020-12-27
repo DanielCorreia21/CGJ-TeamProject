@@ -21,6 +21,7 @@ class TextureInfo {
 		GLuint index;
 		std::string uniform;
 		Texture* texture;
+		std::string texturePath;
 
 		TextureInfo(GLenum textureunit, GLuint index, const std::string& uniform, Texture* texture);
 		void updateShader(ShaderProgram* shader);

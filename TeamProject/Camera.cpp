@@ -89,7 +89,6 @@ void Camera::applyRotation(float angleAroundX, float angleAroundY, float angleAr
 	roll += angleAroundX;
 }
 
-
 Matrix4d Camera::getRotationMatrix()
 {
 	if (this->currentRotation == RotationMode::EULER) {

@@ -11,7 +11,7 @@
 
 OutlineSceneNode::OutlineSceneNode() : SceneNode()
 {
-
+	this->nodeType = NodeType::OUTLINE;
 }
 
 void setBlackColor() {

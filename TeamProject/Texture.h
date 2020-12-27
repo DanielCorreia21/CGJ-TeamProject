@@ -23,6 +23,7 @@ class Texture {
 		~Texture();
 		virtual void bind() = 0;
 		virtual void unbind() = 0;
+		std::string texture_path;
 };
 
 class TextureManager : public Manager<Texture> {};

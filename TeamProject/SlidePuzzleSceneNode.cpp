@@ -2,6 +2,7 @@
 
 SlidePuzzleSceneNode::SlidePuzzleSceneNode(int stencil_index) : OutlineSceneNode()
 {
+	this->nodeType = NodeType::SLIDEPUZZLE;
 	this->stencil_index = stencil_index;
 }
 
