@@ -30,8 +30,32 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 
 #pragma endregion
 
+#pragma region shaderProgram
+
+	vector<ShaderProgram*> shaders = ShaderProgramManager::getInstance()->getAllValues();
+	int shaderProgramIndx = 0;
+	map<int, ShaderProgram*> indexToShaderProgram;
+	for (int i = 0; i < shaders.size(); i++) {
+
+		ShaderProgram* shader = shaders.at(i);
+		string shaderProgramIndex = "shaderProgramIndex " + to_string(shaderProgramIndx);
+		indexToShaderProgram.insert(pair<int, ShaderProgram*>(shaderProgramIndx, shader));
+		shaderProgramIndx++;
+
+		string vertexShaderPath = "vertexShaderPath " + shader->vertexPath;
+		string fragmentShaderPath = "fragmentShaderPath " + shader->fragmentPath;
+		outputBuffer.push_back("#shaderProgram");
+		outputBuffer.push_back(shaderProgramIndex);
+		outputBuffer.push_back(vertexShaderPath);
+		outputBuffer.push_back(fragmentShaderPath);
+		outputBuffer.push_back("#endshaderProgram\n");
+	}
+	
+
+#pragma endregion
+
 #pragma region sceneGraph
-	string sceneGraphName = SceneGraphManager::getInstance()->get(scene);
+	string sceneGraphName = "sceneGraphName " + SceneGraphManager::getInstance()->get(scene);
 	outputBuffer.push_back("#sceneGraph");
 	outputBuffer.push_back(sceneGraphName);
 	outputBuffer.push_back("#endsceneGraph\n");

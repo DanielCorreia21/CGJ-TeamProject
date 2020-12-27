@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <iostream>
+#include<vector>
 
 /*	AUTHORS
 *	Group: 4
@@ -9,6 +10,7 @@
 *	Antoine Pontallier - 98316
 *	André Santos - 91000
 */
+using namespace std;
 
 template<class E>
 class Manager
@@ -23,6 +25,7 @@ public:
 	void add(const std::string& id, E* value);
 	E* get(const std::string& id);
 	std::string get(E* value);
+	vector<E*> getAllValues();
 	void remove(const std::string& id);
 	void clear();
 };
@@ -82,6 +85,23 @@ inline std::string Manager<E>::get(E* value) {
 	}
 	return "";
 }
+
+template<class E>
+inline vector<E*> Manager<E>::getAllValues()
+{
+	typename std::map<std::string, E*>::iterator it = this->map.begin();
+
+	typename std::vector<E*> values;
+
+	while (it != map.end()) {
+
+		values.push_back(it->second);
+		it++;
+	}
+	return values;
+}
+
+
 
 template<class E>
 inline void Manager<E>::remove(const std::string& id)
