@@ -11,11 +11,7 @@
 *	André Santos - 91000
 */
 
-bool TexcoordsLoaded, NormalsLoaded;
 
-GLuint ProgramId;
-GLint ModelMatrix_UId, ViewMatrix_UId, ProjectionMatrix_UId;
-GLuint VboVertices, VboTexcoords, VboNormals;
 
 Mesh::Mesh() { }
 
@@ -26,23 +22,11 @@ Mesh::~Mesh()
 }
 
 ////////////////////////////////////////////////////////////////////////// MESH
-typedef struct {
-	GLfloat x, y, z;
-} Vertex;
 
-typedef struct {
-	GLfloat u, v;
-} Texcoord;
 
-typedef struct {
-	GLfloat nx, ny, nz;
-} Normal;
 
-std::vector <Vertex> Vertices, vertexData;
-std::vector <Texcoord> Texcoords, texcoordData;
-std::vector <Normal> Normals, normalData;
 
-std::vector <unsigned int> vertexIdx, texcoordIdx, normalIdx;
+
 #pragma region parse_stuff
 void Mesh::parseVertex(std::stringstream& sin)
 {
@@ -147,8 +131,6 @@ void Mesh::freeMeshData()
 }
 
 ////////////////////////////////////////////////////////////////////////// VAOs & VBOs
-
-GLuint VaoId, VboId;
 
 void Mesh::createMeshBufferObjects()
 {
