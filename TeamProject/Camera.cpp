@@ -9,13 +9,6 @@
 *	Antoine Pontallier - 98316
 *	André Santos - 91000
 */
-
-
-//TODO should these vars be here?
-float yaw, pitch, roll;
-
-bool keys[4];
-
 const double PI = 3.141592;
 
 Matrix4d Camera::getOrthoProj(double left, double right, double bottom, double top, double near, double far) {

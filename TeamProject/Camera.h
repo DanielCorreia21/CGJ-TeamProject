@@ -47,6 +47,10 @@ public:
 	void updateCamera();
 	Vector3d getEulerAngles();
 private:
+	float yaw = 0;
+	float pitch = 0;
+	float roll = 0;
+	bool keys[4] = { false,false,false,false };
 	bool was_pressed = false;
 	bool firstMouse = true;
 	float lastX = 0;
