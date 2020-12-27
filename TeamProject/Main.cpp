@@ -215,7 +215,7 @@ void createEnvironmentSceneGraph()
 	//---------------Piece 1------------------
 	SceneNode* piece1 = new SlidePuzzleSceneNode(1);
 	piece1->setParent(pieces);
-	piece1->setMesh(discMesh);
+	piece1->setMesh(cubeMesh);
 	piece1->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f,0.4f,0.0f))
 	);
@@ -228,7 +228,7 @@ void createEnvironmentSceneGraph()
 	//---------------Piece 2------------------
 	SceneNode* piece2 = new SlidePuzzleSceneNode(2);
 	piece2->setParent(pieces);
-	piece2->setMesh(discMesh);
+	piece2->setMesh(cubeMesh);
 	piece2->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.4f, 0.0f))
 	);
@@ -240,7 +240,7 @@ void createEnvironmentSceneGraph()
 	//---------------Piece 3------------------
 	SceneNode* piece3 = new SlidePuzzleSceneNode(3);
 	piece3->setParent(pieces);
-	piece3->setMesh(discMesh);
+	piece3->setMesh(cubeMesh);
 	piece3->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.4f, 0.0f))
 	);
@@ -252,7 +252,7 @@ void createEnvironmentSceneGraph()
 	//---------------Piece 4------------------
 	SceneNode* piece4 = new SlidePuzzleSceneNode(4);
 	piece4->setParent(pieces);
-	piece4->setMesh(discMesh);
+	piece4->setMesh(cubeMesh);
 	piece4->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, 0.0f, 0.0f))
 	);
@@ -264,7 +264,7 @@ void createEnvironmentSceneGraph()
 	//---------------Piece 5------------------
 	SceneNode* piece5 = new SlidePuzzleSceneNode(5);
 	piece5->setParent(pieces);
-	piece5->setMesh(discMesh);
+	piece5->setMesh(cubeMesh);
 	piece5->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.0f))
 	);
@@ -276,7 +276,7 @@ void createEnvironmentSceneGraph()
 	//---------------Piece 6------------------
 	SceneNode* piece6 = new SlidePuzzleSceneNode(6);
 	piece6->setParent(pieces);
-	piece6->setMesh(discMesh);
+	piece6->setMesh(cubeMesh);
 	piece6->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.0f, 0.0f))
 	);
@@ -288,7 +288,7 @@ void createEnvironmentSceneGraph()
 	//---------------Piece 7------------------
 	SceneNode* piece7 = new SlidePuzzleSceneNode(7);
 	piece7->setParent(pieces);
-	piece7->setMesh(discMesh);
+	piece7->setMesh(cubeMesh);
 	piece7->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, -0.4f, 0.0f))
 	);
@@ -300,7 +300,7 @@ void createEnvironmentSceneGraph()
 	//---------------Piece 8------------------
 	SceneNode* piece8 = new SlidePuzzleSceneNode(8);
 	piece8->setParent(pieces);
-	piece8->setMesh(discMesh);
+	piece8->setMesh(cubeMesh);
 	piece8->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, -0.4f, 0.0f))
 	);

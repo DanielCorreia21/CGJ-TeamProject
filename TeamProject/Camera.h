@@ -32,6 +32,8 @@ public:
 	Vector3d translationVector;
 
 	Camera(Vector3d eye, Vector3d front, Vector3d up);
+	Matrix4d getOrthoProj(double left, double right, double bottom, double top, double near, double far);
+	Matrix4d getPerspectiveProj(float fov, float aspect, float near, float far);
 	Matrix4d getViewMatrix();
 	Matrix4d getProjectionMatrix();
 	void applyRotation(float angleAroundX, float angleAroundY, float angleAroundZ);

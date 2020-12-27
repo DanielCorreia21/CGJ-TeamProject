@@ -13,13 +13,17 @@
 *	Antoine Pontallier - 98316
 *	André Santos - 91000
 */
+using namespace std;
 
 class ShaderProgram
 {
 private:
 	GLuint VertexShaderId, FragmentShaderId, ProgramId;
 	GLint ModelMatrixIndex, UboId;
-
+	string sVertexShader;
+	string sFragmentShader;
+	void readVertexShader(const char vertexShaderPath[]);
+	void readFragmentShader(const char fragmentShaderPath[]);
 	void destroy();
 public:
 	struct AttributeInfo {

@@ -18,7 +18,7 @@ bool keys[4];
 
 const double PI = 3.141592;
 
-Matrix4d getOrthoProj(double left, double right, double bottom, double top, double near, double far) {
+Matrix4d Camera::getOrthoProj(double left, double right, double bottom, double top, double near, double far) {
 	float result_array[4][4];
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
@@ -36,7 +36,7 @@ Matrix4d getOrthoProj(double left, double right, double bottom, double top, doub
 	return Matrix4d(result_array);
 }
 
-Matrix4d getPerspectiveProj(float fov, float aspect, float near, float far) {
+Matrix4d Camera::getPerspectiveProj(float fov, float aspect, float near, float far) {
 
 	float theta = fov / 2;
 	float d = (float) (1 / (tan(theta * PI / 180)));

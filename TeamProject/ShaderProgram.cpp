@@ -64,17 +64,15 @@ ShaderProgram::UboInfo ShaderProgram::getUbo(const std::string& name)
 	return UboInfo();
 }
 
-std::string sVertexShader;
-std::string sFragmentShader;
 
-void readVertexShader(const char vertexShaderPath[]) {
+void ShaderProgram::readVertexShader(const char vertexShaderPath[]) {
 	std::ifstream ifs(vertexShaderPath);
 	std::string temp((std::istreambuf_iterator<char>(ifs)),
 		(std::istreambuf_iterator<char>()));
 	sVertexShader = temp;
 }
 
-void readFragmentShader(const char fragmentShaderPath[]) {
+void ShaderProgram::readFragmentShader(const char fragmentShaderPath[]) {
 
 	std::ifstream ifs(fragmentShaderPath);
 	std::string temp((std::istreambuf_iterator<char>(ifs)),
