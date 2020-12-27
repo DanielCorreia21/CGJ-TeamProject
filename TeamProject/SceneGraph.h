@@ -24,7 +24,7 @@ public:
 	void setCamera(Camera *camera);
 	Camera *getCamera();
 	SceneNode *getRoot();
-	void init(ShaderProgram* shaders);
+	void init();
 	void draw();
 };
 

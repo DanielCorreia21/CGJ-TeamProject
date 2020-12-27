@@ -22,6 +22,7 @@ public:
 	virtual ~Manager();
 	void add(const std::string& id, E* value);
 	E* get(const std::string& id);
+	std::string get(E* value);
 	void remove(const std::string& id);
 	void clear();
 };
@@ -66,6 +67,20 @@ inline E* Manager<E>::get(const std::string& id)
 		return it->second;
 	}
 	return NULL;
+}
+
+template<class E>
+inline std::string Manager<E>::get(E* value) {
+	typename std::map<std::string, E*>::iterator it = this->map.begin();
+
+	while ( it != map.end()) {
+
+		if (it -> second == value) {
+			return it->first;
+		}
+		it++;
+	}
+	return "";
 }
 
 template<class E>

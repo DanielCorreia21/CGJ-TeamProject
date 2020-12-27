@@ -11,7 +11,7 @@
 */
 
 
-
+//TODO should these vars be here?
 float yaw, pitch, roll;
 
 bool keys[4];
@@ -64,7 +64,7 @@ Camera::Camera(Vector3d initialPos, Vector3d cameraOrientation, Vector3d up)
 	this->VboId[0] = 0;
 
 	orthoMatrix = getOrthoProj(-2, 2, -2, 2, 1, 100);
-	persectiveMatrix = getPerspectiveProj(30, 640 / 640, 1, 100);
+	perspectiveMatrix = getPerspectiveProj(30, 640 / 640, 1, 100);
 }
 
 Matrix4d Camera::getViewMatrix()
@@ -85,7 +85,7 @@ Matrix4d Camera::getProjectionMatrix()
 		return orthoMatrix;
 	}
 	else {
-		return persectiveMatrix;
+		return perspectiveMatrix;
 	}
 }
 
@@ -158,7 +158,7 @@ void Camera::updateCameraPos(int key, int action)
 	}
 }
 
-void Camera::initBuffer(ShaderProgram* shaders)
+void Camera::initBuffer()
 {
 	glGenBuffers(1, VboId);
 
@@ -266,4 +266,8 @@ void Camera::changeRotationType()
 		std::cout << "CHANGE TO EULER\n";
 		currentRotation = RotationMode::EULER;
 	}
+}
+
+Vector3d Camera::getEulerAngles() {
+	return Vector3d(roll,yaw,pitch);
 }

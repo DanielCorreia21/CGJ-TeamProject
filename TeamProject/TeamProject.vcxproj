@@ -157,6 +157,7 @@
     <ClCompile Include="Noise.cpp" />
     <ClCompile Include="OutlineSceneNode.cpp" />
     <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="SceneFileHandler.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="OutlineSceneNode.h" />
     <ClInclude Include="Perlin.h" />
     <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="SceneFileHandler.h" />
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ShaderProgram.h" />

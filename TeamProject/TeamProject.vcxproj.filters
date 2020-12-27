@@ -105,6 +105,9 @@
     <ClCompile Include="SlidePuzzleSceneNode.cpp">
       <Filter>Source Files\SceneGraph</Filter>
     </ClCompile>
+    <ClCompile Include="SceneFileHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderProgram.h">
@@ -184,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="SlidePuzzleSceneNode.h">
       <Filter>Header Files\SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneFileHandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

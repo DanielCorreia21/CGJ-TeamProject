@@ -37,6 +37,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "SceneFileHandler.h"
 
 using namespace std;
 
@@ -51,13 +52,16 @@ const string COLOR_SHADER = "color";
 const string PIECES_SHADER = "Marble Shader";
 
 const string cubeMeshPath = "../objs/cube5.obj";
+const string discMeshPath = "../objs/disc.obj";
 const string CUBE_MESH = "cube";
+const string DISC_MESH = "disc";
 
 const string COLOR_UNIFORM = "Color";
 const string TEXTURE_UNIFORM_COLOR = "Texture";
 const string TEXTURE_UNIFORM_NOISE = "NoiseTexture";
 
 Camera* camera;
+SceneFileHandler sceneFileHandler;
 GameSlidingPuzzle* game;
 
 ///////////////////////////////////////////////////////////////////// GAME?
@@ -127,6 +131,7 @@ void createTextures() {
 void createEnvironmentSceneGraph()
 {
 	Mesh* cubeMesh = MeshManager::getInstance()->get(CUBE_MESH);
+	Mesh* discMesh = MeshManager::getInstance()->get(DISC_MESH);
 
 	#pragma region backboard
 	SceneNode* backboard = new SceneNode();
@@ -315,6 +320,11 @@ void createSceneGraph()
 
 	MeshManager::getInstance()->add(CUBE_MESH, mesh);
 
+	Mesh* meshD = new Mesh();
+	string sD = string(discMeshPath);
+	meshD->init(sD);
+
+	MeshManager::getInstance()->add(DISC_MESH, meshD);
 
 	SceneGraph* slidingPuzzleScenegraph = new SceneGraph();
 	slidingPuzzleScenegraph->setCamera(camera);
@@ -326,7 +336,7 @@ void createSceneGraph()
 
 	createEnvironmentSceneGraph();
 
-	slidingPuzzleScenegraph->init(ShaderProgramManager::getInstance()->get(COLOR_SHADER));
+	slidingPuzzleScenegraph->init();
 }
 
 void drawScene()
@@ -534,10 +544,15 @@ GLFWwindow* setup(int major, int minor,
 	createTextures();
 	createSceneGraph();
 
+	//Hardcoded: The third child of the sceneGraph's root node should be the piece's root node
 	game = new GameSlidingPuzzle(
 		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2)
 		,8);
 	game->setMouseMode(GameSlidingPuzzle::MouseMode::Drag);
+
+	//Start filehandlers
+	sceneFileHandler = SceneFileHandler();
+	sceneFileHandler.saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
 
 	return win;
 
