@@ -139,7 +139,7 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 
 #pragma region writeToFile
 	ofstream my_file;
-	my_file.open("../Saves/testSave.txt", ios::out);
+	my_file.open("../Saves/savedScene.txt", ios::out);
 	if (!my_file) {
 		cout << "File not created!";
 	}
@@ -147,7 +147,7 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		for (int i = 0; i < outputBuffer.size(); i++) {
 			my_file << outputBuffer.at(i) + "\n";
 		}
-		cout << "File created successfully!";
+		cout << "Scene saved successfully!";
 		my_file.close();
 	}
 #pragma endregion
