@@ -6,13 +6,13 @@ translationVector 0.000000 0.000000 -10.000000
 #endcamera
 
 #shaderProgram
-shaderProgramIndex 0
+shaderProgramName MarbleShader
 vertexShaderPath ../Resources/marble_vs.glsl
 fragmentShaderPath ../Resources/marble_fs.glsl
 #endshaderProgram
 
 #shaderProgram
-shaderProgramIndex 1
+shaderProgramName color
 vertexShaderPath ../Resources/color_vs.glsl
 fragmentShaderPath ../Resources/color_fs.glsl
 #endshaderProgram
@@ -24,6 +24,7 @@ sceneGraphName SlidingPuzzle
 #sceneNode
 nodeIndex 0
 parentIndex -1
+stencilIndex -1
 nodeType normal
 hasSceneGraph true
 meshPath NONE
@@ -35,6 +36,7 @@ shaderProgramName color
 #sceneNode
 nodeIndex 1
 parentIndex 0
+stencilIndex -1
 nodeType normal
 hasSceneGraph false
 meshPath ../objs/cube5.obj
@@ -46,6 +48,7 @@ shaderProgramName NONE
 #sceneNode
 nodeIndex 2
 parentIndex 0
+stencilIndex -1
 nodeType normal
 hasSceneGraph false
 meshPath NONE
@@ -57,6 +60,7 @@ shaderProgramName NONE
 #sceneNode
 nodeIndex 3
 parentIndex 2
+stencilIndex -1
 nodeType normal
 hasSceneGraph false
 meshPath ../objs/cube5.obj
@@ -68,6 +72,7 @@ shaderProgramName NONE
 #sceneNode
 nodeIndex 4
 parentIndex 2
+stencilIndex -1
 nodeType normal
 hasSceneGraph false
 meshPath ../objs/cube5.obj
@@ -79,6 +84,7 @@ shaderProgramName NONE
 #sceneNode
 nodeIndex 5
 parentIndex 2
+stencilIndex -1
 nodeType normal
 hasSceneGraph false
 meshPath ../objs/cube5.obj
@@ -90,6 +96,7 @@ shaderProgramName NONE
 #sceneNode
 nodeIndex 6
 parentIndex 2
+stencilIndex -1
 nodeType normal
 hasSceneGraph false
 meshPath ../objs/cube5.obj
@@ -101,6 +108,7 @@ shaderProgramName NONE
 #sceneNode
 nodeIndex 7
 parentIndex 0
+stencilIndex -1
 nodeType normal
 hasSceneGraph false
 meshPath NONE
@@ -112,88 +120,96 @@ shaderProgramName NONE
 #sceneNode
 nodeIndex 8
 parentIndex 7
+stencilIndex 1
 nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 0.400000 0.000000 1.000000 
-texturePaths  ../numbers/1.png 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 0.000000 0.000000 1.000000 
+texturePaths marble ../numbers/1.png 
 shaderProgramName MarbleShader
 #endsceneNode
 
 #sceneNode
 nodeIndex 9
 parentIndex 7
+stencilIndex 2
 nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 0.400000 0.000000 1.000000 
-texturePaths  ../numbers/2.png 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 0.400000 0.000000 1.000000 
+texturePaths marble ../numbers/2.png 
 shaderProgramName MarbleShader
 #endsceneNode
 
 #sceneNode
 nodeIndex 10
 parentIndex 7
+stencilIndex 3
 nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 0.000000 0.000000 1.000000 
-texturePaths  ../numbers/3.png 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 
+texturePaths marble ../numbers/3.png 
 shaderProgramName MarbleShader
 #endsceneNode
 
 #sceneNode
 nodeIndex 11
 parentIndex 7
+stencilIndex 4
 nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 -0.400000 0.000000 1.000000 
-texturePaths  ../numbers/4.png 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 0.400000 0.000000 1.000000 
+texturePaths marble ../numbers/4.png 
 shaderProgramName MarbleShader
 #endsceneNode
 
 #sceneNode
 nodeIndex 12
 parentIndex 7
+stencilIndex 5
 nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
 localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -0.400000 0.000000 1.000000 
-texturePaths  ../numbers/5.png 
+texturePaths marble ../numbers/5.png 
 shaderProgramName MarbleShader
 #endsceneNode
 
 #sceneNode
 nodeIndex 13
 parentIndex 7
+stencilIndex 6
 nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
 localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.400000 0.000000 1.000000 
-texturePaths  ../numbers/6.png 
+texturePaths marble ../numbers/6.png 
 shaderProgramName MarbleShader
 #endsceneNode
 
 #sceneNode
 nodeIndex 14
 parentIndex 7
+stencilIndex 7
 nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 
-texturePaths  ../numbers/7.png 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 -0.400000 0.000000 1.000000 
+texturePaths marble ../numbers/7.png 
 shaderProgramName MarbleShader
 #endsceneNode
 
 #sceneNode
 nodeIndex 15
 parentIndex 7
+stencilIndex 8
 nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
 localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 0.000000 0.000000 1.000000 
-texturePaths  ../numbers/8.png 
+texturePaths marble ../numbers/8.png 
 shaderProgramName MarbleShader
 #endsceneNode
 

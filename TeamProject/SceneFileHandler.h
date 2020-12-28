@@ -1,5 +1,6 @@
 #pragma once
 #include "SceneGraph.h"
+#include "Texture2D.h"
 
 class SceneFileHandler
 {

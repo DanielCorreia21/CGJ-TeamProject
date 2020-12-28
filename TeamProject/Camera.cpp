@@ -263,3 +263,10 @@ void Camera::changeRotationType()
 Vector3d Camera::getEulerAngles() {
 	return Vector3d(roll,yaw,pitch);
 }
+
+void Camera::setEulerAngles(Vector3d angles)
+{
+	this->roll = angles.getX();
+	this->yaw = angles.getY();
+	this->pitch = angles.getZ();
+}

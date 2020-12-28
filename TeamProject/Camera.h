@@ -46,6 +46,7 @@ public:
 	void changeRotationType();
 	void updateCamera();
 	Vector3d getEulerAngles();
+	void setEulerAngles(Vector3d angles);
 private:
 	float yaw = 0;
 	float pitch = 0;

@@ -14,7 +14,7 @@ TextureInfo::TextureInfo(GLenum textureunit, GLuint n_index, const std::string& 
 	index = n_index;
 	uniform = n_uniform;
 	texture = n_texture;
-	texturePath = n_texture->texture_path;
+	//texturePath = n_texture->texture_path;
 }
 
 void TextureInfo::updateShader(ShaderProgram* shader)

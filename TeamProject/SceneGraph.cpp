@@ -36,6 +36,10 @@ SceneNode* SceneGraph::getRoot()
 	return this->root;
 }
 
+void SceneGraph::setRoot(SceneNode* root) {
+	this->root = root;
+}
+
 void SceneGraph::init()
 {
 	this->camera->initBuffer();

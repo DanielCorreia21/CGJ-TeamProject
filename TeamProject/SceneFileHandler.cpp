@@ -1,4 +1,5 @@
 #include "SceneFileHandler.h"
+#include "SlidePuzzleSceneNode.h"
 
 using namespace std;
 
@@ -21,6 +22,7 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 	string translationVector = "translationVector " + to_string(camera->translationVector.getX()) + " "
 		+ to_string(camera->translationVector.getY()) + " "
 		+ to_string(camera->translationVector.getZ());
+
 	outputBuffer.push_back("#camera");
 	outputBuffer.push_back(eulerAngles);
 	outputBuffer.push_back(projectionType);
@@ -38,14 +40,17 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 	for (int i = 0; i < shaders.size(); i++) {
 
 		ShaderProgram* shader = shaders.at(i);
-		string shaderProgramIndex = "shaderProgramIndex " + to_string(shaderProgramIndx);
+		/*string shaderProgramIndex = "shaderProgramIndex " + to_string(shaderProgramIndx);
 		indexToShaderProgram.insert(pair<int, ShaderProgram*>(shaderProgramIndx, shader));
-		shaderProgramIndx++;
+		shaderProgramIndx++;*/
+
+		string shaderProgramName = "shaderProgramName " + ShaderProgramManager::getInstance()->get(shader);
 
 		string vertexShaderPath = "vertexShaderPath " + shader->vertexPath;
 		string fragmentShaderPath = "fragmentShaderPath " + shader->fragmentPath;
+
 		outputBuffer.push_back("#shaderProgram");
-		outputBuffer.push_back(shaderProgramIndex);
+		outputBuffer.push_back(shaderProgramName);
 		outputBuffer.push_back(vertexShaderPath);
 		outputBuffer.push_back(fragmentShaderPath);
 		outputBuffer.push_back("#endshaderProgram\n");
@@ -56,6 +61,7 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 
 #pragma region sceneGraph
 	string sceneGraphName = "sceneGraphName " + SceneGraphManager::getInstance()->get(scene);
+
 	outputBuffer.push_back("#sceneGraph");
 	outputBuffer.push_back(sceneGraphName);
 	outputBuffer.push_back("#endsceneGraph\n");
@@ -88,6 +94,10 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		else if (node->nodeType == SceneNode::NodeType::SLIDEPUZZLE) { auxType = "slidepuzzle"; }
 		string nodeType = "nodeType " + auxType;
 
+		int auxStencilIndex = -1;
+		if (node->nodeType == SceneNode::NodeType::SLIDEPUZZLE) { auxStencilIndex = ((SlidePuzzleSceneNode*)node)->stencil_index; }
+		string stencilIndex = "stencilIndex " + to_string(auxStencilIndex);
+
 		string auxHasSceneGraph = "";
 		if (node->getLocalSceneGraph() != NULL) { auxHasSceneGraph = "true"; } else { auxHasSceneGraph = "false"; }
 		string hasSceneGraph = "hasSceneGraph " + auxHasSceneGraph;
@@ -108,8 +118,14 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		vector<TextureInfo*> textures = node->getTextures();
 		if (textures.size() > 0) { 
 			for (int i = 0; i < textures.size(); i++) {
-
-				auxTexturePaths = auxTexturePaths + textures.at(i)->texture->texture_path + " ";
+				TextureInfo* textureInfo = textures.at(i);
+				string textPath = textureInfo->texture->texture_path;
+				if (textPath.find('/') != string::npos) {
+					auxTexturePaths = auxTexturePaths + textPath + " ";
+				}
+				else {
+					auxTexturePaths = auxTexturePaths + TextureManager::getInstance()->get(textures.at(i)->texture) + " ";
+				}
 			}
 		}
 		else { auxTexturePaths = "NONE"; }
@@ -125,6 +141,7 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		outputBuffer.push_back("#sceneNode");
 		outputBuffer.push_back(nodeIndex);
 		outputBuffer.push_back(parentIndex);
+		outputBuffer.push_back(stencilIndex);
 		outputBuffer.push_back(nodeType);
 		outputBuffer.push_back(hasSceneGraph);
 		outputBuffer.push_back(meshPath);
@@ -147,7 +164,7 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		for (int i = 0; i < outputBuffer.size(); i++) {
 			ofile << outputBuffer.at(i) + "\n";
 		}
-		cout << "Scene saved successfully!";
+		cout << "Scene saved successfully!\n";
 		ofile.close();
 	}
 #pragma endregion
@@ -197,12 +214,200 @@ CurrentObjType currentObjType = CurrentObjType::None;
 
 
 
-
 vector<string> split(const string& s) {
 	vector<string> elems;
 	for (size_t p = 0, q = 0; p != s.npos; p = q)
 		elems.push_back(s.substr(p + (p != 0), (q = s.find(" ", p + 1)) - p - (p != 0)));
 	return elems;
+}
+
+Camera* sceneCamera = NULL;
+map<string, ShaderProgram*> shaderPrograms;
+SceneGraph* sceneGraph = NULL;
+map<int, SceneNode*> sceneNodes;
+map<string, Mesh*> loadedMeshes;
+map<string, TextureInfo*> loadedTextures;
+
+const string TEXTURE_UNIFORM_NOISE = "NoiseTexture";
+const string TEXTURE_UNIFORM_COLOR = "Texture";
+
+SceneNode* createSceneNode(string line) {
+
+	static int nodeIndex = -1;
+	static int parentIndex = -1;
+	static int stencilIndex = 0;
+	static SceneNode::NodeType nodeType = SceneNode::NodeType::NORMAL;
+	static bool hasSceneGraph = false;
+	static string meshPath = "";
+	static Matrix4d localMatrix = Matrix4d();
+	static string texturePaths = "";
+	static string shaderProgramName = "";
+
+
+	vector<string> lineElements = split(line);
+
+	if (lineElements[0].compare("nodeIndex") == 0) {
+		nodeIndex = stoi(lineElements[1]);
+	}
+	else if (lineElements[0].compare("parentIndex") == 0) {
+		parentIndex = stoi(lineElements[1]);
+	}
+	else if (lineElements[0].compare("stencilIndex") == 0) {
+		stencilIndex = stoi(lineElements[1]);
+	}
+	else if (lineElements[0].compare("nodeType") == 0) {
+		if (lineElements[1].compare("normal") == 0) { nodeType = SceneNode::NodeType::NORMAL; }
+		else if (lineElements[1].compare("outline") == 0) { nodeType = SceneNode::NodeType::OUTLINE; }
+		else if (lineElements[1].compare("slidepuzzle") == 0) { nodeType = SceneNode::NodeType::SLIDEPUZZLE; }
+	}
+	else if (lineElements[0].compare("hasSceneGraph") == 0) {
+		hasSceneGraph = lineElements[1].compare("true") == 0 ? true : false;
+	}
+	else if (lineElements[0].compare("meshPath") == 0) {
+		meshPath = lineElements[1];
+	}
+	else if (lineElements[0].compare("localMatrix") == 0) {
+		float auxMatrix[16];
+		for (int i = 1; i < 17; i++) {
+			auxMatrix[i - 1] = stof(lineElements[i]);
+		}
+		localMatrix = Matrix4d(auxMatrix);
+	}
+	else if (lineElements[0].compare("texturePaths") == 0) {
+
+		texturePaths = "";
+		for(int i = 1; i < lineElements.size(); i++) {
+			texturePaths = texturePaths + lineElements[i] + " ";
+		}
+	}
+	else if (lineElements[0].compare("shaderProgramName") == 0) {
+		shaderProgramName = lineElements[1];
+	}
+	else if (line.compare("#endsceneNode") == 0) {
+		
+#pragma region createNode
+		ShaderProgram* shader = ShaderProgramManager::getInstance()->get(shaderProgramName);
+		vector<TextureInfo*> textures;
+
+		vector<string> texturesP = split(texturePaths);
+		if (texturesP[0].compare("NONE") != 0) {
+
+			for (int i = 0; i < texturesP.size(); i++) {
+
+				string textureString = texturesP[i];				
+				if (textureString == "") { continue; }
+
+				TextureInfo* textureInfo;
+				if (textureString.find('/') != string::npos) {//if its a path, we create it ourselves
+
+					map<string, TextureInfo*>::iterator it = loadedTextures.find(textureString);
+					if (it != loadedTextures.end()) {
+						textureInfo = it->second;
+					}
+					else {
+						Texture2D* texture = new Texture2D();
+						texture->load(textureString);
+						textureInfo = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_NOISE, texture);
+					}
+					textures.push_back(textureInfo);
+				
+				}
+				else {
+					map<string, TextureInfo*>::iterator it = loadedTextures.find(textureString);
+					if (it != loadedTextures.end()) {
+						textureInfo = it->second;
+					}
+					else {
+						textureInfo = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_NOISE, TextureManager::getInstance()->get(textureString));
+					}
+					textures.push_back(textureInfo);
+				}
+			}
+		}
+		//---------------Piece------------------
+		SceneNode* node = NULL;
+
+		if (nodeType == SceneNode::NodeType::NORMAL) { node = new SceneNode(); }
+		else if (nodeType == SceneNode::NodeType::OUTLINE) { node = new OutlineSceneNode(); }
+		else if (nodeType == SceneNode::NodeType::SLIDEPUZZLE) { node = new SlidePuzzleSceneNode(stencilIndex); }
+
+		if(parentIndex != -1){ node->setParent(sceneNodes[parentIndex]);}
+
+		if(meshPath != "NONE"){ 
+			Mesh* mesh;
+			map<string, Mesh*>::iterator it = loadedMeshes.find(meshPath);
+			if (it != loadedMeshes.end()){
+				mesh = it->second;
+			}
+			else { //create mesh if not created yet
+				mesh = new Mesh();
+				mesh->init(meshPath);
+				loadedMeshes.insert(pair<string,Mesh*>(meshPath,mesh));
+				MeshManager::getInstance()->add(meshPath, mesh);
+			}
+			node->setMesh(mesh);
+		}
+		
+		node->setMatrix(localMatrix);
+
+		node->setShaderProgram(shader);
+		for (int i = 0; i < textures.size(); i++) {
+			node->addTexture(textures.at(i));
+		}
+
+		if (hasSceneGraph) { node->setSceneGraph(sceneGraph); }
+
+		sceneNodes.insert(pair<int, SceneNode*>(nodeIndex, node));
+		return node;
+#pragma endregion
+
+	}
+
+	return NULL;
+}
+
+SceneGraph* createSceneGraph(string line) {
+
+	static string sceneGraphName;
+
+	vector<string> lineElements = split(line);
+
+	if (lineElements[0].compare("sceneGraphName") == 0) {
+		sceneGraphName = lineElements[1];
+	}
+	else if (line.compare("#endsceneGraph") == 0) {
+		SceneGraph* sceneGraph = new SceneGraph();
+		SceneGraphManager::getInstance()->add(sceneGraphName, sceneGraph);
+		return sceneGraph;
+	}
+
+	return NULL;
+}
+
+pair<string,ShaderProgram*> createShaderProgram(string line) {
+
+	static string shaderProgramName;
+	static string vertexShaderPath;
+	static string fragmentShaderPath;
+
+	vector<string> lineElements = split(line);
+
+	if (lineElements[0].compare("shaderProgramName") == 0) {
+		shaderProgramName = lineElements[1];
+	}
+	else if (lineElements[0].compare("vertexShaderPath") == 0) {
+		vertexShaderPath = lineElements[1];
+	}
+	else if (lineElements[0].compare("fragmentShaderPath") == 0) {
+		fragmentShaderPath = lineElements[1];
+	}
+	else if (line.compare("#endshaderProgram") == 0) {
+		ShaderProgram* shaderProgram = new ShaderProgram();
+		shaderProgram->init(vertexShaderPath.c_str(),fragmentShaderPath.c_str());
+		return pair<string,ShaderProgram*>(shaderProgramName, shaderProgram);
+	}
+
+	return pair<string, ShaderProgram*>("", NULL);
 }
 
 Camera* createCamera(string line) {
@@ -219,9 +424,25 @@ Camera* createCamera(string line) {
 		float y = stof(lineElements[2]);
 		float z = stof(lineElements[3]);
 		eulerAngles = Vector3d(x,y,z);
+	}else if (lineElements[0].compare("projectionType") == 0) {
+		projectionType = lineElements[1].compare("perspective") == 0 ? Camera::CameraType::PERSPECTIVE : Camera::CameraType::ORTHOGONAL;
 	}
-	if (line.compare("#endcamera") == 0) {
+	else if (lineElements[0].compare("rotationType") == 0) {
+		rotationType = lineElements[1].compare("euler") == 0 ? Camera::RotationMode::EULER : Camera::RotationMode::QUATERNION;
+	}
+	else if (lineElements[0].compare("translationVector") == 0) {
+		float x = stof(lineElements[1]);
+		float y = stof(lineElements[2]);
+		float z = stof(lineElements[3]);
+		translationVector = Vector3d(x, y, z);
+	}
+	else if (line.compare("#endcamera") == 0) {
 		Camera* camera = new Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
+		if (camera->currentType != projectionType) { camera->changeProjectionType(); }
+		if (camera->currentRotation != rotationType) { camera->changeRotationType(); }
+		camera->setEulerAngles(eulerAngles);
+		camera->translationVector = translationVector;
+		return camera;
 	}
 
 	return NULL;
@@ -235,19 +456,39 @@ void parseLine(string line) {
 	else if (line.compare("#sceneNode") == 0) { currentObjType = CurrentObjType::SceneNode; }
 
 	switch (currentObjType) {
-	case CurrentObjType::None:
+		case CurrentObjType::None:
+		{}
+		case CurrentObjType::Camera:
+		{
+			Camera* camera = createCamera(line);
+			if (camera != NULL) { sceneCamera = camera; currentObjType = CurrentObjType::None; }
+		}
 		break;
-	case CurrentObjType::Camera:
-		createCamera(line);
+		case CurrentObjType::ShaderProgram:
+		{
+			pair<string, ShaderProgram*> shaderProgram = createShaderProgram(line);
+			if (shaderProgram.second != NULL) { shaderPrograms.insert(shaderProgram); currentObjType = CurrentObjType::None; }
+		}
 		break;
-	case CurrentObjType::ShaderProgram:
+		case CurrentObjType::SceneGraph:
+		{
+			SceneGraph* scGrph = createSceneGraph(line);
+			if (scGrph != NULL) {
+				sceneGraph = scGrph;
+				sceneGraph->setCamera(sceneCamera);
+				currentObjType = CurrentObjType::None;
+			};
+			
+		}
 		break;
-	case CurrentObjType::SceneGraph:
-		break;
-	case CurrentObjType::SceneNode:
+		case CurrentObjType::SceneNode:
+		{
+			createSceneNode(line);
+		}
 		break;
 	}
 }
+
 
 SceneGraph* SceneFileHandler::loadScene() {
 	ifstream ifile("../Saves/savedScene.txt");
@@ -260,7 +501,10 @@ SceneGraph* SceneFileHandler::loadScene() {
 	{
 		parseLine(line);
 	}
-	return NULL;
+
+	sceneGraph->setRoot(sceneNodes[0]);
+
+	return sceneGraph;
 }
 
 

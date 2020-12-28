@@ -328,7 +328,7 @@ void createSceneGraph()
 
 	SceneGraph* slidingPuzzleScenegraph = new SceneGraph();
 	slidingPuzzleScenegraph->setCamera(camera);
-	SceneGraphManager::getInstance()->add(SLIDING_PUZZLE_SCENE_GRAPH, slidingPuzzleScenegraph);
+	//SceneGraphManager::getInstance()->add(SLIDING_PUZZLE_SCENE_GRAPH, slidingPuzzleScenegraph);
 
 	SceneNode* n = slidingPuzzleScenegraph->getRoot();
 	n->setShaderProgram(ShaderProgramManager::getInstance()->get(COLOR_SHADER));
@@ -544,6 +544,8 @@ GLFWwindow* setup(int major, int minor,
 	ShaderProgramManager::getInstance()->add(PIECES_SHADER, g_shaders);
 
 	createTextures();
+	SceneGraph* loadedScene = sceneFileHandler.loadScene();
+	SceneGraphManager::getInstance()->add(SLIDING_PUZZLE_SCENE_GRAPH, loadedScene);
 	createSceneGraph();
 
 	//Hardcoded: The third child of the sceneGraph's root node should be the piece's root node
@@ -554,8 +556,7 @@ GLFWwindow* setup(int major, int minor,
 
 	//Start filehandlers
 	sceneFileHandler = SceneFileHandler();
-	sceneFileHandler.saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
-	SceneGraph* loadedScene = sceneFileHandler.loadScene();
+	//sceneFileHandler.saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
 	return win;
 
 #ifdef ERROR_CALLBACK

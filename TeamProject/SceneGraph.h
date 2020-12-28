@@ -24,6 +24,7 @@ public:
 	void setCamera(Camera *camera);
 	Camera *getCamera();
 	SceneNode *getRoot();
+	void setRoot(SceneNode* root);
 	void init();
 	void draw();
 };
