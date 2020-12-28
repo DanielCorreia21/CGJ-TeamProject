@@ -385,10 +385,12 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 		camera->changeProjectionType();
 	}
 
-	if (key == GLFW_KEY_G && action == GLFW_PRESS)
+	if (key == GLFW_KEY_R && action == GLFW_PRESS)
 	{
 		camera->changeRotationType();
 	}
+
+
 
 }
 
@@ -553,7 +555,7 @@ GLFWwindow* setup(int major, int minor,
 	//Start filehandlers
 	sceneFileHandler = SceneFileHandler();
 	sceneFileHandler.saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
-
+	SceneGraph* loadedScene = sceneFileHandler.loadScene();
 	return win;
 
 #ifdef ERROR_CALLBACK

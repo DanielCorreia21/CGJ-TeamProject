@@ -138,21 +138,20 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 #pragma endregion
 
 #pragma region writeToFile
-	ofstream my_file;
-	my_file.open("../Saves/savedScene.txt", ios::out);
-	if (!my_file) {
+	ofstream ofile;
+	ofile.open("../Saves/savedScene.txt", ios::out);
+	if (!ofile) {
 		cout << "File not created!";
 	}
 	else {
 		for (int i = 0; i < outputBuffer.size(); i++) {
-			my_file << outputBuffer.at(i) + "\n";
+			ofile << outputBuffer.at(i) + "\n";
 		}
 		cout << "Scene saved successfully!";
-		my_file.close();
+		ofile.close();
 	}
 #pragma endregion
 }
-
 
 vector<SceneNode*> allNodes;
 vector<SceneNode*> SceneFileHandler::getAllNodes(SceneNode* node) {
@@ -166,13 +165,13 @@ vector<SceneNode*> SceneFileHandler::getAllNodes(SceneNode* node) {
 			getAllNodes(node->getChildren().at(i));
 		}
 	}
-	if(node->getParent() == NULL) return allNodes;
+	if (node->getParent() == NULL) return allNodes;
 
 	vector<SceneNode*> empty;
 	return empty;
 }
 
-int SceneFileHandler::getIndexFromNode(map<int,SceneNode*> nodeMap, SceneNode* node) {
+int SceneFileHandler::getIndexFromNode(map<int, SceneNode*> nodeMap, SceneNode* node) {
 	typename map<int, SceneNode*>::iterator it = nodeMap.begin();
 
 	while (it != nodeMap.end()) {
@@ -184,3 +183,85 @@ int SceneFileHandler::getIndexFromNode(map<int,SceneNode*> nodeMap, SceneNode* n
 	}
 	return -1;
 }
+
+
+enum class CurrentObjType {
+	None,
+	Camera,
+	ShaderProgram,
+	SceneGraph,
+	SceneNode
+};
+
+CurrentObjType currentObjType = CurrentObjType::None;
+
+
+
+
+vector<string> split(const string& s) {
+	vector<string> elems;
+	for (size_t p = 0, q = 0; p != s.npos; p = q)
+		elems.push_back(s.substr(p + (p != 0), (q = s.find(" ", p + 1)) - p - (p != 0)));
+	return elems;
+}
+
+Camera* createCamera(string line) {
+
+	static Vector3d eulerAngles;
+	static Camera::CameraType projectionType;
+	static Camera::RotationMode rotationType;
+	static Vector3d translationVector;
+
+	vector<string> lineElements = split(line);
+
+	if (lineElements[0].compare("angles") == 0) {
+		float x = stof(lineElements[1]);
+		float y = stof(lineElements[2]);
+		float z = stof(lineElements[3]);
+		eulerAngles = Vector3d(x,y,z);
+	}
+	if (line.compare("#endcamera") == 0) {
+		Camera* camera = new Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
+	}
+
+	return NULL;
+}
+
+void parseLine(string line) {
+
+	if (line.compare("#camera") == 0) { currentObjType = CurrentObjType::Camera; }
+	else if (line.compare("#shaderProgram") == 0) { currentObjType = CurrentObjType::ShaderProgram; }
+	else if (line.compare("#sceneGraph") == 0) { currentObjType = CurrentObjType::SceneGraph; }
+	else if (line.compare("#sceneNode") == 0) { currentObjType = CurrentObjType::SceneNode; }
+
+	switch (currentObjType) {
+	case CurrentObjType::None:
+		break;
+	case CurrentObjType::Camera:
+		createCamera(line);
+		break;
+	case CurrentObjType::ShaderProgram:
+		break;
+	case CurrentObjType::SceneGraph:
+		break;
+	case CurrentObjType::SceneNode:
+		break;
+	}
+}
+
+SceneGraph* SceneFileHandler::loadScene() {
+	ifstream ifile("../Saves/savedScene.txt");
+	string line;
+	if (!ifile) {
+		cout << "File not loaded!";
+		return NULL;
+	}
+	while (std::getline(ifile, line))
+	{
+		parseLine(line);
+	}
+	return NULL;
+}
+
+
+
