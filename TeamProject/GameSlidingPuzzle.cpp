@@ -31,7 +31,7 @@ GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 		}
 	}
 	this->pieces = *v;
-	scramblePieces();
+	//scramblePieces();
 }
 
 #pragma region keyboardExternalMethods
@@ -92,7 +92,7 @@ void GameSlidingPuzzle::handleMouseDrag(float xpos, float ypos, int pressed)
 	lastX = xpos;
 	lastY = ypos;
 
-	float moveAmount;
+	float moveAmount = 0.0f;
 
 	if (mouseMoveDir == MouseMoveDir::Right || mouseMoveDir == MouseMoveDir::Left) {
 		moveAmount = baseMovementValue * xoffset/2; //trial and error...

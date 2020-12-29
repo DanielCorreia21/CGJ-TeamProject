@@ -193,6 +193,10 @@ void Mesh::destroyMeshBufferObjects() {
 void Mesh::draw()
 {
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
+
+#ifndef ERROR_CALLBACK
+	ErrorHandler::checkOpenGLError("ERROR: Could not draw mesh.");
+#endif
 }
 
 void Mesh::init(std::string& filename)

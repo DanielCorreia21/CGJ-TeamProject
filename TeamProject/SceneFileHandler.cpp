@@ -156,7 +156,7 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 
 #pragma region writeToFile
 	ofstream ofile;
-	ofile.open("../Saves/savedScene.txt", ios::out);
+	ofile.open("../Saves/test.txt", ios::out);
 	if (!ofile) {
 		cout << "File not created!";
 	}
@@ -231,6 +231,10 @@ map<string, TextureInfo*> loadedTextures;
 const string TEXTURE_UNIFORM_NOISE = "NoiseTexture";
 const string TEXTURE_UNIFORM_COLOR = "Texture";
 
+Camera* SceneFileHandler::getCamera() {
+	return sceneCamera;
+}
+
 SceneNode* createSceneNode(string line) {
 
 	static int nodeIndex = -1;
@@ -290,6 +294,7 @@ SceneNode* createSceneNode(string line) {
 		vector<TextureInfo*> textures;
 
 		vector<string> texturesP = split(texturePaths);
+
 		if (texturesP[0].compare("NONE") != 0) {
 
 			for (int i = 0; i < texturesP.size(); i++) {
@@ -298,6 +303,7 @@ SceneNode* createSceneNode(string line) {
 				if (textureString == "") { continue; }
 
 				TextureInfo* textureInfo;
+				//TODO add to loadedTextures
 				if (textureString.find('/') != string::npos) {//if its a path, we create it ourselves
 
 					map<string, TextureInfo*>::iterator it = loadedTextures.find(textureString);
@@ -307,7 +313,7 @@ SceneNode* createSceneNode(string line) {
 					else {
 						Texture2D* texture = new Texture2D();
 						texture->load(textureString);
-						textureInfo = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_NOISE, texture);
+						textureInfo = new TextureInfo(GL_TEXTURE1, 1, TEXTURE_UNIFORM_COLOR, texture);
 					}
 					textures.push_back(textureInfo);
 				
@@ -350,7 +356,11 @@ SceneNode* createSceneNode(string line) {
 		
 		node->setMatrix(localMatrix);
 
-		node->setShaderProgram(shader);
+		if (shader != NULL) {
+
+			node->setShaderProgram(shader);
+		}
+
 		for (int i = 0; i < textures.size(); i++) {
 			node->addTexture(textures.at(i));
 		}
@@ -377,12 +387,15 @@ SceneGraph* createSceneGraph(string line) {
 	}
 	else if (line.compare("#endsceneGraph") == 0) {
 		SceneGraph* sceneGraph = new SceneGraph();
-		SceneGraphManager::getInstance()->add(sceneGraphName, sceneGraph);
 		return sceneGraph;
 	}
 
 	return NULL;
 }
+
+const string COLOR_UNIFORM = "Color";
+const string COLOR_SHADER = "color";
+const string PIECES_SHADER = "MarbleShader";
 
 pair<string,ShaderProgram*> createShaderProgram(string line) {
 
@@ -403,7 +416,20 @@ pair<string,ShaderProgram*> createShaderProgram(string line) {
 	}
 	else if (line.compare("#endshaderProgram") == 0) {
 		ShaderProgram* shaderProgram = new ShaderProgram();
-		shaderProgram->init(vertexShaderPath.c_str(),fragmentShaderPath.c_str());
+		if (vertexShaderPath == "../Resources/color_vs.glsl") {
+			shaderProgram->addUniform(COLOR_UNIFORM);
+			shaderProgram->init(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
+			ShaderProgramManager::getInstance()->add(COLOR_SHADER, shaderProgram);
+		}
+		else if(vertexShaderPath == "../Resources/marble_vs.glsl") {
+
+			shaderProgram->addUniform(COLOR_UNIFORM);
+			shaderProgram->addUniform(TEXTURE_UNIFORM_COLOR);
+			shaderProgram->addUniform(TEXTURE_UNIFORM_NOISE);
+			shaderProgram->init(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
+			ShaderProgramManager::getInstance()->add(PIECES_SHADER, shaderProgram);
+		}
+		//shaderProgram->init(vertexShaderPath.c_str(),fragmentShaderPath.c_str());
 		return pair<string,ShaderProgram*>(shaderProgramName, shaderProgram);
 	}
 
@@ -457,11 +483,15 @@ void parseLine(string line) {
 
 	switch (currentObjType) {
 		case CurrentObjType::None:
-		{}
+		break;
 		case CurrentObjType::Camera:
 		{
 			Camera* camera = createCamera(line);
-			if (camera != NULL) { sceneCamera = camera; currentObjType = CurrentObjType::None; }
+			if (camera != NULL) { 
+				sceneCamera = camera; 
+				currentObjType = CurrentObjType::None;
+
+			}
 		}
 		break;
 		case CurrentObjType::ShaderProgram:
@@ -476,6 +506,7 @@ void parseLine(string line) {
 			if (scGrph != NULL) {
 				sceneGraph = scGrph;
 				sceneGraph->setCamera(sceneCamera);
+				sceneGraph->init();
 				currentObjType = CurrentObjType::None;
 			};
 			

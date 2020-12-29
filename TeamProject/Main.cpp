@@ -86,7 +86,7 @@ void createTextures() {
 	texture_0->createPerlinNoise(128, 5, 5, 5, 2, 2, 8);
 	TextureManager::getInstance()->add("marble", (Texture*)texture_0);
 
-	Texture2D* texture_1 = new Texture2D();
+	/*Texture2D* texture_1 = new Texture2D();
 	texture_1->load("../numbers/1.png");
 	TextureManager::getInstance()->add("number_1", (Texture*)texture_1);
 
@@ -116,7 +116,7 @@ void createTextures() {
 
 	Texture2D* texture_8 = new Texture2D();
 	texture_8->load("../numbers/8.png");
-	TextureManager::getInstance()->add("number_8", (Texture*)texture_8);
+	TextureManager::getInstance()->add("number_8", (Texture*)texture_8);*/
 	
 	//Texture2D* backb = new Texture2D();
 	//backb->load("../numbers/backb.png");
@@ -529,24 +529,26 @@ GLFWwindow* setup(int major, int minor,
 
 	camera = new Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
 
-	ShaderProgram* shaders = new ShaderProgram();
-	shaders->addUniform(COLOR_UNIFORM);
-	shaders->init(colorVertexShaderPath, colorFragmentShaderPath);
-	ShaderProgramManager::getInstance()->add(COLOR_SHADER, shaders);
+	//ShaderProgram* shaders = new ShaderProgram();
+	//shaders->addUniform(COLOR_UNIFORM);
+	//shaders->init(colorVertexShaderPath, colorFragmentShaderPath);
+	//ShaderProgramManager::getInstance()->add(COLOR_SHADER, shaders);
 
 
-	ShaderProgram* g_shaders = new ShaderProgram();
-	g_shaders->addUniform(COLOR_UNIFORM);
-	g_shaders->addUniform(TEXTURE_UNIFORM_COLOR);
-	g_shaders->addUniform(TEXTURE_UNIFORM_NOISE);
+	//ShaderProgram* g_shaders = new ShaderProgram();
+	//g_shaders->addUniform(COLOR_UNIFORM);
+	//g_shaders->addUniform(TEXTURE_UNIFORM_COLOR);
+	//g_shaders->addUniform(TEXTURE_UNIFORM_NOISE);
 
-	g_shaders->init(textureVertexShaderPath, textureFragmentShaderPath);
-	ShaderProgramManager::getInstance()->add(PIECES_SHADER, g_shaders);
+	//g_shaders->init(textureVertexShaderPath, textureFragmentShaderPath);
+	//ShaderProgramManager::getInstance()->add(PIECES_SHADER, g_shaders);
 
 	createTextures();
+	sceneFileHandler = SceneFileHandler();
 	SceneGraph* loadedScene = sceneFileHandler.loadScene();
+	camera = sceneFileHandler.getCamera();
 	SceneGraphManager::getInstance()->add(SLIDING_PUZZLE_SCENE_GRAPH, loadedScene);
-	createSceneGraph();
+	//createSceneGraph();
 
 	//Hardcoded: The third child of the sceneGraph's root node should be the piece's root node
 	game = new GameSlidingPuzzle(
@@ -555,8 +557,7 @@ GLFWwindow* setup(int major, int minor,
 	game->setMouseMode(GameSlidingPuzzle::MouseMode::Drag);
 
 	//Start filehandlers
-	sceneFileHandler = SceneFileHandler();
-	//sceneFileHandler.saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
+	sceneFileHandler.saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
 	return win;
 
 #ifdef ERROR_CALLBACK

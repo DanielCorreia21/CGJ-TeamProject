@@ -139,13 +139,11 @@ void SceneNode::preDraw()
 		}
 	}
 
-	this->getShader()->bind();
-
 	this->mesh->bind();
 
 	//pre-draw function
 	if (this->preDrawFun != nullptr) {
-		this->preDrawFun();
+		//this->preDrawFun();
 	}
 }
 
