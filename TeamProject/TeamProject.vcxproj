@@ -187,6 +187,7 @@
     <ClInclude Include="Noise.h" />
     <ClInclude Include="OutlineSceneNode.h" />
     <ClInclude Include="Perlin.h" />
+    <ClInclude Include="PrewDrawFunctions.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="SceneFileHandler.h" />
     <ClInclude Include="SceneGraph.h" />

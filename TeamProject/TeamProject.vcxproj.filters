@@ -197,6 +197,9 @@
     <ClInclude Include="Mappable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PrewDrawFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\marble_fs.glsl">
