@@ -13,7 +13,7 @@
 */
 
 
-class Texture {
+class Texture : public Mappable{
 
 	protected:
 		GLuint id;

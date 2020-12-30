@@ -7,7 +7,7 @@ class SceneFileHandler
 public:
 	SceneFileHandler();
 	void saveScene(SceneGraph* scene);
-	SceneGraph* loadScene();//TODO with a name
+	void loadScene();//TODO with a name
 	Camera* getCamera();
 private:
 	int getIndexFromNode(map<int, SceneNode*> nodeMap, SceneNode* node);

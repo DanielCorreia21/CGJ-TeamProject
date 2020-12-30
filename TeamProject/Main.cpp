@@ -34,6 +34,7 @@
 #include "OutlineSceneNode.h"
 #include "SlidePuzzleSceneNode.h"
 #include "GameSlidingPuzzle.h"
+#include "Globals.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -46,19 +47,9 @@ const char colorFragmentShaderPath[] = "../Resources/color_fs.glsl";
 const char textureVertexShaderPath[] = "../Resources/marble_vs.glsl";
 const char textureFragmentShaderPath[] = "../Resources/marble_fs.glsl";
 
-const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
-
-const string COLOR_SHADER = "color";
-const string PIECES_SHADER = "MarbleShader";
-
 const string cubeMeshPath = "../objs/cube5.obj";
 const string discMeshPath = "../objs/disc.obj";
-const string CUBE_MESH = "cube";
-const string DISC_MESH = "disc";
 
-const string COLOR_UNIFORM = "Color";
-const string TEXTURE_UNIFORM_COLOR = "Texture";
-const string TEXTURE_UNIFORM_NOISE = "NoiseTexture";
 
 Camera* camera;
 SceneFileHandler sceneFileHandler;
@@ -86,7 +77,7 @@ void createTextures() {
 	texture_0->createPerlinNoise(128, 5, 5, 5, 2, 2, 8);
 	TextureManager::getInstance()->add("marble", (Texture*)texture_0);
 
-	/*Texture2D* texture_1 = new Texture2D();
+	Texture2D* texture_1 = new Texture2D();
 	texture_1->load("../numbers/1.png");
 	TextureManager::getInstance()->add("number_1", (Texture*)texture_1);
 
@@ -116,7 +107,7 @@ void createTextures() {
 
 	Texture2D* texture_8 = new Texture2D();
 	texture_8->load("../numbers/8.png");
-	TextureManager::getInstance()->add("number_8", (Texture*)texture_8);*/
+	TextureManager::getInstance()->add("number_8", (Texture*)texture_8);
 	
 	//Texture2D* backb = new Texture2D();
 	//backb->load("../numbers/backb.png");
@@ -328,7 +319,7 @@ void createSceneGraph()
 
 	SceneGraph* slidingPuzzleScenegraph = new SceneGraph();
 	slidingPuzzleScenegraph->setCamera(camera);
-	//SceneGraphManager::getInstance()->add(SLIDING_PUZZLE_SCENE_GRAPH, slidingPuzzleScenegraph);
+	SceneGraphManager::getInstance()->add(SLIDING_PUZZLE_SCENE_GRAPH, slidingPuzzleScenegraph);
 
 	SceneNode* n = slidingPuzzleScenegraph->getRoot();
 	n->setShaderProgram(ShaderProgramManager::getInstance()->get(COLOR_SHADER));
@@ -545,9 +536,9 @@ GLFWwindow* setup(int major, int minor,
 
 	createTextures();
 	sceneFileHandler = SceneFileHandler();
-	SceneGraph* loadedScene = sceneFileHandler.loadScene();
+	sceneFileHandler.loadScene();
 	camera = sceneFileHandler.getCamera();
-	SceneGraphManager::getInstance()->add(SLIDING_PUZZLE_SCENE_GRAPH, loadedScene);
+	//SceneGraphManager::getInstance()->add(SLIDING_PUZZLE_SCENE_GRAPH, loadedScene);
 	//createSceneGraph();
 
 	//Hardcoded: The third child of the sceneGraph's root node should be the piece's root node
@@ -564,6 +555,40 @@ GLFWwindow* setup(int major, int minor,
 	setupErrorCallback();
 #endif
 }
+
+#pragma region toUncommentToUseMainSceneGraph
+/*Texture2D* texture_1 = new Texture2D();
+texture_1->load("../numbers/1.png");
+TextureManager::getInstance()->add("number_1", (Texture*)texture_1);
+
+Texture2D* texture_2 = new Texture2D();
+texture_2->load("../numbers/2.png");
+TextureManager::getInstance()->add("number_2", (Texture*)texture_2);
+
+Texture2D* texture_3 = new Texture2D();
+texture_3->load("../numbers/3.png");
+TextureManager::getInstance()->add("number_3", (Texture*)texture_3);
+
+Texture2D* texture_4 = new Texture2D();
+texture_4->load("../numbers/4.png");
+TextureManager::getInstance()->add("number_4", (Texture*)texture_4);
+
+Texture2D* texture_5 = new Texture2D();
+texture_5->load("../numbers/5.png");
+TextureManager::getInstance()->add("number_5", (Texture*)texture_5);
+
+Texture2D* texture_6 = new Texture2D();
+texture_6->load("../numbers/6.png");
+TextureManager::getInstance()->add("number_6", (Texture*)texture_6);
+
+Texture2D* texture_7 = new Texture2D();
+texture_7->load("../numbers/7.png");
+TextureManager::getInstance()->add("number_7", (Texture*)texture_7);
+
+Texture2D* texture_8 = new Texture2D();
+texture_8->load("../numbers/8.png");
+TextureManager::getInstance()->add("number_8", (Texture*)texture_8);*/
+#pragma endregion
 
 ////////////////////////////////////////////////////////////////////////// RUN
 

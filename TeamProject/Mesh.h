@@ -18,7 +18,7 @@
 *	André Santos - 91000
 */
 
-class Mesh
+class Mesh : public Mappable
 {
 	public:
 

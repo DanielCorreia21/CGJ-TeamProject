@@ -143,7 +143,7 @@ void SceneNode::preDraw()
 
 	//pre-draw function
 	if (this->preDrawFun != nullptr) {
-		//this->preDrawFun();
+		this->preDrawFun();
 	}
 }
 

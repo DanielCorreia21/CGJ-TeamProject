@@ -21,7 +21,8 @@ void setBlackColor() {
 }
 
 void setDifferentColor() {
-	ShaderProgram::UniformInfo* uniInfo = ShaderProgramManager::getInstance()->get("color")->getUniform("Color");
+	ShaderProgram* sp = ShaderProgramManager::getInstance()->get("color");
+	ShaderProgram::UniformInfo* uniInfo = sp->getUniform("Color");
 	glUniform4f(uniInfo->index, 0, 0, 0, 1);
 }
 

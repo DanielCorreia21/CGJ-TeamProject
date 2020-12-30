@@ -15,7 +15,7 @@
 */
 using namespace std;
 
-class ShaderProgram
+class ShaderProgram : public Mappable
 {
 private:
 	GLuint VertexShaderId, FragmentShaderId, ProgramId;

@@ -44,13 +44,35 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		indexToShaderProgram.insert(pair<int, ShaderProgram*>(shaderProgramIndx, shader));
 		shaderProgramIndx++;*/
 
-		string shaderProgramName = "shaderProgramName " + ShaderProgramManager::getInstance()->get(shader);
+		string shaderProgramMapName = "shaderProgramMapName " + shader->getId();
+
+		string auxShaderUni = "";
+		map<string, ShaderProgram::UniformInfo>::iterator itUni = shader->uniforms.begin();
+		while (itUni != shader->uniforms.end()) {
+
+			auxShaderUni = auxShaderUni + itUni->first + " ";
+			itUni++;
+		}
+		if (auxShaderUni == "") { auxShaderUni = "NONE"; }
+		string shaderUniforms = "shaderUniforms " + auxShaderUni;
+
+		string auxShaderAtt = "";
+		map<string, ShaderProgram::AttributeInfo>::iterator itAtt = shader->attributes.begin();
+		while (itAtt != shader->attributes.end()) {
+
+			auxShaderAtt = auxShaderAtt + itAtt->first + " ";
+			itAtt++;
+		}
+		if (auxShaderAtt == "") { auxShaderAtt = "NONE"; }
+		string shaderAtributes = "shaderAtributes " + auxShaderAtt;
 
 		string vertexShaderPath = "vertexShaderPath " + shader->vertexPath;
 		string fragmentShaderPath = "fragmentShaderPath " + shader->fragmentPath;
 
 		outputBuffer.push_back("#shaderProgram");
-		outputBuffer.push_back(shaderProgramName);
+		outputBuffer.push_back(shaderProgramMapName);
+		outputBuffer.push_back(shaderUniforms);
+		outputBuffer.push_back(shaderAtributes);
 		outputBuffer.push_back(vertexShaderPath);
 		outputBuffer.push_back(fragmentShaderPath);
 		outputBuffer.push_back("#endshaderProgram\n");
@@ -60,10 +82,10 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 #pragma endregion
 
 #pragma region sceneGraph
-	string sceneGraphName = "sceneGraphName " + SceneGraphManager::getInstance()->get(scene);
+	string sceneGraphMapName = "sceneGraphMapName " + scene->getId();
 
 	outputBuffer.push_back("#sceneGraph");
-	outputBuffer.push_back(sceneGraphName);
+	outputBuffer.push_back(sceneGraphMapName);
 	outputBuffer.push_back("#endsceneGraph\n");
 #pragma endregion
 
@@ -103,9 +125,14 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		string hasSceneGraph = "hasSceneGraph " + auxHasSceneGraph;
 
 		string auxMeshPath = "";
-		if (node->getMesh() != NULL) { auxMeshPath = node->getMesh()->meshPath; }
-		else { auxMeshPath = "NONE"; }
+		string auxMeshMapName = "";
+		if (node->getMesh() != NULL) { 
+			auxMeshPath = node->getMesh()->meshPath; 
+			auxMeshMapName = node->getMesh()->getId();
+		}
+		else { auxMeshPath = "NONE"; auxMeshMapName = "NONE"; }
 		string meshPath = "meshPath " + auxMeshPath;
+		string meshMapName = "meshMapName " + auxMeshMapName;
 
 		string auxLocalMatrix = "";
 		float matrix[16]; node->getMatrix().toColumnMajorArray(matrix);
@@ -115,6 +142,8 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		string localMatrix = "localMatrix " + auxLocalMatrix;
 
 		string auxTexturePaths = "";
+		string auxTextureUniforms = "";
+		string auxTextureMapNames = "";
 		vector<TextureInfo*> textures = node->getTextures();
 		if (textures.size() > 0) { 
 			for (int i = 0; i < textures.size(); i++) {
@@ -126,10 +155,14 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 				else {
 					auxTexturePaths = auxTexturePaths + TextureManager::getInstance()->get(textures.at(i)->texture) + " ";
 				}
+				auxTextureUniforms = auxTextureUniforms + textureInfo->uniform + " ";
+				auxTextureMapNames = auxTextureMapNames + textureInfo->texture->getId() + " ";
 			}
 		}
-		else { auxTexturePaths = "NONE"; }
+		else { auxTexturePaths = "NONE"; auxTextureUniforms = "NONE"; auxTextureMapNames = "NONE"; }
 		string texturePaths = "texturePaths " + auxTexturePaths;
+		string textureUniforms = "textureUniforms " + auxTextureUniforms;
+		string textureMapNames = "textureMapNames " + auxTextureMapNames;
 
 		string auxShaderProgramName =
 			ShaderProgramManager::getInstance()->get(node->getLocalShaderProgram()) == "" ? "NONE" :
@@ -145,8 +178,11 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		outputBuffer.push_back(nodeType);
 		outputBuffer.push_back(hasSceneGraph);
 		outputBuffer.push_back(meshPath);
+		outputBuffer.push_back(meshMapName);
 		outputBuffer.push_back(localMatrix);
 		outputBuffer.push_back(texturePaths);
+		outputBuffer.push_back(textureUniforms);
+		outputBuffer.push_back(textureMapNames);
 		outputBuffer.push_back(shaderProgramName);
 		outputBuffer.push_back("#endsceneNode\n");
 	}
@@ -156,7 +192,7 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 
 #pragma region writeToFile
 	ofstream ofile;
-	ofile.open("../Saves/test.txt", ios::out);
+	ofile.open("../Saves/savedScene.txt", ios::out);
 	if (!ofile) {
 		cout << "File not created!";
 	}
@@ -222,14 +258,9 @@ vector<string> split(const string& s) {
 }
 
 Camera* sceneCamera = NULL;
-map<string, ShaderProgram*> shaderPrograms;
 SceneGraph* sceneGraph = NULL;
 map<int, SceneNode*> sceneNodes;
-map<string, Mesh*> loadedMeshes;
 map<string, TextureInfo*> loadedTextures;
-
-const string TEXTURE_UNIFORM_NOISE = "NoiseTexture";
-const string TEXTURE_UNIFORM_COLOR = "Texture";
 
 Camera* SceneFileHandler::getCamera() {
 	return sceneCamera;
@@ -237,16 +268,20 @@ Camera* SceneFileHandler::getCamera() {
 
 SceneNode* createSceneNode(string line) {
 
+	#pragma region nodeVars
 	static int nodeIndex = -1;
 	static int parentIndex = -1;
 	static int stencilIndex = 0;
 	static SceneNode::NodeType nodeType = SceneNode::NodeType::NORMAL;
 	static bool hasSceneGraph = false;
 	static string meshPath = "";
+	static string meshMapName = "";
 	static Matrix4d localMatrix = Matrix4d();
 	static string texturePaths = "";
+	static string textureUniforms = "";
+	static string textureMapNames = ""; //TODO
 	static string shaderProgramName = "";
-
+	#pragma endregion
 
 	vector<string> lineElements = split(line);
 
@@ -270,6 +305,9 @@ SceneNode* createSceneNode(string line) {
 	else if (lineElements[0].compare("meshPath") == 0) {
 		meshPath = lineElements[1];
 	}
+	else if (lineElements[0].compare("meshMapName") == 0) {
+		meshMapName = lineElements[1];
+	}
 	else if (lineElements[0].compare("localMatrix") == 0) {
 		float auxMatrix[16];
 		for (int i = 1; i < 17; i++) {
@@ -284,6 +322,20 @@ SceneNode* createSceneNode(string line) {
 			texturePaths = texturePaths + lineElements[i] + " ";
 		}
 	}
+	else if (lineElements[0].compare("textureUniforms") == 0) {
+
+		textureUniforms = "";
+		for(int i = 1; i < lineElements.size(); i++) {
+			textureUniforms = textureUniforms + lineElements[i] + " ";
+		}
+	}
+	else if (lineElements[0].compare("textureMapNames") == 0) {
+
+		textureMapNames = "";
+		for(int i = 1; i < lineElements.size(); i++) {
+			textureMapNames = textureMapNames + lineElements[i] + " ";
+		}
+	}
 	else if (lineElements[0].compare("shaderProgramName") == 0) {
 		shaderProgramName = lineElements[1];
 	}
@@ -294,6 +346,8 @@ SceneNode* createSceneNode(string line) {
 		vector<TextureInfo*> textures;
 
 		vector<string> texturesP = split(texturePaths);
+		vector<string> texturesUni = split(textureUniforms);
+		vector<string> texturesMapNames = split(textureMapNames);
 
 		if (texturesP[0].compare("NONE") != 0) {
 
@@ -303,34 +357,33 @@ SceneNode* createSceneNode(string line) {
 				if (textureString == "") { continue; }
 
 				TextureInfo* textureInfo;
-				//TODO add to loadedTextures
-				if (textureString.find('/') != string::npos) {//if its a path, we create it ourselves
+				map<string, TextureInfo*>::iterator it = loadedTextures.find(textureString);
+				if (it != loadedTextures.end()) { //We already have a textureInfo with this name
+					textureInfo = it->second;
+				}
+				else { // We don't have a textureInfo
+					if (textureString.find('/') != string::npos) {//if its a path, we create it ourselves
 
-					map<string, TextureInfo*>::iterator it = loadedTextures.find(textureString);
-					if (it != loadedTextures.end()) {
-						textureInfo = it->second;
+						Texture* texture = TextureManager::getInstance()->get(texturesMapNames[i]);
+						if (texture == NULL) {
+							//TODO 3D textures?
+							texture = new Texture2D();
+							((Texture2D*)texture)->load(textureString);
+							TextureManager::getInstance()->add(texturesMapNames[i], texture);
+						}
+						textureInfo = new TextureInfo(GL_TEXTURE1, 1, texturesUni[i], texture);
 					}
-					else {
-						Texture2D* texture = new Texture2D();
-						texture->load(textureString);
-						textureInfo = new TextureInfo(GL_TEXTURE1, 1, TEXTURE_UNIFORM_COLOR, texture);
+					else { 
+						//If we don't have a path, we assume the texture is a default asset from the application, and is therefore loaded
+						textureInfo = new TextureInfo(GL_TEXTURE0, 0, texturesUni[i],
+							TextureManager::getInstance()->get(texturesMapNames[i]));
 					}
-					textures.push_back(textureInfo);
-				
 				}
-				else {
-					map<string, TextureInfo*>::iterator it = loadedTextures.find(textureString);
-					if (it != loadedTextures.end()) {
-						textureInfo = it->second;
-					}
-					else {
-						textureInfo = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_NOISE, TextureManager::getInstance()->get(textureString));
-					}
-					textures.push_back(textureInfo);
-				}
+
+				textures.push_back(textureInfo);
 			}
 		}
-		//---------------Piece------------------
+		//---------------Node------------------
 		SceneNode* node = NULL;
 
 		if (nodeType == SceneNode::NodeType::NORMAL) { node = new SceneNode(); }
@@ -340,16 +393,11 @@ SceneNode* createSceneNode(string line) {
 		if(parentIndex != -1){ node->setParent(sceneNodes[parentIndex]);}
 
 		if(meshPath != "NONE"){ 
-			Mesh* mesh;
-			map<string, Mesh*>::iterator it = loadedMeshes.find(meshPath);
-			if (it != loadedMeshes.end()){
-				mesh = it->second;
-			}
-			else { //create mesh if not created yet
+			Mesh* mesh = MeshManager::getInstance()->get(meshMapName);
+			if (mesh == NULL){
 				mesh = new Mesh();
 				mesh->init(meshPath);
-				loadedMeshes.insert(pair<string,Mesh*>(meshPath,mesh));
-				MeshManager::getInstance()->add(meshPath, mesh);
+				MeshManager::getInstance()->add(meshMapName, mesh);
 			}
 			node->setMesh(mesh);
 		}
@@ -378,59 +426,78 @@ SceneNode* createSceneNode(string line) {
 
 SceneGraph* createSceneGraph(string line) {
 
-	static string sceneGraphName;
+	static string sceneGraphMapName;
 
 	vector<string> lineElements = split(line);
 
-	if (lineElements[0].compare("sceneGraphName") == 0) {
-		sceneGraphName = lineElements[1];
+	if (lineElements[0].compare("sceneGraphMapName") == 0) {
+		sceneGraphMapName = lineElements[1];
 	}
 	else if (line.compare("#endsceneGraph") == 0) {
 		SceneGraph* sceneGraph = new SceneGraph();
+		SceneGraphManager::getInstance()->add(sceneGraphMapName, sceneGraph);
 		return sceneGraph;
 	}
 
 	return NULL;
 }
 
-const string COLOR_UNIFORM = "Color";
-const string COLOR_SHADER = "color";
-const string PIECES_SHADER = "MarbleShader";
-
 pair<string,ShaderProgram*> createShaderProgram(string line) {
 
-	static string shaderProgramName;
+	static string shaderProgramMapName;
 	static string vertexShaderPath;
 	static string fragmentShaderPath;
+	static string shaderUniforms;
+	static string shaderAtributes;
 
 	vector<string> lineElements = split(line);
 
-	if (lineElements[0].compare("shaderProgramName") == 0) {
-		shaderProgramName = lineElements[1];
+	if (lineElements[0].compare("shaderProgramMapName") == 0) {
+		shaderProgramMapName = lineElements[1];
 	}
 	else if (lineElements[0].compare("vertexShaderPath") == 0) {
 		vertexShaderPath = lineElements[1];
+	}
+	else if (lineElements[0].compare("shaderUniforms") == 0) {
+		shaderUniforms = "";
+		for (int i = 1; i < lineElements.size(); i++) {
+			shaderUniforms = shaderUniforms + lineElements[i] + " ";
+		}
+	}
+	else if (lineElements[0].compare("shaderAtributes") == 0) {
+		shaderAtributes = "";
+		for (int i = 1; i < lineElements.size(); i++) {
+			shaderAtributes = shaderAtributes + lineElements[i] + " ";
+		}
 	}
 	else if (lineElements[0].compare("fragmentShaderPath") == 0) {
 		fragmentShaderPath = lineElements[1];
 	}
 	else if (line.compare("#endshaderProgram") == 0) {
 		ShaderProgram* shaderProgram = new ShaderProgram();
-		if (vertexShaderPath == "../Resources/color_vs.glsl") {
-			shaderProgram->addUniform(COLOR_UNIFORM);
-			shaderProgram->init(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
-			ShaderProgramManager::getInstance()->add(COLOR_SHADER, shaderProgram);
-		}
-		else if(vertexShaderPath == "../Resources/marble_vs.glsl") {
 
-			shaderProgram->addUniform(COLOR_UNIFORM);
-			shaderProgram->addUniform(TEXTURE_UNIFORM_COLOR);
-			shaderProgram->addUniform(TEXTURE_UNIFORM_NOISE);
-			shaderProgram->init(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
-			ShaderProgramManager::getInstance()->add(PIECES_SHADER, shaderProgram);
+		vector<string> shaderUnis = split(shaderUniforms);
+		if (shaderUnis[0].compare("NONE") != 0) {
+			for (int i = 0; i < shaderUnis.size(); i++) {
+				string uniformString = shaderUnis[i];
+				if (uniformString == "") { continue; }
+				shaderProgram->addUniform(uniformString);
+			}
 		}
-		//shaderProgram->init(vertexShaderPath.c_str(),fragmentShaderPath.c_str());
-		return pair<string,ShaderProgram*>(shaderProgramName, shaderProgram);
+
+		vector<string> shaderAtt = split(shaderAtributes);
+		if (shaderAtt[0].compare("NONE") != 0) {
+			for (int i = 0; i < shaderAtt.size(); i++) {
+				string atributeString = shaderAtt[i];
+				if (atributeString == "") { continue; }
+				//shaderProgram->addAttribute(atributeString);
+			}
+		}
+
+		shaderProgram->init(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
+		ShaderProgramManager::getInstance()->add(shaderProgramMapName, shaderProgram);
+
+		return pair<string,ShaderProgram*>(shaderProgramMapName, shaderProgram);
 	}
 
 	return pair<string, ShaderProgram*>("", NULL);
@@ -497,7 +564,7 @@ void parseLine(string line) {
 		case CurrentObjType::ShaderProgram:
 		{
 			pair<string, ShaderProgram*> shaderProgram = createShaderProgram(line);
-			if (shaderProgram.second != NULL) { shaderPrograms.insert(shaderProgram); currentObjType = CurrentObjType::None; }
+			if (shaderProgram.second != NULL) { currentObjType = CurrentObjType::None; }
 		}
 		break;
 		case CurrentObjType::SceneGraph:
@@ -521,12 +588,12 @@ void parseLine(string line) {
 }
 
 
-SceneGraph* SceneFileHandler::loadScene() {
+void SceneFileHandler::loadScene() {
 	ifstream ifile("../Saves/savedScene.txt");
 	string line;
 	if (!ifile) {
 		cout << "File not loaded!";
-		return NULL;
+		return;
 	}
 	while (std::getline(ifile, line))
 	{
@@ -534,8 +601,6 @@ SceneGraph* SceneFileHandler::loadScene() {
 	}
 
 	sceneGraph->setRoot(sceneNodes[0]);
-
-	return sceneGraph;
 }
 
 

@@ -12,7 +12,7 @@
 *	André Santos - 91000
 */
 
-class SceneGraph
+class SceneGraph : public Mappable
 {
 private:
 	SceneNode *root;

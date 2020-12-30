@@ -3,6 +3,8 @@
 #include <iostream>
 #include<vector>
 
+#include "Mappable.h"
+
 /*	AUTHORS
 *	Group: 4
 *	Bernardo Pinto - 98734
@@ -59,6 +61,7 @@ Manager<E>::~Manager() {
 template<class E>
 inline void Manager<E>::add(const std::string& id, E* value)
 {
+	value->setId(id);
 	this->map.insert(std::make_pair(id, value));
 }
 
