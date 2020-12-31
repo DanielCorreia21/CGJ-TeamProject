@@ -433,7 +433,6 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 	//O : Start a new slidePuzzle game, without creating a new scene
 	if (key == GLFW_KEY_O && action == GLFW_PRESS)
 	{
-		game->reload(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2));
 		game->scramblePieces();
 	}
 

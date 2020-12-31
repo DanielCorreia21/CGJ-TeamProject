@@ -23,7 +23,7 @@ void SlidePuzzleGameFileHandler::saveGame(GameSlidingPuzzle* game) {
 	vector<SlidePuzzleSceneNode*> pieces = game->pieces;
 	for (int i = 0; i < pieces.size(); i++) {
 		if (pieces.at(i) != NULL) {
-			auxPiecePositions = auxPiecePositions + to_string(pieces.at(i)->stencil_index) + " ";
+			auxPiecePositions = auxPiecePositions + to_string(pieces.at(i)->stencil_index-1) + " ";
 		}
 		else {
 			auxPiecePositions = auxPiecePositions + "-1" + " ";

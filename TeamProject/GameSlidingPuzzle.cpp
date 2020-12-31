@@ -433,7 +433,7 @@ void GameSlidingPuzzle::setPiecePositions(vector<int> newPositions) {
 
 		for (int i = 0; i < pieces.size(); i++) {
 			if (pieces.at(i) != NULL) {
-				if (pieces.at(i)->stencil_index == newPositions.at(j)) {
+				if (pieces.at(i)->stencil_index-1 == newPositions.at(j)) {
 					auxPieces.push_back(pieces.at(i));
 				}
 			}
