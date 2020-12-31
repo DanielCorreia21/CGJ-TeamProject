@@ -33,34 +33,6 @@ GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 	this->pieces = *v;
 }
 
-void GameSlidingPuzzle::reload(SceneNode* piecesRoot) {
-
-	vector<SlidePuzzleSceneNode*>* v = new vector<SlidePuzzleSceneNode*>();
-	vector<SceneNode*> auxPieces = piecesRoot->getChildren();
-
-	bool insertedEmptyPos = false;
-
-	for (int i = 0; i < auxPieces.size() + 1; i++) {
-		if (i == this->emptyPos) {
-			v->push_back(NULL);
-			insertedEmptyPos = true;
-		}
-		if (i < auxPieces.size()) {
-
-			v->push_back(((SlidePuzzleSceneNode*)auxPieces.at(i)));
-			if (!insertedEmptyPos) {
-
-				int stencilIndex = v->at(i)->stencil_index - 1;
-				stencilToGameIndex.insert(pair<int, int>(stencilIndex, i));
-			}
-			else {
-				int stencilIndex = v->at(i+1)->stencil_index - 1;
-				stencilToGameIndex.insert(pair<int, int>(stencilIndex, i+1));
-			}
-		}
-	}
-	this->pieces = *v;
-}
 
 #pragma region keyboardExternalMethods
 void GameSlidingPuzzle::handleKeyboardInput(int key, int action)
@@ -294,7 +266,95 @@ void GameSlidingPuzzle::setNewMouseMoveDir(int gamePieceIndex) {
 }
 #pragma endregion
 
-#pragma region helperMethods
+#pragma region publicHelperMethods
+void GameSlidingPuzzle::scramblePieces()
+{
+	int piecesSize = (int)pieces.size();
+	int totalSwaps = piecesSize * 3;
+
+	//Next time think about impossible puzzles first instead of spending 15mins like a retard.
+	//https://puzzling.stackexchange.com/questions/25563/do-i-have-an-unsolvable-15-puzzle
+	if (totalSwaps % 2 != 0) totalSwaps--;
+
+	int randomNumber1;
+	int randomNumber2;
+
+	for (int i = 0; i < totalSwaps; i++) {
+		randomNumber1 = getRandomIntDifferentFromTwo(this->emptyPos, -1, piecesSize);
+		randomNumber2 = getRandomIntDifferentFromTwo(this->emptyPos, randomNumber1, piecesSize);
+		
+		swapPieces(randomNumber1, randomNumber2);
+	}
+}
+
+void GameSlidingPuzzle::reload(SceneNode* piecesRoot) {
+
+	vector<SlidePuzzleSceneNode*>* v = new vector<SlidePuzzleSceneNode*>();
+	vector<SceneNode*> auxPieces = piecesRoot->getChildren();
+
+	bool insertedEmptyPos = false;
+
+	for (int i = 0; i < auxPieces.size() + 1; i++) {
+		if (i == this->emptyPos) {
+			v->push_back(NULL);
+			insertedEmptyPos = true;
+		}
+		if (i < auxPieces.size()) {
+
+			v->push_back(((SlidePuzzleSceneNode*)auxPieces.at(i)));
+			if (!insertedEmptyPos) {
+
+				int stencilIndex = v->at(i)->stencil_index - 1;
+				stencilToGameIndex.insert(pair<int, int>(stencilIndex, i));
+			}
+			else {
+				int stencilIndex = v->at((size_t)i+1)->stencil_index - 1;
+				stencilToGameIndex.insert(pair<int, int>(stencilIndex, i+1));
+			}
+		}
+	}
+	this->pieces = *v;
+}
+
+void GameSlidingPuzzle::setPiecePositions(vector<int> newPositions) {
+	vector<SlidePuzzleSceneNode*> auxPieces;
+
+	vector<int> auxStencil = vector<int>(newPositions);
+	for (int j = 0; j < auxStencil.size(); j++) {
+		if (auxStencil[j] == -1) auxStencil.erase(auxStencil.begin() + j);
+	}
+
+	for (int j = 0; j < newPositions.size();j++) {
+
+		//update game pieces positions
+		for (int i = 0; i < pieces.size(); i++) {
+			if (pieces.at(i) != NULL) {
+				if (pieces.at(i)->stencil_index-1 == newPositions.at(j)) {
+					auxPieces.push_back(pieces.at(i));
+				}
+			}
+			else if (newPositions.at(j) == -1) {
+				auxPieces.push_back(NULL);
+			}
+		}
+
+		//update stencil to game piece positions
+		/* Taking for example from the save file : piecePositions 3 2 4 0 7 1 5 6 -1 
+		 * This means that piece with stencilIndex 4 (stencilIndex - 1, 3 on the example above), 
+		 should be on position 0, of the game pieces
+		 Meaning, stencilToGameIndex[3] = 0
+		*/
+		if (j < auxStencil.size()) {
+			stencilToGameIndex[auxStencil[j]] = j;
+		}
+	}
+
+	this->pieces = auxPieces;
+
+}
+#pragma endregion
+
+#pragma region privateHelperMethods
 //Get DirectionPiece gets the piece in the direction FROM the empty position.
 //e.g: getRightPiece gets the piece on the right of the emptyPos
 SlidePuzzleSceneNode* GameSlidingPuzzle::getRightPiece()
@@ -356,26 +416,6 @@ void GameSlidingPuzzle::movePiece(Vector3d translation,SlidePuzzleSceneNode* pie
 	checkWinningState();
 }
 
-void GameSlidingPuzzle::scramblePieces()
-{
-	int piecesSize = (int)pieces.size();
-	int totalSwaps = piecesSize * 3;
-
-	//Next time think about impossible puzzles first instead of spending 15mins like a retard.
-	//https://puzzling.stackexchange.com/questions/25563/do-i-have-an-unsolvable-15-puzzle
-	if (totalSwaps % 2 != 0) totalSwaps--;
-
-	int randomNumber1;
-	int randomNumber2;
-
-	for (int i = 0; i < totalSwaps; i++) {
-		randomNumber1 = getRandomIntDifferentFromTwo(this->emptyPos, -1, piecesSize);
-		randomNumber2 = getRandomIntDifferentFromTwo(this->emptyPos, randomNumber1, piecesSize);
-		
-		swapPieces(randomNumber1, randomNumber2);
-	}
-}
-
 int GameSlidingPuzzle::getRandomIntDifferentFromTwo(int x,int y, int range) {
 	int randomNumber = rand() % range;
 	while (randomNumber == x || randomNumber == y) {
@@ -426,40 +466,4 @@ bool GameSlidingPuzzle::checkWinningState() {
 	return puzzleSolved;
 }
 
-void GameSlidingPuzzle::setPiecePositions(vector<int> newPositions) {
-	vector<SlidePuzzleSceneNode*> auxPieces;
-
-	vector<int> auxStencil = vector<int>(newPositions);
-	for (int j = 0; j < auxStencil.size(); j++) {
-		if (auxStencil[j] == -1) auxStencil.erase(auxStencil.begin() + j);
-	}
-
-	for (int j = 0; j < newPositions.size();j++) {
-
-		//update game pieces positions
-		for (int i = 0; i < pieces.size(); i++) {
-			if (pieces.at(i) != NULL) {
-				if (pieces.at(i)->stencil_index-1 == newPositions.at(j)) {
-					auxPieces.push_back(pieces.at(i));
-				}
-			}
-			else if (newPositions.at(j) == -1) {
-				auxPieces.push_back(NULL);
-			}
-		}
-
-		//update stencil to game piece positions
-		/* Taking for example from the save file : piecePositions 3 2 4 0 7 1 5 6 -1 
-		 * This means that piece with stencilIndex 4 (stencilIndex - 1, 3 on the example above), 
-		 should be on position 0, of the game pieces
-		 Meaning, stencilToGameIndex[3] = 0
-		*/
-		if (j < auxStencil.size()) {
-			stencilToGameIndex[auxStencil[j]] = j;
-		}
-	}
-
-	this->pieces = auxPieces;
-
-}
 #pragma endregion

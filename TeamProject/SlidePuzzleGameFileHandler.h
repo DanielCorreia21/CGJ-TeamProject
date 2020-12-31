@@ -13,6 +13,6 @@ private:
 	SlidePuzzleGameFileHandler();
 	void parseLine(string line);
 	vector<string> split(const string& s);
-	int emptyPos;
+	int emptyPos = -1;
 };
 
