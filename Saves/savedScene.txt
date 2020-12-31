@@ -38,6 +38,7 @@ texturePaths NONE
 textureUniforms NONE
 textureMapNames NONE
 shaderProgramName color
+preDrawFunName NONE
 #endsceneNode
 
 #sceneNode
@@ -53,6 +54,7 @@ texturePaths NONE
 textureUniforms NONE
 textureMapNames NONE
 shaderProgramName NONE
+preDrawFunName BlueColor
 #endsceneNode
 
 #sceneNode
@@ -68,6 +70,7 @@ texturePaths NONE
 textureUniforms NONE
 textureMapNames NONE
 shaderProgramName NONE
+preDrawFunName RedColor
 #endsceneNode
 
 #sceneNode
@@ -83,6 +86,7 @@ texturePaths NONE
 textureUniforms NONE
 textureMapNames NONE
 shaderProgramName NONE
+preDrawFunName RedColor
 #endsceneNode
 
 #sceneNode
@@ -98,6 +102,7 @@ texturePaths NONE
 textureUniforms NONE
 textureMapNames NONE
 shaderProgramName NONE
+preDrawFunName RedColor
 #endsceneNode
 
 #sceneNode
@@ -113,6 +118,7 @@ texturePaths NONE
 textureUniforms NONE
 textureMapNames NONE
 shaderProgramName NONE
+preDrawFunName RedColor
 #endsceneNode
 
 #sceneNode
@@ -128,6 +134,7 @@ texturePaths NONE
 textureUniforms NONE
 textureMapNames NONE
 shaderProgramName NONE
+preDrawFunName RedColor
 #endsceneNode
 
 #sceneNode
@@ -143,6 +150,7 @@ texturePaths NONE
 textureUniforms NONE
 textureMapNames NONE
 shaderProgramName NONE
+preDrawFunName NONE
 #endsceneNode
 
 #sceneNode
@@ -158,6 +166,7 @@ texturePaths marble ../numbers/1.png
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_1 
 shaderProgramName MarbleShader
+preDrawFunName NONE
 #endsceneNode
 
 #sceneNode
@@ -173,6 +182,7 @@ texturePaths marble ../numbers/2.png
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_2 
 shaderProgramName MarbleShader
+preDrawFunName NONE
 #endsceneNode
 
 #sceneNode
@@ -188,6 +198,7 @@ texturePaths marble ../numbers/3.png
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_3 
 shaderProgramName MarbleShader
+preDrawFunName NONE
 #endsceneNode
 
 #sceneNode
@@ -203,6 +214,7 @@ texturePaths marble ../numbers/4.png
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_4 
 shaderProgramName MarbleShader
+preDrawFunName NONE
 #endsceneNode
 
 #sceneNode
@@ -218,6 +230,7 @@ texturePaths marble ../numbers/5.png
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_5 
 shaderProgramName MarbleShader
+preDrawFunName NONE
 #endsceneNode
 
 #sceneNode
@@ -233,6 +246,7 @@ texturePaths marble ../numbers/6.png
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_6 
 shaderProgramName MarbleShader
+preDrawFunName NONE
 #endsceneNode
 
 #sceneNode
@@ -248,6 +262,7 @@ texturePaths marble ../numbers/7.png
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_7 
 shaderProgramName MarbleShader
+preDrawFunName NONE
 #endsceneNode
 
 #sceneNode
@@ -263,5 +278,6 @@ texturePaths marble ../numbers/8.png
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_8 
 shaderProgramName MarbleShader
+preDrawFunName NONE
 #endsceneNode
 

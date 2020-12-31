@@ -32,17 +32,17 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "SceneFileHandler.h"
+#include "PreDrawFunction.h"
 
 using namespace std;
 
-
-#pragma region Instances
+#pragma region AppInstances
 Camera* camera;
 SceneFileHandler sceneFileHandler;
 GameSlidingPuzzle* game;
 #pragma endregion
 
-///////////////////////////////////////////////////////////////////// PreDrawFunctions
+/////////////////////////////////////////////////////////////////////////////// PreDrawFunctions
 #pragma region PREDRAWFUNCTIONS
 void setRedColor() {
 	ShaderProgram::UniformInfo* uniInfo = ShaderProgramManager::getInstance()->get(COLOR_SHADER)->getUniform(COLOR_UNIFORM);
@@ -54,59 +54,65 @@ void setBlueColor() {
 	glUniform4f(uniInfo->index, 0, 0, 1, 0);
 }
 
-typedef void (*Colors);
-
-Colors colors[2] = { &setRedColor, &setBlueColor };
+typedef void (*PreDrawFunc)();
+pair<string,PreDrawFunc> preDrawFunc[2] = { 
+	make_pair("RedColor", &setRedColor), 
+	make_pair("BlueColor", &setBlueColor),
+};
 
 #pragma endregion
-
-///////////////////////////////////////////////////////////////////// SCENE
-#pragma region SCENE
-void createTextures() {
-
+/////////////////////////////////////////////////////////////////////////////// Load by default
+#pragma region LOADDEFAULT
+void loadDefaultTextures() {
+	//These are textures that I cannot recreate unless I start storing a lot of things, which doens't make sense.
+	//Therefore, these textures are loaded on startup
 	Texture3D* texture_0 = new Texture3D();
 	texture_0->createPerlinNoise(128, 5, 5, 5, 2, 2, 8);
 	TextureManager::getInstance()->add("marble", (Texture*)texture_0);
+}
+void loadDefaultPreDrawFunctions() {
+	int len = sizeof(preDrawFunc) / sizeof(preDrawFunc[0]);
+	for (int i = 0; i < len; i++) {
+		PreDrawFunction* pdf = new PreDrawFunction(preDrawFunc[i].second);
+		PreDrawFunctionManager::getInstance()->add(preDrawFunc[i].first, pdf);
+	}
+}
+#pragma endregion
+/////////////////////////////////////////////////////////////////////////////// Scene
+#pragma region SCENE
+void createTextures() {
 
-	//Texture2D* texture_1 = new Texture2D();
-	//texture_1->load("../numbers/1.png");
-	//TextureManager::getInstance()->add("number_1", (Texture*)texture_1);
+	Texture2D* texture_1 = new Texture2D();
+	texture_1->load("../numbers/1.png");
+	TextureManager::getInstance()->add("number_1", (Texture*)texture_1);
 
-	//Texture2D* texture_2 = new Texture2D();
-	//texture_2->load("../numbers/2.png");
-	//TextureManager::getInstance()->add("number_2", (Texture*)texture_2);
+	Texture2D* texture_2 = new Texture2D();
+	texture_2->load("../numbers/2.png");
+	TextureManager::getInstance()->add("number_2", (Texture*)texture_2);
 
-	//Texture2D* texture_3 = new Texture2D();
-	//texture_3->load("../numbers/3.png");
-	//TextureManager::getInstance()->add("number_3", (Texture*)texture_3);
+	Texture2D* texture_3 = new Texture2D();
+	texture_3->load("../numbers/3.png");
+	TextureManager::getInstance()->add("number_3", (Texture*)texture_3);
 
-	//Texture2D* texture_4 = new Texture2D();
-	//texture_4->load("../numbers/4.png");
-	//TextureManager::getInstance()->add("number_4", (Texture*)texture_4);
+	Texture2D* texture_4 = new Texture2D();
+	texture_4->load("../numbers/4.png");
+	TextureManager::getInstance()->add("number_4", (Texture*)texture_4);
 
-	//Texture2D* texture_5 = new Texture2D();
-	//texture_5->load("../numbers/5.png");
-	//TextureManager::getInstance()->add("number_5", (Texture*)texture_5);
+	Texture2D* texture_5 = new Texture2D();
+	texture_5->load("../numbers/5.png");
+	TextureManager::getInstance()->add("number_5", (Texture*)texture_5);
 
-	//Texture2D* texture_6 = new Texture2D();
-	//texture_6->load("../numbers/6.png");
-	//TextureManager::getInstance()->add("number_6", (Texture*)texture_6);
+	Texture2D* texture_6 = new Texture2D();
+	texture_6->load("../numbers/6.png");
+	TextureManager::getInstance()->add("number_6", (Texture*)texture_6);
 
-	//Texture2D* texture_7 = new Texture2D();
-	//texture_7->load("../numbers/7.png");
-	//TextureManager::getInstance()->add("number_7", (Texture*)texture_7);
+	Texture2D* texture_7 = new Texture2D();
+	texture_7->load("../numbers/7.png");
+	TextureManager::getInstance()->add("number_7", (Texture*)texture_7);
 
-	//Texture2D* texture_8 = new Texture2D();
-	//texture_8->load("../numbers/8.png");
-	//TextureManager::getInstance()->add("number_8", (Texture*)texture_8);
-	
-	//Texture2D* backb = new Texture2D();
-	//backb->load("../numbers/backb.png");
-	//TextureManager::getInstance()->add("backb", (Texture*)backb);
-
-	//Texture2D* fram = new Texture2D();
-	//fram->load("../numbers/fram.png");
-	//TextureManager::getInstance()->add("fram", (Texture*)fram);
+	Texture2D* texture_8 = new Texture2D();
+	texture_8->load("../numbers/8.png");
+	TextureManager::getInstance()->add("number_8", (Texture*)texture_8);
 
 }
 
@@ -118,7 +124,7 @@ void createEnvironmentSceneGraph()
 	#pragma region backboard
 	SceneNode* backboard = new SceneNode();
 	backboard->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
-	backboard->setPreDrawFun(setBlueColor);
+	backboard->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("BlueColor"));
 	backboard->setMesh(cubeMesh);
 	backboard->setMatrix(
 		MatrixFactory::scalingMatrix(Vector3d(11.0f,11.0f,1.0f))
@@ -131,14 +137,14 @@ void createEnvironmentSceneGraph()
 
 	SceneNode* frame = new SceneNode();
 	frame->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
-	frame->setPreDrawFun(setRedColor);
+	frame->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frame->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.8f))
 	);
 
 	SceneNode* frameUp = new SceneNode();
 	frameUp->setParent(frame);
-	frameUp->setPreDrawFun(setRedColor);
+	frameUp->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameUp->setMesh(cubeMesh);
 
 	//UP Frame
@@ -151,7 +157,7 @@ void createEnvironmentSceneGraph()
 	//Down
 	SceneNode* frameDown = new SceneNode();
 	frameDown->setParent(frame);
-	frameDown->setPreDrawFun(setRedColor);
+	frameDown->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameDown->setMesh(cubeMesh);
 	frameDown->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, -2.0f, 0.0f))
@@ -161,7 +167,7 @@ void createEnvironmentSceneGraph()
 	//Right
 	SceneNode* frameRight = new SceneNode();
 	frameRight->setParent(frame);
-	frameRight->setPreDrawFun(setRedColor);
+	frameRight->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameRight->setMesh(cubeMesh);
 	frameRight->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(2.0f, 0.0f, 0.0f))
@@ -172,7 +178,7 @@ void createEnvironmentSceneGraph()
 	//Left
 	SceneNode* frameLeft = new SceneNode();
 	frameLeft->setParent(frame);
-	frameLeft->setPreDrawFun(setRedColor);
+	frameLeft->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameLeft->setMesh(cubeMesh);
 	frameLeft->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-2.0f, 0.0f, 0.0f))
@@ -331,8 +337,7 @@ void drawScene()
 }
 
 #pragma endregion
-
-///////////////////////////////////////////////////////////////////// CALLBACKS
+/////////////////////////////////////////////////////////////////////////////// Callbacks
 #pragma region CALLBACKS
 void window_close_callback(GLFWwindow* win)
 {
@@ -413,8 +418,7 @@ void mouse_button_callback(GLFWwindow* win, int button, int action, int mods)
 }
 
 #pragma endregion
-
-///////////////////////////////////////////////////////////////////////// SETUP
+/////////////////////////////////////////////////////////////////////////////// Setup
 #pragma region SETUP
 GLFWwindow* setupWindow(int winx, int winy, const char* title,
 	int is_fullscreen, int is_vsync)
@@ -515,6 +519,7 @@ GLFWwindow* setup(int major, int minor,
 
 	camera = new Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
 
+	//Setup shaders
 	//ShaderProgram* shaders = new ShaderProgram();
 	//shaders->addUniform(COLOR_UNIFORM);
 	//shaders->init(colorVertexShaderPath, colorFragmentShaderPath);
@@ -529,21 +534,29 @@ GLFWwindow* setup(int major, int minor,
 	//g_shaders->init(textureVertexShaderPath, textureFragmentShaderPath);
 	//ShaderProgramManager::getInstance()->add(PIECES_SHADER, g_shaders);
 
-	createTextures();
-	sceneFileHandler = SceneFileHandler();
-	sceneFileHandler.loadScene();
-	camera = sceneFileHandler.getCamera();
-	//SceneGraphManager::getInstance()->add(SLIDING_PUZZLE_SCENE_GRAPH, loadedScene);
+	//First, load the default "assets" the app needs
+	loadDefaultTextures();
+	loadDefaultPreDrawFunctions();
+
+	//Create scene
+	//createTextures();
 	//createSceneGraph();
 
+	//Start filehandlers
+	sceneFileHandler = SceneFileHandler();
+	//Save and load the scene
+	sceneFileHandler.loadScene();
+	camera = sceneFileHandler.getCamera();
+
+	//Start the slide puzzle game
 	//Hardcoded: The third child of the sceneGraph's root node should be the piece's root node
 	game = new GameSlidingPuzzle(
 		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2)
 		,8);
 	game->setMouseMode(GameSlidingPuzzle::MouseMode::Drag);
 
-	//Start filehandlers
-	sceneFileHandler.saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
+	//Save scene
+	//sceneFileHandler.saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
 	return win;
 
 #ifdef ERROR_CALLBACK
@@ -552,42 +565,7 @@ GLFWwindow* setup(int major, int minor,
 }
 
 #pragma endregion
-
-#pragma region toUncommentToUseMainSceneGraph
-/*Texture2D* texture_1 = new Texture2D();
-texture_1->load("../numbers/1.png");
-TextureManager::getInstance()->add("number_1", (Texture*)texture_1);
-
-Texture2D* texture_2 = new Texture2D();
-texture_2->load("../numbers/2.png");
-TextureManager::getInstance()->add("number_2", (Texture*)texture_2);
-
-Texture2D* texture_3 = new Texture2D();
-texture_3->load("../numbers/3.png");
-TextureManager::getInstance()->add("number_3", (Texture*)texture_3);
-
-Texture2D* texture_4 = new Texture2D();
-texture_4->load("../numbers/4.png");
-TextureManager::getInstance()->add("number_4", (Texture*)texture_4);
-
-Texture2D* texture_5 = new Texture2D();
-texture_5->load("../numbers/5.png");
-TextureManager::getInstance()->add("number_5", (Texture*)texture_5);
-
-Texture2D* texture_6 = new Texture2D();
-texture_6->load("../numbers/6.png");
-TextureManager::getInstance()->add("number_6", (Texture*)texture_6);
-
-Texture2D* texture_7 = new Texture2D();
-texture_7->load("../numbers/7.png");
-TextureManager::getInstance()->add("number_7", (Texture*)texture_7);
-
-Texture2D* texture_8 = new Texture2D();
-texture_8->load("../numbers/8.png");
-TextureManager::getInstance()->add("number_8", (Texture*)texture_8);*/
-#pragma endregion
-
-////////////////////////////////////////////////////////////////////////// RUN
+/////////////////////////////////////////////////////////////////////////////// Run
 #pragma region RUN
 void display(GLFWwindow* win, double elapsed_sec)
 {
@@ -623,8 +601,7 @@ void run(GLFWwindow* win)
 }
 
 #pragma endregion
-////////////////////////////////////////////////////////////////////////// MAIN
-
+/////////////////////////////////////////////////////////////////////////////// Main
 int main(int argc, char* argv[])
 {
 	int gl_major = 4, gl_minor = 3;
@@ -637,5 +614,4 @@ int main(int argc, char* argv[])
 
 	exit(EXIT_SUCCESS);
 }
-
-/////////////////////////////////////////////////////////////////////////// END
+/////////////////////////////////////////////////////////////////////////////// End

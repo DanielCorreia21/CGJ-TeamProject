@@ -98,7 +98,7 @@ ShaderProgram* SceneNode::getLocalShaderProgram() {
 	return this->shader;
 }
 
-void SceneNode::setPreDrawFun(fptr f)
+void SceneNode::setPreDrawFun(PreDrawFunction* f)
 {
 	this->preDrawFun = f;
 }
@@ -142,8 +142,8 @@ void SceneNode::preDraw()
 	this->mesh->bind();
 
 	//pre-draw function
-	if (this->preDrawFun != nullptr) {
-		this->preDrawFun();
+	if (this->preDrawFun != NULL) {
+		this->preDrawFun->getFunction()();
 	}
 }
 

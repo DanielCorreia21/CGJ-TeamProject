@@ -162,6 +162,7 @@
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="SlidePuzzleSceneNode.cpp" />
+    <ClCompile Include="PreDrawFunction.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Texture3D.cpp" />
@@ -187,7 +188,7 @@
     <ClInclude Include="Noise.h" />
     <ClInclude Include="OutlineSceneNode.h" />
     <ClInclude Include="Perlin.h" />
-    <ClInclude Include="PrewDrawFunctions.h" />
+    <ClInclude Include="PreDrawFunction.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="SceneFileHandler.h" />
     <ClInclude Include="SceneGraph.h" />

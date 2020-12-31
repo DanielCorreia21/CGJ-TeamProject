@@ -108,6 +108,9 @@
     <ClCompile Include="SceneFileHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PreDrawFunction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderProgram.h">
@@ -197,7 +200,7 @@
     <ClInclude Include="Mappable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PrewDrawFunctions.h">
+    <ClInclude Include="PreDrawFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

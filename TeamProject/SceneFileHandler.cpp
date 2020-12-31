@@ -170,6 +170,8 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		string shaderProgramName = "shaderProgramName " + auxShaderProgramName;
 
 		//TODO pre and post drawFun
+		string preDrawFunName = "preDrawFunName " + (node->preDrawFun == NULL ? "NONE" : node->preDrawFun->getId());
+
 
 		outputBuffer.push_back("#sceneNode");
 		outputBuffer.push_back(nodeIndex);
@@ -184,6 +186,7 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		outputBuffer.push_back(textureUniforms);
 		outputBuffer.push_back(textureMapNames);
 		outputBuffer.push_back(shaderProgramName);
+		outputBuffer.push_back(preDrawFunName);
 		outputBuffer.push_back("#endsceneNode\n");
 	}
 
@@ -279,8 +282,9 @@ SceneNode* createSceneNode(string line) {
 	static Matrix4d localMatrix = Matrix4d();
 	static string texturePaths = "";
 	static string textureUniforms = "";
-	static string textureMapNames = ""; //TODO
+	static string textureMapNames = "";
 	static string shaderProgramName = "";
+	static string preDrawFunName = "";
 	#pragma endregion
 
 	vector<string> lineElements = split(line);
@@ -338,6 +342,9 @@ SceneNode* createSceneNode(string line) {
 	}
 	else if (lineElements[0].compare("shaderProgramName") == 0) {
 		shaderProgramName = lineElements[1];
+	}
+	else if (lineElements[0].compare("preDrawFunName") == 0) {
+		preDrawFunName = lineElements[1];
 	}
 	else if (line.compare("#endsceneNode") == 0) {
 		
@@ -414,6 +421,10 @@ SceneNode* createSceneNode(string line) {
 		}
 
 		if (hasSceneGraph) { node->setSceneGraph(sceneGraph); }
+
+		if (preDrawFunName.compare("NONE") != 0) {
+			node->setPreDrawFun(PreDrawFunctionManager::getInstance()->get(preDrawFunName));
+		}
 
 		sceneNodes.insert(pair<int, SceneNode*>(nodeIndex, node));
 		return node;

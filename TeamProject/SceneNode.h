@@ -4,6 +4,7 @@
 #include "ShaderProgram.h"
 #include <vector>
 #include "TextureInfo.h"
+#include "PreDrawFunction.h"
 
 /*	AUTHORS
 *	Group: 4
@@ -25,7 +26,6 @@ protected:
 	Matrix4d matrix;
 	std::vector<SceneNode*> children;
 	ShaderProgram *shader = nullptr;
-	fptr preDrawFun = nullptr;
 	std::vector<TextureInfo*> textures;
 	fptr postDrawFun = nullptr;
 
@@ -53,7 +53,8 @@ public:
 	void setMatrix(Matrix4d matrix);
 	void setShaderProgram(ShaderProgram* shader);
 	ShaderProgram* getLocalShaderProgram();
-	void setPreDrawFun(fptr f);
+	void setPreDrawFun(PreDrawFunction* f);
+	PreDrawFunction* preDrawFun = NULL;
 	void setTextures(std::vector<TextureInfo*> textures);
 	std::vector<SceneNode*> getChildren();
 	std::vector<TextureInfo*> getTextures();
