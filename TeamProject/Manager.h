@@ -62,7 +62,9 @@ template<class E>
 inline void Manager<E>::add(const std::string& id, E* value)
 {
 	value->setId(id);
-	this->map.insert(std::make_pair(id, value));
+	if ( !(this->map.insert(std::make_pair(id, value)).second) ) {
+		this->map[id] = value;
+	}
 }
 
 template<class E>

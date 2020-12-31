@@ -236,6 +236,17 @@ void GameSlidingPuzzle::setMouseMode(MouseMode mode) {
 	this->mouseMode = mode;
 }
 
+string GameSlidingPuzzle::changeMouseMode() {
+	if (this->mouseMode == MouseMode::Drag) {
+		this->mouseMode = MouseMode::Click;
+		return "Click";
+	}
+	else {
+		this->mouseMode = MouseMode::Drag;
+		return "Drag";
+	}
+}
+
 void GameSlidingPuzzle::setNewMouseMoveDir(int gamePieceIndex) {
 	if ((this->emptyPos % 3) - (gamePieceIndex % 3) == 1 && this->emptyPos - gamePieceIndex == 1) {
 		this->mouseMoveDir = MouseMoveDir::Right;

@@ -1,8 +1,8 @@
 #camera
-angles 0.000000 0.000000 0.000000
+angles 0.800000 -76.899979 0.000000
 projectionType perspective
 rotationType euler
-translationVector 0.000000 0.000000 -10.000000
+translationVector 0.000000 0.000000 -15.500021
 #endcamera
 
 #shaderProgram

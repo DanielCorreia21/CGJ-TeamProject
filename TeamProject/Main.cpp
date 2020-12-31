@@ -38,7 +38,7 @@ using namespace std;
 
 #pragma region AppInstances
 Camera* camera;
-SceneFileHandler sceneFileHandler;
+SceneFileHandler* sceneFileHandler;
 GameSlidingPuzzle* game;
 #pragma endregion
 
@@ -78,8 +78,24 @@ void loadDefaultPreDrawFunctions() {
 	}
 }
 #pragma endregion
-/////////////////////////////////////////////////////////////////////////////// Scene
+/////////////////////////////////////////////////////////////////////////////// Create new Scene
 #pragma region SCENE
+void createShaders() {
+	ShaderProgram* shaders = new ShaderProgram();
+	shaders->addUniform(COLOR_UNIFORM);
+	shaders->init(colorVertexShaderPath, colorFragmentShaderPath);
+	ShaderProgramManager::getInstance()->add(COLOR_SHADER, shaders);
+
+
+	ShaderProgram* g_shaders = new ShaderProgram();
+	g_shaders->addUniform(COLOR_UNIFORM);
+	g_shaders->addUniform(TEXTURE_UNIFORM_COLOR);
+	g_shaders->addUniform(TEXTURE_UNIFORM_NOISE);
+
+	g_shaders->init(textureVertexShaderPath, textureFragmentShaderPath);
+	ShaderProgramManager::getInstance()->add(PIECES_SHADER, g_shaders);
+}
+
 void createTextures() {
 
 	Texture2D* texture_1 = new Texture2D();
@@ -327,6 +343,19 @@ void createSceneGraph()
 	slidingPuzzleScenegraph->init();
 }
 
+void createNewSlidePuzzleGame(){
+	camera = new Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
+	createShaders();
+	createTextures();
+	createSceneGraph();
+	//Start the slide puzzle game
+	//Hardcoded: The third child of the sceneGraph's root node should be the piece's root node
+	game = new GameSlidingPuzzle(
+		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2)
+		, 8);
+	game->setMouseMode(GameSlidingPuzzle::MouseMode::Drag);
+}
+/////////////////////////////////////////////////////////////////////////////// Draw the SlidePuzzle scene
 void drawScene()
 {
 	SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->draw();
@@ -369,18 +398,47 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 		camera->updateCameraPos(key, action);
 	}
 
-	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	if (key == GLFW_KEY_E && action == GLFW_PRESS)
 	{
 		camera->changeProjectionType();
 	}
 
-	if (key == GLFW_KEY_R && action == GLFW_PRESS)
+	if (key == GLFW_KEY_Q && action == GLFW_PRESS)
 	{
 		camera->changeRotationType();
 	}
 
+	//P : Save the slidePuzzleScene and game
+	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+		cout << "Saving game...\n";
+		sceneFileHandler->saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
+	}
+	//L : Load the last saved slidePuzzleScene and game
+	if (key == GLFW_KEY_L && action == GLFW_PRESS)
+	{
+		cout << "Loading game...\n";
+		SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
+		camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
+	}
+	//O : Start a new slidePuzzle game, without creating a new scene
+	if (key == GLFW_KEY_O && action == GLFW_PRESS)
+	{
+		
+	}
 
+	//Z : Start a new slidePuzzle game, on a new scene
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+	{
+		createNewSlidePuzzleGame();
+	}
 
+	//M : Change mouse input for game
+	if (key == GLFW_KEY_M && action == GLFW_PRESS)
+	{
+		string mode = game->changeMouseMode();
+		cout << "Mouse mode change to : " + mode + "\n";
+	}
 }
 
 int right_mouse_pressed = 0;
@@ -517,46 +575,20 @@ GLFWwindow* setup(int major, int minor,
 	setupGLEW();
 	setupOpenGL(winx, winy);
 
-	camera = new Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
-
-	//Setup shaders
-	//ShaderProgram* shaders = new ShaderProgram();
-	//shaders->addUniform(COLOR_UNIFORM);
-	//shaders->init(colorVertexShaderPath, colorFragmentShaderPath);
-	//ShaderProgramManager::getInstance()->add(COLOR_SHADER, shaders);
-
-
-	//ShaderProgram* g_shaders = new ShaderProgram();
-	//g_shaders->addUniform(COLOR_UNIFORM);
-	//g_shaders->addUniform(TEXTURE_UNIFORM_COLOR);
-	//g_shaders->addUniform(TEXTURE_UNIFORM_NOISE);
-
-	//g_shaders->init(textureVertexShaderPath, textureFragmentShaderPath);
-	//ShaderProgramManager::getInstance()->add(PIECES_SHADER, g_shaders);
+	//Set filehandlers
+	sceneFileHandler = SceneFileHandler::getInstance();
 
 	//First, load the default "assets" the app needs
 	loadDefaultTextures();
 	loadDefaultPreDrawFunctions();
 
-	//Create scene
-	//createTextures();
-	//createSceneGraph();
+	// By default, we always start a new game, on a new scene
+	createNewSlidePuzzleGame(); 
+	//SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
+	//camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
 
-	//Start filehandlers
-	sceneFileHandler = SceneFileHandler();
-	//Save and load the scene
-	sceneFileHandler.loadScene();
-	camera = sceneFileHandler.getCamera();
 
-	//Start the slide puzzle game
-	//Hardcoded: The third child of the sceneGraph's root node should be the piece's root node
-	game = new GameSlidingPuzzle(
-		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2)
-		,8);
-	game->setMouseMode(GameSlidingPuzzle::MouseMode::Drag);
 
-	//Save scene
-	//sceneFileHandler.saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
 	return win;
 
 #ifdef ERROR_CALLBACK

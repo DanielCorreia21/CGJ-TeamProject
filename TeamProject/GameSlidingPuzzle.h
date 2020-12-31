@@ -11,6 +11,7 @@ public:
 	GameSlidingPuzzle(SceneNode* pieces, int emptyPos);
 	enum class MouseMode {Click,Drag};
 	void setMouseMode(MouseMode);
+	string changeMouseMode();
 	void handleKeyboardInput(int key, int action);
 	void handleMouseDrag(float xpos, float ypos, int action);
 	void handleMouseClick(float xpos, float ypos, int index);

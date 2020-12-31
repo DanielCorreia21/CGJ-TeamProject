@@ -3,9 +3,20 @@
 
 using namespace std;
 
+#pragma region Singleton
+SceneFileHandler* SceneFileHandler::instance = NULL;
+SceneFileHandler* SceneFileHandler::getInstance() {
+	if (!instance) {
+		instance = new SceneFileHandler();
+	}
+	return instance;
+}
+
 SceneFileHandler::SceneFileHandler() {}
+#pragma endregion
 
 //TODO handle multiple sceneGraphs
+vector<SceneNode*> allNodes;
 
 void SceneFileHandler::saveScene(SceneGraph* scene) {
 	vector<string> outputBuffer;
@@ -195,7 +206,7 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 
 #pragma region writeToFile
 	ofstream ofile;
-	ofile.open("../Saves/savedScene.txt", ios::out);
+	ofile.open("../Saves/" + scene->getId() + ".txt", ios::out);
 	if (!ofile) {
 		cout << "File not created!";
 	}
@@ -207,9 +218,12 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 		ofile.close();
 	}
 #pragma endregion
+
+#pragma region resetVariables
+	allNodes = vector<SceneNode*>();
+#pragma endregion
 }
 
-vector<SceneNode*> allNodes;
 vector<SceneNode*> SceneFileHandler::getAllNodes(SceneNode* node) {
 
 	if (node->getChildren().size() == 0) {
@@ -241,35 +255,30 @@ int SceneFileHandler::getIndexFromNode(map<int, SceneNode*> nodeMap, SceneNode* 
 }
 
 
-enum class CurrentObjType {
-	None,
-	Camera,
-	ShaderProgram,
-	SceneGraph,
-	SceneNode
-};
-
-CurrentObjType currentObjType = CurrentObjType::None;
-
-
-
-vector<string> split(const string& s) {
+vector<string> SceneFileHandler::split(const string& s) {
 	vector<string> elems;
 	for (size_t p = 0, q = 0; p != s.npos; p = q)
 		elems.push_back(s.substr(p + (p != 0), (q = s.find(" ", p + 1)) - p - (p != 0)));
 	return elems;
 }
 
-Camera* sceneCamera = NULL;
-SceneGraph* sceneGraph = NULL;
-map<int, SceneNode*> sceneNodes;
-map<string, TextureInfo*> loadedTextures;
+vector<Camera*> SceneFileHandler::getCamera(SceneGraph* scene) {
+	typename map<Camera*, SceneGraph*>::iterator it = sceneCameras.begin();
 
-Camera* SceneFileHandler::getCamera() {
-	return sceneCamera;
+	vector<Camera*> cameras;
+
+	while (it != sceneCameras.end()) {
+
+		if (it->second->getId() == scene->getId()) {
+			cameras.push_back(it->first);
+		}
+		it++;
+	}
+
+	return cameras;
 }
 
-SceneNode* createSceneNode(string line) {
+SceneNode* SceneFileHandler::createSceneNode(string line) {
 
 	#pragma region nodeVars
 	static int nodeIndex = -1;
@@ -435,9 +444,9 @@ SceneNode* createSceneNode(string line) {
 	return NULL;
 }
 
-SceneGraph* createSceneGraph(string line) {
+SceneGraph* SceneFileHandler::createSceneGraph(string line) {
 
-	static string sceneGraphMapName;
+	static string sceneGraphMapName = "";
 
 	vector<string> lineElements = split(line);
 
@@ -453,13 +462,13 @@ SceneGraph* createSceneGraph(string line) {
 	return NULL;
 }
 
-pair<string,ShaderProgram*> createShaderProgram(string line) {
+pair<string,ShaderProgram*> SceneFileHandler::createShaderProgram(string line) {
 
-	static string shaderProgramMapName;
-	static string vertexShaderPath;
-	static string fragmentShaderPath;
-	static string shaderUniforms;
-	static string shaderAtributes;
+	static string shaderProgramMapName = "";
+	static string vertexShaderPath = "";
+	static string fragmentShaderPath = "";
+	static string shaderUniforms = "";
+	static string shaderAtributes = "";
 
 	vector<string> lineElements = split(line);
 
@@ -514,12 +523,12 @@ pair<string,ShaderProgram*> createShaderProgram(string line) {
 	return pair<string, ShaderProgram*>("", NULL);
 }
 
-Camera* createCamera(string line) {
+Camera* SceneFileHandler::createCamera(string line) {
 
-	static Vector3d eulerAngles;
+	static Vector3d eulerAngles = Vector3d();
 	static Camera::CameraType projectionType;
 	static Camera::RotationMode rotationType;
-	static Vector3d translationVector;
+	static Vector3d translationVector = Vector3d();
 
 	vector<string> lineElements = split(line);
 
@@ -552,7 +561,7 @@ Camera* createCamera(string line) {
 	return NULL;
 }
 
-void parseLine(string line) {
+void SceneFileHandler::parseLine(string line) {
 
 	if (line.compare("#camera") == 0) { currentObjType = CurrentObjType::Camera; }
 	else if (line.compare("#shaderProgram") == 0) { currentObjType = CurrentObjType::ShaderProgram; }
@@ -584,6 +593,7 @@ void parseLine(string line) {
 			if (scGrph != NULL) {
 				sceneGraph = scGrph;
 				sceneGraph->setCamera(sceneCamera);
+				sceneCameras.insert(make_pair(sceneCamera, scGrph));
 				sceneGraph->init();
 				currentObjType = CurrentObjType::None;
 			};
@@ -599,12 +609,22 @@ void parseLine(string line) {
 }
 
 
-void SceneFileHandler::loadScene() {
-	ifstream ifile("../Saves/savedScene.txt");
+SceneGraph* SceneFileHandler::loadScene(string sceneId) {
+
+#pragma region resetVariables
+	currentObjType = CurrentObjType::None;
+	sceneCamera = NULL;
+	sceneGraph = NULL;
+	sceneNodes = map<int, SceneNode*>();
+	loadedTextures = map<string, TextureInfo*>();
+	sceneCameras = map<Camera*, SceneGraph*>();
+#pragma endregion
+
+	ifstream ifile("../Saves/" + sceneId + ".txt");
 	string line;
 	if (!ifile) {
 		cout << "File not loaded!";
-		return;
+		return NULL;
 	}
 	while (std::getline(ifile, line))
 	{
@@ -612,6 +632,8 @@ void SceneFileHandler::loadScene() {
 	}
 
 	sceneGraph->setRoot(sceneNodes[0]);
+	cout << "Scene loaded successfully!\n";
+	return SceneGraphManager::getInstance()->get(sceneId);
 }
 
 
