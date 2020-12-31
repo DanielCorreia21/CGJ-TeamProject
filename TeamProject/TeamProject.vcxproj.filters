@@ -111,6 +111,9 @@
     <ClCompile Include="PreDrawFunction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SlidePuzzleGameFileHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderProgram.h">
@@ -201,6 +204,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PreDrawFunction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SlidePuzzleGameFileHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -33,12 +33,14 @@
 #include <GLFW/glfw3.h>
 #include "SceneFileHandler.h"
 #include "PreDrawFunction.h"
+#include "SlidePuzzleGameFileHandler.h"
 
 using namespace std;
 
 #pragma region AppInstances
 Camera* camera;
 SceneFileHandler* sceneFileHandler;
+SlidePuzzleGameFileHandler* slidePuzzleGameFileHandler;
 GameSlidingPuzzle* game;
 #pragma endregion
 
@@ -353,6 +355,7 @@ void createNewSlidePuzzleGame(){
 	game = new GameSlidingPuzzle(
 		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2)
 		, 8);
+	game->scramblePieces();
 	game->setMouseMode(GameSlidingPuzzle::MouseMode::Drag);
 }
 /////////////////////////////////////////////////////////////////////////////// Draw the SlidePuzzle scene
@@ -413,6 +416,7 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 	{
 		cout << "Saving game...\n";
 		sceneFileHandler->saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
+		slidePuzzleGameFileHandler->saveGame(game);
 	}
 	//L : Load the last saved slidePuzzleScene and game
 	if (key == GLFW_KEY_L && action == GLFW_PRESS)
@@ -420,11 +424,17 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 		cout << "Loading game...\n";
 		SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
 		camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
+
+		slidePuzzleGameFileHandler->loadGame(game);
+		game->reload(scene->getRoot()->getChildren().at(2)); //Update/Reload references to nodes
+		game->setPiecePositions(slidePuzzleGameFileHandler->piecesPositions); //Update positions of nodes in game
+
 	}
 	//O : Start a new slidePuzzle game, without creating a new scene
 	if (key == GLFW_KEY_O && action == GLFW_PRESS)
 	{
-		
+		game->reload(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2));
+		game->scramblePieces();
 	}
 
 	//Z : Start a new slidePuzzle game, on a new scene
@@ -577,6 +587,7 @@ GLFWwindow* setup(int major, int minor,
 
 	//Set filehandlers
 	sceneFileHandler = SceneFileHandler::getInstance();
+	slidePuzzleGameFileHandler = SlidePuzzleGameFileHandler::getInstance();
 
 	//First, load the default "assets" the app needs
 	loadDefaultTextures();
@@ -584,10 +595,6 @@ GLFWwindow* setup(int major, int minor,
 
 	// By default, we always start a new game, on a new scene
 	createNewSlidePuzzleGame(); 
-	//SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
-	//camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
-
-
 
 	return win;
 

@@ -161,6 +161,7 @@
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="SlidePuzzleGameFileHandler.cpp" />
     <ClCompile Include="SlidePuzzleSceneNode.cpp" />
     <ClCompile Include="PreDrawFunction.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="SlidePuzzleGameFileHandler.h" />
     <ClInclude Include="SlidePuzzleSceneNode.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Texture2D.h" />

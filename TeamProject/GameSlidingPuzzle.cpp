@@ -31,7 +31,35 @@ GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 		}
 	}
 	this->pieces = *v;
-	//scramblePieces();
+}
+
+void GameSlidingPuzzle::reload(SceneNode* piecesRoot) {
+
+	vector<SlidePuzzleSceneNode*>* v = new vector<SlidePuzzleSceneNode*>();
+	vector<SceneNode*> auxPieces = piecesRoot->getChildren();
+
+	bool insertedEmptyPos = false;
+
+	for (int i = 0; i < auxPieces.size() + 1; i++) {
+		if (i == this->emptyPos) {
+			v->push_back(NULL);
+			insertedEmptyPos = true;
+		}
+		if (i < auxPieces.size()) {
+
+			v->push_back(((SlidePuzzleSceneNode*)auxPieces.at(i)));
+			if (!insertedEmptyPos) {
+
+				int stencilIndex = v->at(i)->stencil_index - 1;
+				stencilToGameIndex.insert(pair<int, int>(stencilIndex, i));
+			}
+			else {
+				int stencilIndex = v->at(i+1)->stencil_index - 1;
+				stencilToGameIndex.insert(pair<int, int>(stencilIndex, i+1));
+			}
+		}
+	}
+	this->pieces = *v;
 }
 
 #pragma region keyboardExternalMethods
@@ -396,5 +424,26 @@ bool GameSlidingPuzzle::checkWinningState() {
 	}
 
 	return puzzleSolved;
+}
+
+void GameSlidingPuzzle::setPiecePositions(vector<int> newPositions) {
+	vector<SlidePuzzleSceneNode*> auxPieces;
+
+	for (int j = 0; j < newPositions.size();j++) {
+
+		for (int i = 0; i < pieces.size(); i++) {
+			if (pieces.at(i) != NULL) {
+				if (pieces.at(i)->stencil_index == newPositions.at(j)) {
+					auxPieces.push_back(pieces.at(i));
+				}
+			}
+			else if (newPositions.at(j) == -1) {
+				auxPieces.push_back(NULL);
+			}
+		}
+	}
+
+	this->pieces = auxPieces;
+
 }
 #pragma endregion
