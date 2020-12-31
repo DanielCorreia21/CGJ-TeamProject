@@ -429,8 +429,14 @@ bool GameSlidingPuzzle::checkWinningState() {
 void GameSlidingPuzzle::setPiecePositions(vector<int> newPositions) {
 	vector<SlidePuzzleSceneNode*> auxPieces;
 
+	vector<int> auxStencil = vector<int>(newPositions);
+	for (int j = 0; j < auxStencil.size(); j++) {
+		if (auxStencil[j] == -1) auxStencil.erase(auxStencil.begin() + j);
+	}
+
 	for (int j = 0; j < newPositions.size();j++) {
 
+		//update game pieces positions
 		for (int i = 0; i < pieces.size(); i++) {
 			if (pieces.at(i) != NULL) {
 				if (pieces.at(i)->stencil_index-1 == newPositions.at(j)) {
@@ -440,6 +446,16 @@ void GameSlidingPuzzle::setPiecePositions(vector<int> newPositions) {
 			else if (newPositions.at(j) == -1) {
 				auxPieces.push_back(NULL);
 			}
+		}
+
+		//update stencil to game piece positions
+		/* Taking for example from the save file : piecePositions 3 2 4 0 7 1 5 6 -1 
+		 * This means that piece with stencilIndex 4 (stencilIndex - 1, 3 on the example above), 
+		 should be on position 0, of the game pieces
+		 Meaning, stencilToGameIndex[3] = 0
+		*/
+		if (j < auxStencil.size()) {
+			stencilToGameIndex[auxStencil[j]] = j;
 		}
 	}
 
