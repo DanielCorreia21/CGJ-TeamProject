@@ -340,21 +340,36 @@ void GameSlidingPuzzle::setPiecePositions(vector<int> newPositions) {
 	}
 
 	bool foundEmptyPos = false;
-	for (int j = 0; j < auxStencil.size(); j++) {
+	for (int j = 0; j < auxStencil.size()-1; j++) {
 		//update stencil to game piece positions
 		/* Taking for example from the save file : piecePositions 3 2 4 0 7 1 5 6 -1
 		 * This means that piece with stencilIndex 4 (stencilIndex - 1, 3 on the example above),
 		 should be on position 0, of the game pieces
 		 Meaning, stencilToGameIndex[3] = 0
 		 If the empty position is to the left of any piece, the pieces to its right should have its value+1
+		 Examples:
+		 piecePositions
+		-1 4 5 0 7 3 2 6 1
+		   0 1 2 3 4 5 6 7
+		stencil:
+		   0 1 2 3 4 5 6 7
+		 ( 2 7 5 4 0 1 6 3  ) + 1
+
+		piecePositions : Position 4 is the emppty position
+		4 7 5 0 -1 3 2 6 1
+		0 1 2 3    4 5 6 7
+
+		stencil:
+		   0 1 2 3 4 5 6 7
+		   3 8 6 5 0 2 7 1
 		*/
-		if (auxStencil.at(j) == -1) { foundEmptyPos = true; continue; }
+		if (!foundEmptyPos && auxStencil.at(j) == -1) { foundEmptyPos = true; }
 
 		if (!foundEmptyPos) {
-			stencilToGameIndex[auxStencil[j]] = j - 1;
+			stencilToGameIndex[auxStencil[j]] = j;
 		}
 		else if (foundEmptyPos) {
-			stencilToGameIndex[auxStencil[j]] = j;
+			stencilToGameIndex[auxStencil[j+1]] = j + 1;
 		}
 	}
 
