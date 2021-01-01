@@ -320,9 +320,9 @@ void GameSlidingPuzzle::setPiecePositions(vector<int> newPositions) {
 	vector<SlidePuzzleSceneNode*> auxPieces;
 
 	vector<int> auxStencil = vector<int>(newPositions);
-	for (int j = 0; j < auxStencil.size(); j++) {
-		if (auxStencil[j] == -1) auxStencil.erase(auxStencil.begin() + j);
-	}
+	//for (int j = 0; j < auxStencil.size(); j++) {
+	//	if (auxStencil[j] == -1) auxStencil.erase(auxStencil.begin() + j);
+	//}
 
 	for (int j = 0; j < newPositions.size();j++) {
 
@@ -337,19 +337,29 @@ void GameSlidingPuzzle::setPiecePositions(vector<int> newPositions) {
 				auxPieces.push_back(NULL);
 			}
 		}
+	}
 
+	bool foundEmptyPos = false;
+	for (int j = 0; j < auxStencil.size(); j++) {
 		//update stencil to game piece positions
-		/* Taking for example from the save file : piecePositions 3 2 4 0 7 1 5 6 -1 
-		 * This means that piece with stencilIndex 4 (stencilIndex - 1, 3 on the example above), 
+		/* Taking for example from the save file : piecePositions 3 2 4 0 7 1 5 6 -1
+		 * This means that piece with stencilIndex 4 (stencilIndex - 1, 3 on the example above),
 		 should be on position 0, of the game pieces
 		 Meaning, stencilToGameIndex[3] = 0
+		 If the empty position is to the left of any piece, the pieces to its right should have its value+1
 		*/
-		if (j < auxStencil.size()) {
+		if (auxStencil.at(j) == -1) { foundEmptyPos = true; continue; }
+
+		if (!foundEmptyPos) {
+			stencilToGameIndex[auxStencil[j]] = j - 1;
+		}
+		else if (foundEmptyPos) {
 			stencilToGameIndex[auxStencil[j]] = j;
 		}
 	}
 
 	this->pieces = auxPieces;
+
 
 }
 #pragma endregion

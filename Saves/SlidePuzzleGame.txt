@@ -1,2 +1,2 @@
-emptyPos 8
-piecePositions 3 2 4 0 7 1 5 6 -1 
+emptyPos 0
+piecePositions -1 4 5 0 7 3 2 6 1 
