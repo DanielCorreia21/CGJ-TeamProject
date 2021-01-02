@@ -14,5 +14,6 @@ private:
 	void parseLine(string line);
 	vector<string> split(const string& s);
 	int emptyPos = -1;
+	GameSlidingPuzzle::MouseMode mouseMode = GameSlidingPuzzle::MouseMode::Drag;
 };
 

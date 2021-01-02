@@ -31,8 +31,12 @@ void SlidePuzzleGameFileHandler::saveGame(GameSlidingPuzzle* game) {
 	}
 	string piecePositions = "piecePositions " + auxPiecePositions;
 
+	string auxMouseMode = game->mouseMode == GameSlidingPuzzle::MouseMode::Drag ? "drag" : "click";
+	string mouseMode = "mouseMode " + auxMouseMode;
+
 	outputBuffer.push_back(emptyPos);
 	outputBuffer.push_back(piecePositions);
+	outputBuffer.push_back(mouseMode);
 
 #pragma region writeToFile
 	ofstream ofile;
@@ -64,12 +68,19 @@ void SlidePuzzleGameFileHandler::parseLine(string line) {
 	if (lineElements[0].compare("emptyPos") == 0) {
 		this->emptyPos = stoi(lineElements[1]);
 	}
-	if (lineElements[0].compare("piecePositions") == 0) {
+	else if (lineElements[0].compare("piecePositions") == 0) {
 		for (int i = 1; i < lineElements.size(); i++) {
 			if (lineElements[i] == "") { continue; }
 			this->piecesPositions.push_back(stoi(lineElements[i]));
 		}
-		
+	} 
+	else if (lineElements[0].compare("mouseMode") == 0) {
+		if (lineElements[1].compare("drag") == 0) {
+			this->mouseMode = GameSlidingPuzzle::MouseMode::Drag;
+		}
+		else if (lineElements[1].compare("click") == 0) {
+			this->mouseMode = GameSlidingPuzzle::MouseMode::Click;
+		}
 	}
 }
 
@@ -89,5 +100,6 @@ void SlidePuzzleGameFileHandler::loadGame(GameSlidingPuzzle* game) {
 	}
 
 	game->emptyPos = this->emptyPos;
+	game->setMouseMode(this->mouseMode);
 	cout << "Game loaded successfully!\n";
 }

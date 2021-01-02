@@ -20,12 +20,12 @@ public:
 	void reload(SceneNode* pieces);
 	void setPiecePositions(vector<int> newPositions);
 	int emptyPos;
+	MouseMode mouseMode;
 	vector<SlidePuzzleSceneNode*> pieces;
 private:
 	#pragma region mouseVariables
 	map<int, int> stencilToGameIndex; //First is the stencilIndex, second is the game index
 	enum class MouseMoveDir {Up,Down,Left,Right,None};
-	MouseMode mouseMode;
 	MouseMoveDir mouseMoveDir;
 	Matrix4d savedMatrix;
 	SlidePuzzleSceneNode* selectedPiece;
