@@ -4,6 +4,7 @@
 #include "ShaderProgram.h"
 #include <vector>
 #include "TextureInfo.h"
+#include "PreDrawFunction.h"
 
 /*	AUTHORS
 *	Group: 4
@@ -25,7 +26,6 @@ protected:
 	Matrix4d matrix;
 	std::vector<SceneNode*> children;
 	ShaderProgram *shader = nullptr;
-	fptr preDrawFun = nullptr;
 	std::vector<TextureInfo*> textures;
 	fptr postDrawFun = nullptr;
 
@@ -36,18 +36,25 @@ protected:
 	virtual void duringDraw();
 	virtual void postDraw();
 public:
+	enum class NodeType{NORMAL,OUTLINE,SLIDEPUZZLE};
+	NodeType nodeType;
 	Matrix4d getModelMatrix();
 	Matrix4d getMatrix();
 	SceneNode(SceneNode* parent);
 	SceneNode();
 	void setParent(SceneNode* parent);
+	SceneNode* getParent();
 	//SceneNode *createNode();
 	//void addNode(SceneNode *node);
 	void setSceneGraph(SceneGraph *sceneGraph);
+	SceneGraph* getLocalSceneGraph();
 	void setMesh(Mesh* mesh);
+	Mesh* getMesh();
 	void setMatrix(Matrix4d matrix);
 	void setShaderProgram(ShaderProgram* shader);
-	void setPreDrawFun(fptr f);
+	ShaderProgram* getLocalShaderProgram();
+	void setPreDrawFun(PreDrawFunction* f);
+	PreDrawFunction* preDrawFun = NULL;
 	void setTextures(std::vector<TextureInfo*> textures);
 	std::vector<SceneNode*> getChildren();
 	std::vector<TextureInfo*> getTextures();

@@ -109,15 +109,15 @@ void Quaternion::toAngleAxis(float& theta, Vector4d& axis) {
 
 //Convert to Quaternion
 Quaternion Quaternion::fromEuler(Vector3d angles) {
-	float roll = angles.getX();
-	float pitch = angles.getY();
-	float yaw = angles.getZ();
-	double cy = cos(yaw * DEGREES_TO_RADIANS * 0.5);
-	double sy = sin(yaw * DEGREES_TO_RADIANS * 0.5);
-	double cp = cos(pitch * DEGREES_TO_RADIANS * 0.5);
-	double sp = sin(pitch * DEGREES_TO_RADIANS * 0.5);
-	double cr = cos(roll * DEGREES_TO_RADIANS * 0.5);
-	double sr = sin(roll * DEGREES_TO_RADIANS * 0.5);
+	float qroll = angles.getX();
+	float qpitch = angles.getY();
+	float qyaw = angles.getZ();
+	double cy = cos(qyaw * DEGREES_TO_RADIANS * 0.5);
+	double sy = sin(qyaw * DEGREES_TO_RADIANS * 0.5);
+	double cp = cos(qpitch * DEGREES_TO_RADIANS * 0.5);
+	double sp = sin(qpitch * DEGREES_TO_RADIANS * 0.5);
+	double cr = cos(qroll * DEGREES_TO_RADIANS * 0.5);
+	double sr = sin(qroll * DEGREES_TO_RADIANS * 0.5);
 
 	Quaternion q;
 	q.w = (float) (cr * cp * cy + sr * sp * sy);

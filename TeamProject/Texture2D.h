@@ -21,5 +21,4 @@ class Texture2D : public Texture
 		void load(const std::string& filename);
 		void loadMipMap(int levels, const std::string& prefix, const std::string& suffix);
 		void createPerlinNoise(const unsigned short side, const double scalex, const double scaley, const double alpha, const double beta, const int harmonics);
-
 };

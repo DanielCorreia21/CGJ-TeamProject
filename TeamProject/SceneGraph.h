@@ -12,7 +12,7 @@
 *	André Santos - 91000
 */
 
-class SceneGraph
+class SceneGraph : public Mappable
 {
 private:
 	SceneNode *root;
@@ -24,7 +24,8 @@ public:
 	void setCamera(Camera *camera);
 	Camera *getCamera();
 	SceneNode *getRoot();
-	void init(ShaderProgram* shaders);
+	void setRoot(SceneNode* root);
+	void init();
 	void draw();
 };
 

@@ -11,11 +11,7 @@
 *	André Santos - 91000
 */
 
-bool TexcoordsLoaded, NormalsLoaded;
 
-GLuint ProgramId;
-GLint ModelMatrix_UId, ViewMatrix_UId, ProjectionMatrix_UId;
-GLuint VboVertices, VboTexcoords, VboNormals;
 
 Mesh::Mesh() { }
 
@@ -26,23 +22,11 @@ Mesh::~Mesh()
 }
 
 ////////////////////////////////////////////////////////////////////////// MESH
-typedef struct {
-	GLfloat x, y, z;
-} Vertex;
 
-typedef struct {
-	GLfloat u, v;
-} Texcoord;
 
-typedef struct {
-	GLfloat nx, ny, nz;
-} Normal;
 
-std::vector <Vertex> Vertices, vertexData;
-std::vector <Texcoord> Texcoords, texcoordData;
-std::vector <Normal> Normals, normalData;
 
-std::vector <unsigned int> vertexIdx, texcoordIdx, normalIdx;
+
 #pragma region parse_stuff
 void Mesh::parseVertex(std::stringstream& sin)
 {
@@ -103,6 +87,7 @@ void Mesh::parseLine(std::stringstream& sin)
 
 void Mesh::loadMeshData(std::string& filename)
 {
+	this->meshPath = filename;
 	std::cout << "Filename: " + filename + "\n";
 	std::ifstream ifile(filename);
 	std::string line;
@@ -148,8 +133,6 @@ void Mesh::freeMeshData()
 
 ////////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
-GLuint VaoId, VboId;
-
 void Mesh::createMeshBufferObjects()
 {
 
@@ -158,7 +141,7 @@ void Mesh::createMeshBufferObjects()
 	{
 		glGenBuffers(1, &VboVertices);
 		glBindBuffer(GL_ARRAY_BUFFER, VboVertices);
-		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(Vertex), &Vertices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(Vertex), &Vertices[0], GL_STATIC_DRAW); //error
 		glEnableVertexAttribArray(VERTICES);
 		glVertexAttribPointer(VERTICES, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
@@ -210,6 +193,10 @@ void Mesh::destroyMeshBufferObjects() {
 void Mesh::draw()
 {
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
+
+#ifndef ERROR_CALLBACK
+	ErrorHandler::checkOpenGLError("ERROR: Could not draw mesh.");
+#endif
 }
 
 void Mesh::init(std::string& filename)

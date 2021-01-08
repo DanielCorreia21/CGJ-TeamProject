@@ -16,10 +16,13 @@ GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 
 	vector<SlidePuzzleSceneNode*>* v = new vector<SlidePuzzleSceneNode*>();
 	vector<SceneNode*> auxPieces = piecesRoot->getChildren();
-	this->winningOrder = new int[auxPieces.size()];
+	this->winningOrder = vector<int>(auxPieces.size()+1);
 
 	for (int i = 0; i < auxPieces.size() + 1; i++) {
-		if (i == this->emptyPos) { v->push_back(NULL); }
+		if (i == this->emptyPos) { 
+			v->push_back(NULL);
+			this->winningOrder[i] = -1;
+		}
 		else {
 			v->push_back(((SlidePuzzleSceneNode*) auxPieces.at(i)));
 			int stencilIndex = v->at(i)->stencil_index-1;
@@ -28,8 +31,8 @@ GameSlidingPuzzle::GameSlidingPuzzle(SceneNode* piecesRoot, int pos)
 		}
 	}
 	this->pieces = *v;
-	scramblePieces();
 }
+
 
 #pragma region keyboardExternalMethods
 void GameSlidingPuzzle::handleKeyboardInput(int key, int action)
@@ -89,7 +92,7 @@ void GameSlidingPuzzle::handleMouseDrag(float xpos, float ypos, int pressed)
 	lastX = xpos;
 	lastY = ypos;
 
-	float moveAmount;
+	float moveAmount = 0.0f;
 
 	if (mouseMoveDir == MouseMoveDir::Right || mouseMoveDir == MouseMoveDir::Left) {
 		moveAmount = baseMovementValue * xoffset/2; //trial and error...
@@ -233,6 +236,17 @@ void GameSlidingPuzzle::setMouseMode(MouseMode mode) {
 	this->mouseMode = mode;
 }
 
+string GameSlidingPuzzle::changeMouseMode() {
+	if (this->mouseMode == MouseMode::Drag) {
+		this->mouseMode = MouseMode::Click;
+		return "Click";
+	}
+	else {
+		this->mouseMode = MouseMode::Drag;
+		return "Drag";
+	}
+}
+
 void GameSlidingPuzzle::setNewMouseMoveDir(int gamePieceIndex) {
 	if ((this->emptyPos % 3) - (gamePieceIndex % 3) == 1 && this->emptyPos - gamePieceIndex == 1) {
 		this->mouseMoveDir = MouseMoveDir::Right;
@@ -252,7 +266,120 @@ void GameSlidingPuzzle::setNewMouseMoveDir(int gamePieceIndex) {
 }
 #pragma endregion
 
-#pragma region helperMethods
+#pragma region publicHelperMethods
+void GameSlidingPuzzle::scramblePieces()
+{
+	int piecesSize = (int)pieces.size();
+	int totalSwaps = piecesSize * 3;
+
+	//Next time think about impossible puzzles first instead of spending 15mins like a retard.
+	//https://puzzling.stackexchange.com/questions/25563/do-i-have-an-unsolvable-15-puzzle
+	if (totalSwaps % 2 != 0) totalSwaps--;
+
+	int randomNumber1;
+	int randomNumber2;
+
+	for (int i = 0; i < totalSwaps; i++) {
+		randomNumber1 = getRandomIntDifferentFromTwo(this->emptyPos, -1, piecesSize);
+		randomNumber2 = getRandomIntDifferentFromTwo(this->emptyPos, randomNumber1, piecesSize);
+		
+		swapPieces(randomNumber1, randomNumber2);
+	}
+}
+
+void GameSlidingPuzzle::reload(SceneNode* piecesRoot) {
+
+	vector<SlidePuzzleSceneNode*>* v = new vector<SlidePuzzleSceneNode*>();
+	vector<SceneNode*> auxPieces = piecesRoot->getChildren();
+
+	bool insertedEmptyPos = false;
+
+	for (int i = 0; i < auxPieces.size() + 1; i++) {
+		if (i == this->emptyPos) {
+			v->push_back(NULL);
+			insertedEmptyPos = true;
+		}
+		if (i < auxPieces.size()) {
+
+			v->push_back(((SlidePuzzleSceneNode*)auxPieces.at(i)));
+			if (!insertedEmptyPos) {
+
+				int stencilIndex = v->at(i)->stencil_index - 1;
+				stencilToGameIndex.insert(pair<int, int>(stencilIndex, i));
+			}
+			else {
+				int stencilIndex = v->at((size_t)i+1)->stencil_index - 1;
+				stencilToGameIndex.insert(pair<int, int>(stencilIndex, i+1));
+			}
+		}
+	}
+	this->pieces = *v;
+}
+
+void GameSlidingPuzzle::setPiecePositions(vector<int> newPositions) {
+	vector<SlidePuzzleSceneNode*> auxPieces;
+
+	vector<int> auxStencil = vector<int>(newPositions);
+	//for (int j = 0; j < auxStencil.size(); j++) {
+	//	if (auxStencil[j] == -1) auxStencil.erase(auxStencil.begin() + j);
+	//}
+
+	for (int j = 0; j < newPositions.size();j++) {
+
+		//update game pieces positions
+		for (int i = 0; i < pieces.size(); i++) {
+			if (pieces.at(i) != NULL) {
+				if (pieces.at(i)->stencil_index-1 == newPositions.at(j)) {
+					auxPieces.push_back(pieces.at(i));
+				}
+			}
+			else if (newPositions.at(j) == -1) {
+				auxPieces.push_back(NULL);
+			}
+		}
+	}
+
+	bool foundEmptyPos = false;
+	for (int j = 0; j < auxStencil.size()-1; j++) {
+		//update stencil to game piece positions
+		/* Taking for example from the save file : piecePositions 3 2 4 0 7 1 5 6 -1
+		 * This means that piece with stencilIndex 4 (stencilIndex - 1, 3 on the example above),
+		 should be on position 0, of the game pieces
+		 Meaning, stencilToGameIndex[3] = 0
+		 If the empty position is to the left of any piece, the pieces to its right should have its value+1
+		 Examples:
+		 piecePositions
+		-1 4 5 0 7 3 2 6 1
+		   0 1 2 3 4 5 6 7
+		stencil:
+		   0 1 2 3 4 5 6 7
+		 ( 2 7 5 4 0 1 6 3  ) + 1
+
+		piecePositions : Position 4 is the emppty position
+		4 7 5 0 -1 3 2 6 1
+		0 1 2 3    4 5 6 7
+
+		stencil:
+		   0 1 2 3 4 5 6 7
+		   3 8 6 5 0 2 7 1
+		*/
+		if (!foundEmptyPos && auxStencil.at(j) == -1) { foundEmptyPos = true; }
+
+		if (!foundEmptyPos) {
+			stencilToGameIndex[auxStencil[j]] = j;
+		}
+		else if (foundEmptyPos) {
+			stencilToGameIndex[auxStencil[j+1]] = j + 1;
+		}
+	}
+
+	this->pieces = auxPieces;
+
+
+}
+#pragma endregion
+
+#pragma region privateHelperMethods
 //Get DirectionPiece gets the piece in the direction FROM the empty position.
 //e.g: getRightPiece gets the piece on the right of the emptyPos
 SlidePuzzleSceneNode* GameSlidingPuzzle::getRightPiece()
@@ -314,26 +441,6 @@ void GameSlidingPuzzle::movePiece(Vector3d translation,SlidePuzzleSceneNode* pie
 	checkWinningState();
 }
 
-void GameSlidingPuzzle::scramblePieces()
-{
-	int piecesSize = (int)pieces.size();
-	int totalSwaps = piecesSize * 3;
-
-	//Next time think about impossible puzzles first instead of spending 15mins like a retard.
-	//https://puzzling.stackexchange.com/questions/25563/do-i-have-an-unsolvable-15-puzzle
-	if (totalSwaps % 2 != 0) totalSwaps--;
-
-	int randomNumber1;
-	int randomNumber2;
-
-	for (int i = 0; i < totalSwaps; i++) {
-		randomNumber1 = getRandomIntDifferentFromTwo(this->emptyPos, -1, piecesSize);
-		randomNumber2 = getRandomIntDifferentFromTwo(this->emptyPos, randomNumber1, piecesSize);
-		
-		swapPieces(randomNumber1, randomNumber2);
-	}
-}
-
 int GameSlidingPuzzle::getRandomIntDifferentFromTwo(int x,int y, int range) {
 	int randomNumber = rand() % range;
 	while (randomNumber == x || randomNumber == y) {
@@ -367,8 +474,10 @@ void GameSlidingPuzzle::swapPieces(int randomNumber1, int randomNumber2) {
 bool GameSlidingPuzzle::checkWinningState() {
 	bool puzzleSolved = true;
 	for (int i = 0; i < this->pieces.size(); i++) {
-		if (i == this->emptyPos) { continue; }
-		if (this->winningOrder[i] != this->pieces.at(i)->stencil_index) {
+		if (i == this->emptyPos) { 
+			if (this->winningOrder.at(i) != -1) { puzzleSolved = false; }
+		}
+		else if (this->winningOrder.at(i) != this->pieces.at(i)->stencil_index-1) {
 			puzzleSolved = false;
 		}
 	}
@@ -381,4 +490,5 @@ bool GameSlidingPuzzle::checkWinningState() {
 
 	return puzzleSolved;
 }
+
 #pragma endregion

@@ -1,6 +1,9 @@
 #pragma once
 #include <map>
 #include <iostream>
+#include<vector>
+
+#include "Mappable.h"
 
 /*	AUTHORS
 *	Group: 4
@@ -9,6 +12,7 @@
 *	Antoine Pontallier - 98316
 *	André Santos - 91000
 */
+using namespace std;
 
 template<class E>
 class Manager
@@ -22,6 +26,8 @@ public:
 	virtual ~Manager();
 	void add(const std::string& id, E* value);
 	E* get(const std::string& id);
+	std::string get(E* value);
+	vector<E*> getAllValues();
 	void remove(const std::string& id);
 	void clear();
 };
@@ -55,7 +61,10 @@ Manager<E>::~Manager() {
 template<class E>
 inline void Manager<E>::add(const std::string& id, E* value)
 {
-	this->map.insert(std::make_pair(id, value));
+	value->setId(id);
+	if ( !(this->map.insert(std::make_pair(id, value)).second) ) {
+		this->map[id] = value;
+	}
 }
 
 template<class E>
@@ -67,6 +76,37 @@ inline E* Manager<E>::get(const std::string& id)
 	}
 	return NULL;
 }
+
+template<class E>
+inline std::string Manager<E>::get(E* value) {
+	typename std::map<std::string, E*>::iterator it = this->map.begin();
+
+	while ( it != map.end()) {
+
+		if (it -> second == value) {
+			return it->first;
+		}
+		it++;
+	}
+	return "";
+}
+
+template<class E>
+inline vector<E*> Manager<E>::getAllValues()
+{
+	typename std::map<std::string, E*>::iterator it = this->map.begin();
+
+	typename std::vector<E*> values;
+
+	while (it != map.end()) {
+
+		values.push_back(it->second);
+		it++;
+	}
+	return values;
+}
+
+
 
 template<class E>
 inline void Manager<E>::remove(const std::string& id)

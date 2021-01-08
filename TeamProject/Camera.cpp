@@ -9,16 +9,9 @@
 *	Antoine Pontallier - 98316
 *	André Santos - 91000
 */
-
-
-
-float yaw, pitch, roll;
-
-bool keys[4];
-
 const double PI = 3.141592;
 
-Matrix4d getOrthoProj(double left, double right, double bottom, double top, double near, double far) {
+Matrix4d Camera::getOrthoProj(double left, double right, double bottom, double top, double near, double far) {
 	float result_array[4][4];
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
@@ -36,7 +29,7 @@ Matrix4d getOrthoProj(double left, double right, double bottom, double top, doub
 	return Matrix4d(result_array);
 }
 
-Matrix4d getPerspectiveProj(float fov, float aspect, float near, float far) {
+Matrix4d Camera::getPerspectiveProj(float fov, float aspect, float near, float far) {
 
 	float theta = fov / 2;
 	float d = (float) (1 / (tan(theta * PI / 180)));
@@ -64,7 +57,7 @@ Camera::Camera(Vector3d initialPos, Vector3d cameraOrientation, Vector3d up)
 	this->VboId[0] = 0;
 
 	orthoMatrix = getOrthoProj(-2, 2, -2, 2, 1, 100);
-	persectiveMatrix = getPerspectiveProj(30, 640 / 640, 1, 100);
+	perspectiveMatrix = getPerspectiveProj(30, 640 / 640, 1, 100);
 }
 
 Matrix4d Camera::getViewMatrix()
@@ -85,7 +78,7 @@ Matrix4d Camera::getProjectionMatrix()
 		return orthoMatrix;
 	}
 	else {
-		return persectiveMatrix;
+		return perspectiveMatrix;
 	}
 }
 
@@ -95,7 +88,6 @@ void Camera::applyRotation(float angleAroundX, float angleAroundY, float angleAr
 	pitch += angleAroundZ;
 	roll += angleAroundX;
 }
-
 
 Matrix4d Camera::getRotationMatrix()
 {
@@ -158,7 +150,7 @@ void Camera::updateCameraPos(int key, int action)
 	}
 }
 
-void Camera::initBuffer(ShaderProgram* shaders)
+void Camera::initBuffer()
 {
 	glGenBuffers(1, VboId);
 
@@ -266,4 +258,15 @@ void Camera::changeRotationType()
 		std::cout << "CHANGE TO EULER\n";
 		currentRotation = RotationMode::EULER;
 	}
+}
+
+Vector3d Camera::getEulerAngles() {
+	return Vector3d(roll,yaw,pitch);
+}
+
+void Camera::setEulerAngles(Vector3d angles)
+{
+	this->roll = angles.getX();
+	this->yaw = angles.getY();
+	this->pitch = angles.getZ();
 }

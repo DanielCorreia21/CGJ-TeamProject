@@ -36,9 +36,13 @@ SceneNode* SceneGraph::getRoot()
 	return this->root;
 }
 
-void SceneGraph::init(ShaderProgram* shaders)
+void SceneGraph::setRoot(SceneNode* root) {
+	this->root = root;
+}
+
+void SceneGraph::init()
 {
-	this->camera->initBuffer(shaders);
+	this->camera->initBuffer();
 }
 
 void SceneGraph::destroy()

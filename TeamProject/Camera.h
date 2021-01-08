@@ -27,29 +27,37 @@ public:
 		EULER,
 		QUATERNION
 	};
+	CameraType currentType;
+	RotationMode currentRotation;
+	Vector3d translationVector;
 
 	Camera(Vector3d eye, Vector3d front, Vector3d up);
+	Matrix4d getOrthoProj(double left, double right, double bottom, double top, double near, double far);
+	Matrix4d getPerspectiveProj(float fov, float aspect, float near, float far);
 	Matrix4d getViewMatrix();
 	Matrix4d getProjectionMatrix();
 	void applyRotation(float angleAroundX, float angleAroundY, float angleAroundZ);
 	void updateCameraPos(int key, int action);
-	void initBuffer(ShaderProgram* shaders);
+	void initBuffer();
 	void destroyBuffer();
 	void draw();
 	void look(float xpos, float ypos, bool pressed);
 	void changeProjectionType();
 	void changeRotationType();
 	void updateCamera();
+	Vector3d getEulerAngles();
+	void setEulerAngles(Vector3d angles);
 private:
+	float yaw = 0;
+	float pitch = 0;
+	float roll = 0;
+	bool keys[4] = { false,false,false,false };
 	bool was_pressed = false;
 	bool firstMouse = true;
 	float lastX = 0;
 	float lastY = 0;
 	Vector3d up, cameraOrientation;
-	Vector3d translationVector;
-	CameraType currentType;
-	RotationMode currentRotation;
-	Matrix4d orthoMatrix, persectiveMatrix;
+	Matrix4d orthoMatrix, perspectiveMatrix;
 	GLuint VboId[1];
 	float CAMERA_SPEED = 0.05f;
 	Matrix4d getRotationMatrix();

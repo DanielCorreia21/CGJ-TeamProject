@@ -18,7 +18,7 @@
 *	André Santos - 91000
 */
 
-class Mesh
+class Mesh : public Mappable
 {
 	public:
 
@@ -28,8 +28,29 @@ class Mesh
 		void bind();
 		void unbind();
 		void draw();
+		std::string meshPath;
 
 	private:
+		bool TexcoordsLoaded, NormalsLoaded;
+		typedef struct {
+			GLfloat x, y, z;
+		} Vertex;
+
+		typedef struct {
+			GLfloat u, v;
+		} Texcoord;
+
+		typedef struct {
+			GLfloat nx, ny, nz;
+		} Normal;
+		GLuint ProgramId;
+		GLint ModelMatrix_UId, ViewMatrix_UId, ProjectionMatrix_UId;
+		GLuint VboVertices, VboTexcoords, VboNormals;
+		std::vector <Vertex> Vertices, vertexData;
+		std::vector <Texcoord> Texcoords, texcoordData;
+		std::vector <Normal> Normals, normalData;
+		std::vector <unsigned int> vertexIdx, texcoordIdx, normalIdx;
+		GLuint VaoId, VboId;
 		void createMeshBufferObjects();
 		void destroyMeshBufferObjects();
 

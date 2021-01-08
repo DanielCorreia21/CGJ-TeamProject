@@ -1,17 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////
-//
-// Drawing two instances of a triangle in Clip Space.
-// A "Hello 2D World" of Modern OpenGL.
-//
-// (c)2013-20 by Carlos Martinho
-//
-// MODIFIED BY
+// AUTHORS
 // Group: 4
 // Bernardo Pinto - 98734
 // Daniel Correia - 98745
 // Antoine Pontallier - 98316
 // André Santos - 91000
-//
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -34,36 +27,25 @@
 #include "OutlineSceneNode.h"
 #include "SlidePuzzleSceneNode.h"
 #include "GameSlidingPuzzle.h"
+#include "Globals.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "SceneFileHandler.h"
+#include "PreDrawFunction.h"
+#include "SlidePuzzleGameFileHandler.h"
 
 using namespace std;
 
-const char colorVertexShaderPath[] = "../Resources/color_vs.glsl";
-const char colorFragmentShaderPath[] = "../Resources/color_fs.glsl";
-const char textureVertexShaderPath[] = "../Resources/marble_vs.glsl";
-const char textureFragmentShaderPath[] = "../Resources/marble_fs.glsl";
-
-const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
-
-const string COLOR_SHADER = "color";
-const string PIECES_SHADER = "Marble Shader";
-
-const string cubeMeshPath = "../objs/cube5.obj";
-const string CUBE_MESH = "cube";
-
-const string COLOR_UNIFORM = "Color";
-const string TEXTURE_UNIFORM_COLOR = "Texture";
-const string TEXTURE_UNIFORM_NOISE = "NoiseTexture";
-
+#pragma region AppInstances
 Camera* camera;
+SceneFileHandler* sceneFileHandler;
+SlidePuzzleGameFileHandler* slidePuzzleGameFileHandler;
 GameSlidingPuzzle* game;
+#pragma endregion
 
-///////////////////////////////////////////////////////////////////// GAME?
-
-///////////////////////////////////////////////////////////////////// PreDrawFunctions
-
+/////////////////////////////////////////////////////////////////////////////// PreDrawFunctions
+#pragma region PREDRAWFUNCTIONS
 void setRedColor() {
 	ShaderProgram::UniformInfo* uniInfo = ShaderProgramManager::getInstance()->get(COLOR_SHADER)->getUniform(COLOR_UNIFORM);
 	glUniform4f(uniInfo->index, 1, 0, 0, 0);
@@ -74,13 +56,49 @@ void setBlueColor() {
 	glUniform4f(uniInfo->index, 0, 0, 1, 0);
 }
 
-///////////////////////////////////////////////////////////////////// SCENE
+typedef void (*PreDrawFunc)();
+pair<string,PreDrawFunc> preDrawFunc[2] = { 
+	make_pair("RedColor", &setRedColor), 
+	make_pair("BlueColor", &setBlueColor),
+};
 
-void createTextures() {
-
+#pragma endregion
+/////////////////////////////////////////////////////////////////////////////// Load by default
+#pragma region LOADDEFAULT
+void loadDefaultTextures() {
+	//These are textures that I cannot recreate unless I start storing a lot of things, which doens't make sense.
+	//Therefore, these textures are loaded on startup
 	Texture3D* texture_0 = new Texture3D();
 	texture_0->createPerlinNoise(128, 5, 5, 5, 2, 2, 8);
 	TextureManager::getInstance()->add("marble", (Texture*)texture_0);
+}
+void loadDefaultPreDrawFunctions() {
+	int len = sizeof(preDrawFunc) / sizeof(preDrawFunc[0]);
+	for (int i = 0; i < len; i++) {
+		PreDrawFunction* pdf = new PreDrawFunction(preDrawFunc[i].second);
+		PreDrawFunctionManager::getInstance()->add(preDrawFunc[i].first, pdf);
+	}
+}
+#pragma endregion
+/////////////////////////////////////////////////////////////////////////////// Create new Scene
+#pragma region SCENE
+void createShaders() {
+	ShaderProgram* shaders = new ShaderProgram();
+	shaders->addUniform(COLOR_UNIFORM);
+	shaders->init(colorVertexShaderPath, colorFragmentShaderPath);
+	ShaderProgramManager::getInstance()->add(COLOR_SHADER, shaders);
+
+
+	ShaderProgram* g_shaders = new ShaderProgram();
+	g_shaders->addUniform(COLOR_UNIFORM);
+	g_shaders->addUniform(TEXTURE_UNIFORM_COLOR);
+	g_shaders->addUniform(TEXTURE_UNIFORM_NOISE);
+
+	g_shaders->init(textureVertexShaderPath, textureFragmentShaderPath);
+	ShaderProgramManager::getInstance()->add(PIECES_SHADER, g_shaders);
+}
+
+void createTextures() {
 
 	Texture2D* texture_1 = new Texture2D();
 	texture_1->load("../numbers/1.png");
@@ -113,25 +131,18 @@ void createTextures() {
 	Texture2D* texture_8 = new Texture2D();
 	texture_8->load("../numbers/8.png");
 	TextureManager::getInstance()->add("number_8", (Texture*)texture_8);
-	
-	//Texture2D* backb = new Texture2D();
-	//backb->load("../numbers/backb.png");
-	//TextureManager::getInstance()->add("backb", (Texture*)backb);
-
-	//Texture2D* fram = new Texture2D();
-	//fram->load("../numbers/fram.png");
-	//TextureManager::getInstance()->add("fram", (Texture*)fram);
 
 }
 
 void createEnvironmentSceneGraph()
 {
 	Mesh* cubeMesh = MeshManager::getInstance()->get(CUBE_MESH);
+	Mesh* discMesh = MeshManager::getInstance()->get(DISC_MESH);
 
 	#pragma region backboard
 	SceneNode* backboard = new SceneNode();
 	backboard->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
-	backboard->setPreDrawFun(setBlueColor);
+	backboard->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("BlueColor"));
 	backboard->setMesh(cubeMesh);
 	backboard->setMatrix(
 		MatrixFactory::scalingMatrix(Vector3d(11.0f,11.0f,1.0f))
@@ -144,14 +155,14 @@ void createEnvironmentSceneGraph()
 
 	SceneNode* frame = new SceneNode();
 	frame->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
-	frame->setPreDrawFun(setRedColor);
+	frame->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frame->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.8f))
 	);
 
 	SceneNode* frameUp = new SceneNode();
 	frameUp->setParent(frame);
-	frameUp->setPreDrawFun(setRedColor);
+	frameUp->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameUp->setMesh(cubeMesh);
 
 	//UP Frame
@@ -164,7 +175,7 @@ void createEnvironmentSceneGraph()
 	//Down
 	SceneNode* frameDown = new SceneNode();
 	frameDown->setParent(frame);
-	frameDown->setPreDrawFun(setRedColor);
+	frameDown->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameDown->setMesh(cubeMesh);
 	frameDown->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, -2.0f, 0.0f))
@@ -174,7 +185,7 @@ void createEnvironmentSceneGraph()
 	//Right
 	SceneNode* frameRight = new SceneNode();
 	frameRight->setParent(frame);
-	frameRight->setPreDrawFun(setRedColor);
+	frameRight->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameRight->setMesh(cubeMesh);
 	frameRight->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(2.0f, 0.0f, 0.0f))
@@ -185,7 +196,7 @@ void createEnvironmentSceneGraph()
 	//Left
 	SceneNode* frameLeft = new SceneNode();
 	frameLeft->setParent(frame);
-	frameLeft->setPreDrawFun(setRedColor);
+	frameLeft->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameLeft->setMesh(cubeMesh);
 	frameLeft->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-2.0f, 0.0f, 0.0f))
@@ -315,6 +326,11 @@ void createSceneGraph()
 
 	MeshManager::getInstance()->add(CUBE_MESH, mesh);
 
+	Mesh* meshD = new Mesh();
+	string sD = string(discMeshPath);
+	meshD->init(sD);
+
+	MeshManager::getInstance()->add(DISC_MESH, meshD);
 
 	SceneGraph* slidingPuzzleScenegraph = new SceneGraph();
 	slidingPuzzleScenegraph->setCamera(camera);
@@ -326,9 +342,23 @@ void createSceneGraph()
 
 	createEnvironmentSceneGraph();
 
-	slidingPuzzleScenegraph->init(ShaderProgramManager::getInstance()->get(COLOR_SHADER));
+	slidingPuzzleScenegraph->init();
 }
 
+void createNewSlidePuzzleGame(){
+	camera = new Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
+	createShaders();
+	createTextures();
+	createSceneGraph();
+	//Start the slide puzzle game
+	//Hardcoded: The third child of the sceneGraph's root node should be the piece's root node
+	game = new GameSlidingPuzzle(
+		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2)
+		, 8);
+	game->scramblePieces();
+	game->setMouseMode(GameSlidingPuzzle::MouseMode::Drag);
+}
+/////////////////////////////////////////////////////////////////////////////// Draw the SlidePuzzle scene
 void drawScene()
 {
 	SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->draw();
@@ -338,8 +368,9 @@ void drawScene()
 #endif
 }
 
-///////////////////////////////////////////////////////////////////// CALLBACKS
-
+#pragma endregion
+/////////////////////////////////////////////////////////////////////////////// Callbacks
+#pragma region CALLBACKS
 void window_close_callback(GLFWwindow* win)
 {
 	delete ShaderProgramManager::getInstance();
@@ -370,16 +401,53 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 		camera->updateCameraPos(key, action);
 	}
 
-	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	if (key == GLFW_KEY_E && action == GLFW_PRESS)
 	{
 		camera->changeProjectionType();
 	}
 
-	if (key == GLFW_KEY_G && action == GLFW_PRESS)
+	if (key == GLFW_KEY_Q && action == GLFW_PRESS)
 	{
 		camera->changeRotationType();
 	}
 
+	//P : Save the slidePuzzleScene and game
+	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+		cout << "Saving game...\n";
+		sceneFileHandler->saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
+		slidePuzzleGameFileHandler->saveGame(game);
+	}
+	//L : Load the last saved slidePuzzleScene and game
+	if (key == GLFW_KEY_L && action == GLFW_PRESS)
+	{
+		cout << "Loading game...\n";
+		SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
+		camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
+
+		slidePuzzleGameFileHandler->loadGame(game);
+		game->reload(scene->getRoot()->getChildren().at(2)); //Update/Reload references to nodes
+		game->setPiecePositions(slidePuzzleGameFileHandler->piecesPositions); //Update positions of nodes in game
+
+	}
+	//O : Start a new slidePuzzle game, without creating a new scene
+	if (key == GLFW_KEY_O && action == GLFW_PRESS)
+	{
+		game->scramblePieces();
+	}
+
+	//Z : Start a new slidePuzzle game, on a new scene
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+	{
+		createNewSlidePuzzleGame();
+	}
+
+	//M : Change mouse input for game
+	if (key == GLFW_KEY_M && action == GLFW_PRESS)
+	{
+		string mode = game->changeMouseMode();
+		cout << "Mouse mode change to : " + mode + "\n";
+	}
 }
 
 int right_mouse_pressed = 0;
@@ -416,8 +484,9 @@ void mouse_button_callback(GLFWwindow* win, int button, int action, int mods)
 	}
 }
 
-///////////////////////////////////////////////////////////////////////// SETUP
-
+#pragma endregion
+/////////////////////////////////////////////////////////////////////////////// Setup
+#pragma region SETUP
 GLFWwindow* setupWindow(int winx, int winy, const char* title,
 	int is_fullscreen, int is_vsync)
 {
@@ -515,29 +584,16 @@ GLFWwindow* setup(int major, int minor,
 	setupGLEW();
 	setupOpenGL(winx, winy);
 
-	camera = new Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
+	//Set filehandlers
+	sceneFileHandler = SceneFileHandler::getInstance();
+	slidePuzzleGameFileHandler = SlidePuzzleGameFileHandler::getInstance();
 
-	ShaderProgram* shaders = new ShaderProgram();
-	shaders->addUniform(COLOR_UNIFORM);
-	shaders->init(colorVertexShaderPath, colorFragmentShaderPath);
-	ShaderProgramManager::getInstance()->add(COLOR_SHADER, shaders);
+	//First, load the default "assets" the app needs
+	loadDefaultTextures();
+	loadDefaultPreDrawFunctions();
 
-
-	ShaderProgram* g_shaders = new ShaderProgram();
-	g_shaders->addUniform(COLOR_UNIFORM);
-	g_shaders->addUniform(TEXTURE_UNIFORM_COLOR);
-	g_shaders->addUniform(TEXTURE_UNIFORM_NOISE);
-
-	g_shaders->init(textureVertexShaderPath, textureFragmentShaderPath);
-	ShaderProgramManager::getInstance()->add(PIECES_SHADER, g_shaders);
-
-	createTextures();
-	createSceneGraph();
-
-	game = new GameSlidingPuzzle(
-		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2)
-		,8);
-	game->setMouseMode(GameSlidingPuzzle::MouseMode::Drag);
+	// By default, we always start a new game, on a new scene
+	createNewSlidePuzzleGame(); 
 
 	return win;
 
@@ -546,8 +602,9 @@ GLFWwindow* setup(int major, int minor,
 #endif
 }
 
-////////////////////////////////////////////////////////////////////////// RUN
-
+#pragma endregion
+/////////////////////////////////////////////////////////////////////////////// Run
+#pragma region RUN
 void display(GLFWwindow* win, double elapsed_sec)
 {
 	drawScene();
@@ -581,8 +638,8 @@ void run(GLFWwindow* win)
 	glfwTerminate();
 }
 
-////////////////////////////////////////////////////////////////////////// MAIN
-
+#pragma endregion
+/////////////////////////////////////////////////////////////////////////////// Main
 int main(int argc, char* argv[])
 {
 	int gl_major = 4, gl_minor = 3;
@@ -593,8 +650,6 @@ int main(int argc, char* argv[])
 		640, 640, "Team project", is_fullscreen, is_vsync);
 	run(win);
 
-
 	exit(EXIT_SUCCESS);
 }
-
-/////////////////////////////////////////////////////////////////////////// END
+/////////////////////////////////////////////////////////////////////////////// End
