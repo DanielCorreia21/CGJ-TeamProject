@@ -59,7 +59,7 @@ bool Vector2d::isEqual(Vector2d vec)  const {
 	return util::equalFloats(this->x, vec.getX()) && util::equalFloats(this->y, vec.getY());
 }
 float Vector2d::norm() {
-	return sqrt(pow(this->x, 2) + pow(this->y, 2));
+	return (float) sqrt(pow(this->x, 2) + pow(this->y, 2));
 }
 Vector2d Vector2d::normalize()
 {

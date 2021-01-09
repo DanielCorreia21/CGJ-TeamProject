@@ -4,7 +4,16 @@
 #include <GLFW/glfw3.h>
 #include "Manager.h"
 
-class Texture {
+/*	AUTHORS
+*	Group: 4
+*	Bernardo Pinto - 98734
+*	Daniel Correia - 98745
+*	Antoine Pontallier - 98316
+*	André Santos - 91000
+*/
+
+
+class Texture : public Mappable{
 
 	protected:
 		GLuint id;
@@ -14,6 +23,7 @@ class Texture {
 		~Texture();
 		virtual void bind() = 0;
 		virtual void unbind() = 0;
+		std::string texture_path = "";
 };
 
 class TextureManager : public Manager<Texture> {};

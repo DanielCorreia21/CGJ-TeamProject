@@ -1,5 +1,9 @@
 .vs/
 TeamProject/x64/Debug/
+TeamProject/x64/Release/
 x64/Debug/TeamProject.pdb
 x64/Debug/TeamProject.ilk
 x64/Debug/TeamProject.exe
+x64/Release/TeamProject.pdb
+x64/Release/TeamProject.ilk
+x64/Release/TeamProject.exe

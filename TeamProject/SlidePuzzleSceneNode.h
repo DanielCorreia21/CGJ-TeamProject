@@ -1,6 +1,6 @@
 #pragma once
-#include "SceneNode.h"
 #include "ShaderProgram.h"
+#include "OutlineSceneNode.h"
 
 /*	AUTHORS
 *	Group: 4
@@ -9,12 +9,13 @@
 *	Antoine Pontallier - 98316
 *	André Santos - 91000
 */
-
-class OutlineSceneNode : public SceneNode
+class SlidePuzzleSceneNode : public OutlineSceneNode
 {
 protected:
-	virtual void duringDraw();
+	void duringDraw();
+
 public:
-	OutlineSceneNode();
+	int stencil_index;
+	SlidePuzzleSceneNode(int stencil_index);
 };
 

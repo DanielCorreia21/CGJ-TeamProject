@@ -133,17 +133,21 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\glew\include;$(SolutionDir)dependencies\SOIL\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glfw\lib-vc2019;$(SolutionDir)dependencies\glew\lib;$(SolutionDir)dependencies\SOIL\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;glfw3dll.lib;opengl32.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ErrorHandler.cpp" />
+    <ClCompile Include="GameSlidingPuzzle.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Matrix2d.cpp" />
     <ClCompile Include="Matrix3d.cpp" />
@@ -153,9 +157,13 @@
     <ClCompile Include="Noise.cpp" />
     <ClCompile Include="OutlineSceneNode.cpp" />
     <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="SceneFileHandler.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="SlidePuzzleGameFileHandler.cpp" />
+    <ClCompile Include="SlidePuzzleSceneNode.cpp" />
+    <ClCompile Include="PreDrawFunction.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Texture3D.cpp" />
@@ -168,8 +176,11 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ErrorHandler.h" />
+    <ClInclude Include="GameSlidingPuzzle.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="GLStatics.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="Mappable.h" />
     <ClInclude Include="Matrix2d.h" />
     <ClInclude Include="Matrix3d.h" />
     <ClInclude Include="Matrix4d.h" />
@@ -178,10 +189,14 @@
     <ClInclude Include="Noise.h" />
     <ClInclude Include="OutlineSceneNode.h" />
     <ClInclude Include="Perlin.h" />
+    <ClInclude Include="PreDrawFunction.h" />
     <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="SceneFileHandler.h" />
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="SlidePuzzleGameFileHandler.h" />
+    <ClInclude Include="SlidePuzzleSceneNode.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Texture3D.h" />
@@ -192,19 +207,10 @@
     <ClInclude Include="Vector4d.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\fragmentShader.glsl" />
-    <None Include="..\Resources\GraniteFS_3D.glsl" />
-    <None Include="..\Resources\MarbleFS_HL.glsl" />
-    <None Include="..\Resources\MarbleFS.glsl" />
-    <None Include="..\Resources\GraniteFS_Light.glsl" />
-    <None Include="..\Resources\MarbleFS_3D.glsl" />
-    <None Include="..\Resources\MarbleFS_Normal.glsl" />
-    <None Include="..\Resources\MarbleVS.glsl" />
-    <None Include="..\Resources\Menu_FS.glsl" />
-    <None Include="..\Resources\texture_vs.glsl" />
-    <None Include="..\Resources\vertexShader.glsl" />
-    <None Include="..\Resources\Marble.glsl" />
-    <None Include="..\Resources\GraniteFS.glsl" />
+    <None Include="..\Resources\color_fs.glsl" />
+    <None Include="..\Resources\marble_fs.glsl" />
+    <None Include="..\Resources\marble_vs.glsl" />
+    <None Include="..\Resources\color_vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

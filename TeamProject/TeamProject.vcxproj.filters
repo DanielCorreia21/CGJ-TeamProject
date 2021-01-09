@@ -19,6 +19,18 @@
     <Filter Include="Header Files\MatrixVectors">
       <UniqueIdentifier>{751e68eb-eef3-484d-905e-0c24c32cc754}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Textures">
+      <UniqueIdentifier>{484897f2-a387-40fb-8e66-57638bc09bc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Textures">
+      <UniqueIdentifier>{f66ea814-6968-40b2-8175-27049394151f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SceneGraph">
+      <UniqueIdentifier>{8bc9a721-1fa3-4778-961e-b17a3644bc7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SceneGraph">
+      <UniqueIdentifier>{983ed011-3f4a-4ef0-8310-6ed727412ea9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ShaderProgram.cpp">
@@ -60,31 +72,46 @@
     <ClCompile Include="Quaternion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SceneGraph.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TextureInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OutlineSceneNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Noise.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Textures</Filter>
     </ClCompile>
     <ClCompile Include="Texture3D.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Noise.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph.cpp">
+      <Filter>Source Files\SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneNode.cpp">
+      <Filter>Source Files\SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="OutlineSceneNode.cpp">
+      <Filter>Source Files\SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSlidingPuzzle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SlidePuzzleSceneNode.cpp">
+      <Filter>Source Files\SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneFileHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PreDrawFunction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SlidePuzzleGameFileHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -131,75 +158,69 @@
     <ClInclude Include="Quaternion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SceneGraph.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Textures</Filter>
     </ClInclude>
     <ClInclude Include="Texture2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OutlineSceneNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Noise.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Perlin.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Textures</Filter>
     </ClInclude>
     <ClInclude Include="Texture3D.h">
+      <Filter>Header Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureInfo.h">
+      <Filter>Header Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Perlin.h">
+      <Filter>Header Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Noise.h">
+      <Filter>Header Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph.h">
+      <Filter>Header Files\SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneNode.h">
+      <Filter>Header Files\SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="OutlineSceneNode.h">
+      <Filter>Header Files\SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSlidingPuzzle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SlidePuzzleSceneNode.h">
+      <Filter>Header Files\SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneFileHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mappable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PreDrawFunction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SlidePuzzleGameFileHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\fragmentShader.glsl">
+    <None Include="..\Resources\marble_fs.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\vertexShader.glsl">
+    <None Include="..\Resources\marble_vs.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\texture_vs.glsl">
+    <None Include="..\Resources\color_fs.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\MarbleFS.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\MarbleFS_3D.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\MarbleFS_Normal.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\MarbleVS.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\GraniteFS_3D.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\GraniteFS.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\Marble.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\MarbleFS_HL.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\GraniteFS_Light.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\Menu_FS.glsl">
+    <None Include="..\Resources\color_vs.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

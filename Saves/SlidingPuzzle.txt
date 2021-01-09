@@ -1,0 +1,283 @@
+#camera
+angles -2.000000 -51.499992 0.000000
+projectionType perspective
+rotationType euler
+translationVector 0.000000 0.000000 -10.000000
+#endcamera
+
+#shaderProgram
+shaderProgramMapName MarbleShader
+shaderUniforms Color NoiseTexture Texture 
+shaderAtributes NONE
+vertexShaderPath ../Resources/marble_vs.glsl
+fragmentShaderPath ../Resources/marble_fs.glsl
+#endshaderProgram
+
+#shaderProgram
+shaderProgramMapName color
+shaderUniforms Color 
+shaderAtributes NONE
+vertexShaderPath ../Resources/color_vs.glsl
+fragmentShaderPath ../Resources/color_fs.glsl
+#endshaderProgram
+
+#sceneGraph
+sceneGraphMapName SlidingPuzzle
+#endsceneGraph
+
+#sceneNode
+nodeIndex 0
+parentIndex -1
+stencilIndex -1
+nodeType normal
+hasSceneGraph true
+meshPath NONE
+meshMapName NONE
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 
+texturePaths NONE
+textureUniforms NONE
+textureMapNames NONE
+shaderProgramName color
+preDrawFunName NONE
+#endsceneNode
+
+#sceneNode
+nodeIndex 1
+parentIndex 0
+stencilIndex -1
+nodeType normal
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 11.000000 0.000000 0.000000 0.000000 0.000000 11.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 
+texturePaths NONE
+textureUniforms NONE
+textureMapNames NONE
+shaderProgramName NONE
+preDrawFunName BlueColor
+#endsceneNode
+
+#sceneNode
+nodeIndex 2
+parentIndex 0
+stencilIndex -1
+nodeType normal
+hasSceneGraph false
+meshPath NONE
+meshMapName NONE
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.800000 1.000000 
+texturePaths NONE
+textureUniforms NONE
+textureMapNames NONE
+shaderProgramName NONE
+preDrawFunName RedColor
+#endsceneNode
+
+#sceneNode
+nodeIndex 3
+parentIndex 2
+stencilIndex -1
+nodeType normal
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 11.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 3.000000 0.000000 0.000000 2.000000 0.000000 1.000000 
+texturePaths NONE
+textureUniforms NONE
+textureMapNames NONE
+shaderProgramName NONE
+preDrawFunName RedColor
+#endsceneNode
+
+#sceneNode
+nodeIndex 4
+parentIndex 2
+stencilIndex -1
+nodeType normal
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 11.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 3.000000 0.000000 0.000000 -2.000000 0.000000 1.000000 
+texturePaths NONE
+textureUniforms NONE
+textureMapNames NONE
+shaderProgramName NONE
+preDrawFunName RedColor
+#endsceneNode
+
+#sceneNode
+nodeIndex 5
+parentIndex 2
+stencilIndex -1
+nodeType normal
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 0.000000 11.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 3.000000 0.000000 2.000000 0.000000 0.000000 1.000000 
+texturePaths NONE
+textureUniforms NONE
+textureMapNames NONE
+shaderProgramName NONE
+preDrawFunName RedColor
+#endsceneNode
+
+#sceneNode
+nodeIndex 6
+parentIndex 2
+stencilIndex -1
+nodeType normal
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 0.000000 11.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 3.000000 0.000000 -2.000000 0.000000 0.000000 1.000000 
+texturePaths NONE
+textureUniforms NONE
+textureMapNames NONE
+shaderProgramName NONE
+preDrawFunName RedColor
+#endsceneNode
+
+#sceneNode
+nodeIndex 7
+parentIndex 0
+stencilIndex -1
+nodeType normal
+hasSceneGraph false
+meshPath NONE
+meshMapName NONE
+localMatrix 3.000000 0.000000 0.000000 0.000000 0.000000 3.000000 0.000000 0.000000 0.000000 0.000000 3.000000 0.000000 0.000000 0.000000 0.800000 1.000000 
+texturePaths NONE
+textureUniforms NONE
+textureMapNames NONE
+shaderProgramName NONE
+preDrawFunName NONE
+#endsceneNode
+
+#sceneNode
+nodeIndex 8
+parentIndex 7
+stencilIndex 1
+nodeType slidepuzzle
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 0.000000 0.000000 1.000000 
+texturePaths marble ../numbers/1.png 
+textureUniforms NoiseTexture Texture 
+textureMapNames marble number_1 
+shaderProgramName MarbleShader
+preDrawFunName NONE
+#endsceneNode
+
+#sceneNode
+nodeIndex 9
+parentIndex 7
+stencilIndex 2
+nodeType slidepuzzle
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 0.400000 0.000000 1.000000 
+texturePaths marble ../numbers/2.png 
+textureUniforms NoiseTexture Texture 
+textureMapNames marble number_2 
+shaderProgramName MarbleShader
+preDrawFunName NONE
+#endsceneNode
+
+#sceneNode
+nodeIndex 10
+parentIndex 7
+stencilIndex 3
+nodeType slidepuzzle
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.400000 0.000000 1.000000 
+texturePaths marble ../numbers/3.png 
+textureUniforms NoiseTexture Texture 
+textureMapNames marble number_3 
+shaderProgramName MarbleShader
+preDrawFunName NONE
+#endsceneNode
+
+#sceneNode
+nodeIndex 11
+parentIndex 7
+stencilIndex 4
+nodeType slidepuzzle
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 
+texturePaths marble ../numbers/4.png 
+textureUniforms NoiseTexture Texture 
+textureMapNames marble number_4 
+shaderProgramName MarbleShader
+preDrawFunName NONE
+#endsceneNode
+
+#sceneNode
+nodeIndex 12
+parentIndex 7
+stencilIndex 5
+nodeType slidepuzzle
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 -0.400000 0.000000 1.000000 
+texturePaths marble ../numbers/5.png 
+textureUniforms NoiseTexture Texture 
+textureMapNames marble number_5 
+shaderProgramName MarbleShader
+preDrawFunName NONE
+#endsceneNode
+
+#sceneNode
+nodeIndex 13
+parentIndex 7
+stencilIndex 6
+nodeType slidepuzzle
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 -0.400000 0.000000 1.000000 
+texturePaths marble ../numbers/6.png 
+textureUniforms NoiseTexture Texture 
+textureMapNames marble number_6 
+shaderProgramName MarbleShader
+preDrawFunName NONE
+#endsceneNode
+
+#sceneNode
+nodeIndex 14
+parentIndex 7
+stencilIndex 7
+nodeType slidepuzzle
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -0.400000 0.000000 1.000000 
+texturePaths marble ../numbers/7.png 
+textureUniforms NoiseTexture Texture 
+textureMapNames marble number_7 
+shaderProgramName MarbleShader
+preDrawFunName NONE
+#endsceneNode
+
+#sceneNode
+nodeIndex 15
+parentIndex 7
+stencilIndex 8
+nodeType slidepuzzle
+hasSceneGraph false
+meshPath ../objs/cube5.obj
+meshMapName cube
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 0.400000 0.000000 1.000000 
+texturePaths marble ../numbers/8.png 
+textureUniforms NoiseTexture Texture 
+textureMapNames marble number_8 
+shaderProgramName MarbleShader
+preDrawFunName NONE
+#endsceneNode
+

@@ -72,7 +72,7 @@ bool Vector3d::isEqual(Vector3d vec) const{
 	return util::equalFloats(this->x, vec.getX()) && util::equalFloats(this->y, vec.getY()) && util::equalFloats(this->z, vec.getZ());
 }
 float Vector3d::norm() {
-	return sqrt(pow(this-> x,2) + pow(this-> y, 2) + pow(this-> z, 2));
+	return (float) sqrt(pow(this-> x,2) + pow(this-> y, 2) + pow(this-> z, 2));
 }
 Vector3d Vector3d::normalize()
 {

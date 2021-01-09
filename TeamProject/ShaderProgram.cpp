@@ -5,24 +5,22 @@
 #include "Vector4d.h"
 #include "ErrorHandler.h"
 
-
-//passar argumentos com UniformLocation ou Block
-/*
-in_position
-in_texture
-shared_matrices
-model_matrix
-
-in_color
+/*	AUTHORS
+*	Group: 4
+*	Bernardo Pinto - 98734
+*	Daniel Correia - 98745
+*	Antoine Pontallier - 98316
+*	André Santos - 91000
 */
-//new ones -> inhereted shaderProgram
-//bindAttributeLocation tmb para todos?
-
-
-//nesses casos getUniformId() etc ja nao guardamos do nosso lado?
 
 ShaderProgram::ShaderProgram(){
-	VertexShaderId = FragmentShaderId = ProgramId = UniformId = UboId = 0;
+	VertexShaderId = FragmentShaderId = ProgramId = ModelMatrixIndex = UboId = 0;
+}
+
+ShaderProgram::~ShaderProgram()
+{
+	std::cout << "\nDestroying shaders\n";
+	this->destroy();
 }
 
 void ShaderProgram::addAttribute(const std::string& name, const GLuint index)
@@ -47,17 +45,34 @@ void ShaderProgram::addUbo(const std::string& name, const GLuint binding_point)
 	this->ubos.insert(std::make_pair(name, ubo));
 }
 
-std::string sVertexShader;
-std::string sFragmentShader;
+ShaderProgram::AttributeInfo ShaderProgram::getAttribute(const std::string& name)
+{
+	return AttributeInfo();
+}
 
-void readVertexShader(const char vertexShaderPath[]) {
+ShaderProgram::UniformInfo* ShaderProgram::getUniform(const std::string& name)
+{
+	std::map<std::string, ShaderProgram::UniformInfo>::iterator it = this->uniforms.find(name);
+	if (it != this->uniforms.end()) {
+		return &(it->second);
+	}
+	return nullptr;
+}
+
+ShaderProgram::UboInfo ShaderProgram::getUbo(const std::string& name)
+{
+	return UboInfo();
+}
+
+
+void ShaderProgram::readVertexShader(const char vertexShaderPath[]) {
 	std::ifstream ifs(vertexShaderPath);
 	std::string temp((std::istreambuf_iterator<char>(ifs)),
 		(std::istreambuf_iterator<char>()));
 	sVertexShader = temp;
 }
 
-void readFragmentShader(const char fragmentShaderPath[]) {
+void ShaderProgram::readFragmentShader(const char fragmentShaderPath[]) {
 
 	std::ifstream ifs(fragmentShaderPath);
 	std::string temp((std::istreambuf_iterator<char>(ifs)),
@@ -65,8 +80,10 @@ void readFragmentShader(const char fragmentShaderPath[]) {
 	sFragmentShader = temp;
 }
 
-void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShaderPath[], bool tcoords, bool normals)
+void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShaderPath[])
 {
+	this->vertexPath = vertexShaderPath;
+	this->fragmentPath = fragmentShaderPath;
 	readVertexShader(vertexShaderPath);
 	readFragmentShader(fragmentShaderPath);
 	const char* VertexShader = sVertexShader.c_str();
@@ -86,22 +103,22 @@ void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShade
 	glAttachShader(ProgramId, FragmentShaderId);
 
 	//--------------------------------------------------------------------------------------
+	//Default attributes
 	glBindAttribLocation(ProgramId, VERTICES, "inVertex");
+	glBindAttribLocation(ProgramId, TEXCOORDS, "inTexcoord");
+	glBindAttribLocation(ProgramId, NORMALS, "inNormal");
 
-	if (tcoords) {
-		glBindAttribLocation(ProgramId, TEXCOORDS, "inTexcoord");
-	}
-	if (normals) {
-		glBindAttribLocation(ProgramId, NORMALS, "inNormal");
-	}
 
+	//default uniform
 	glLinkProgram(ProgramId);
-	//TODO ASIGN??!!
-	this->UniformId = glGetUniformLocation(ProgramId, "ModelMatrix");
+	this->ModelMatrixIndex = glGetUniformLocation(ProgramId, "ModelMatrix");
+
+	//default UBO
 	this->UboId = glGetUniformBlockIndex(ProgramId, "SharedMatrices");
 	glUniformBlockBinding(ProgramId, this->UboId, UBO_BP);
 
 
+	//bind new attributes
 	std::map<std::string, AttributeInfo>::iterator it = this->attributes.begin();
 	while (it != this->attributes.end())
 	{
@@ -109,7 +126,7 @@ void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShade
 		it++;
 	}
 
-	//this->UniformColorId = glGetUniformLocation(ProgramId, "Color");
+	//bind new uniforms
 	std::map<std::string, UniformInfo>::iterator it2 = this->uniforms.begin();
 	while (it2 != this->uniforms.end())
 	{
@@ -117,6 +134,7 @@ void ShaderProgram::init(const char vertexShaderPath[], const char fragmentShade
 		it2++;
 	}
 
+	//bind new UBO's
 	std::map<std::string, UboInfo>::iterator it3 = this->ubos.begin();
 	while (it3 != this->ubos.end())
 	{
@@ -156,15 +174,10 @@ void ShaderProgram::destroy()
 #endif
 }
 
-GLint ShaderProgram::getUniformId()
+GLint ShaderProgram::getModelMatrixIndex()
 {
-	return this->UniformId;
+	return this->ModelMatrixIndex;
 }
-
-/*GLint ShaderProgram::getUBO()
-{
-	return UBO_BP;
-}*/
 
 
 

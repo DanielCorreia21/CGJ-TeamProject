@@ -3,45 +3,30 @@
 #include "GLStatics.h"
 #include "ErrorHandler.h"
 
-//Questions: prof na teorica criou interface drawable, should I too?
-//melhor createMesh(filename) ou *contrutor() e init(filename)*
-//melhor createMeshBufferObjects e destroyMeshBufferObjects ou o create fica dentro do init/create
+/*	AUTHORS
+*	Group: 4
+*	Bernardo Pinto - 98734
+*	Daniel Correia - 98745
+*	Antoine Pontallier - 98316
+*	André Santos - 91000
+*/
 
-//TODO
-//contructor(filename), init(){loadMeshData, loadBuffers}
-//~Mesh(){destroybuffers}
 
-bool TexcoordsLoaded, NormalsLoaded;
-
-GLuint ProgramId;
-GLint ModelMatrix_UId, ViewMatrix_UId, ProjectionMatrix_UId;
-GLuint VboVertices, VboTexcoords, VboNormals;
 
 Mesh::Mesh() { }
 
 Mesh::~Mesh()
 {
+	std::cout << "Destroying mesh\n";
 	destroyMeshBufferObjects();
 }
 
 ////////////////////////////////////////////////////////////////////////// MESH
-typedef struct {
-	GLfloat x, y, z;
-} Vertex;
 
-typedef struct {
-	GLfloat u, v;
-} Texcoord;
 
-typedef struct {
-	GLfloat nx, ny, nz;
-} Normal;
 
-std::vector <Vertex> Vertices, vertexData;
-std::vector <Texcoord> Texcoords, texcoordData;
-std::vector <Normal> Normals, normalData;
 
-std::vector <unsigned int> vertexIdx, texcoordIdx, normalIdx;
+
 #pragma region parse_stuff
 void Mesh::parseVertex(std::stringstream& sin)
 {
@@ -102,7 +87,8 @@ void Mesh::parseLine(std::stringstream& sin)
 
 void Mesh::loadMeshData(std::string& filename)
 {
-	std::cout << "Filename: " + filename;
+	this->meshPath = filename;
+	std::cout << "Filename: " + filename + "\n";
 	std::ifstream ifile(filename);
 	std::string line;
 	while (std::getline(ifile, line))
@@ -147,8 +133,6 @@ void Mesh::freeMeshData()
 
 ////////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
-GLuint VaoId, VboId;
-
 void Mesh::createMeshBufferObjects()
 {
 
@@ -157,7 +141,7 @@ void Mesh::createMeshBufferObjects()
 	{
 		glGenBuffers(1, &VboVertices);
 		glBindBuffer(GL_ARRAY_BUFFER, VboVertices);
-		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(Vertex), &Vertices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(Vertex), &Vertices[0], GL_STATIC_DRAW); //error
 		glEnableVertexAttribArray(VERTICES);
 		glVertexAttribPointer(VERTICES, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
@@ -209,6 +193,10 @@ void Mesh::destroyMeshBufferObjects() {
 void Mesh::draw()
 {
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
+
+#ifndef ERROR_CALLBACK
+	ErrorHandler::checkOpenGLError("ERROR: Could not draw mesh.");
+#endif
 }
 
 void Mesh::init(std::string& filename)
