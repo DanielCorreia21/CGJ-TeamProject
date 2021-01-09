@@ -158,9 +158,6 @@
     <ClInclude Include="Perlin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Atexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Texture3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -172,34 +169,37 @@
     <None Include="..\Resources\vertexShader.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\GraniteFS.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\GraniteVS.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Resources\texture_fs.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\Resources\texture_vs.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\GraniteFS_Normal.glsl">
+    <None Include="..\Resources\MarbleFS.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\wtv_fs.glsl">
+    <None Include="..\Resources\MarbleFS_3D.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\wtv_fs_3D.glsl">
+    <None Include="..\Resources\MarbleFS_Normal.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\MarbleVS.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\Resources\GraniteFS_3D.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\GraniteFS _Tiles.glsl">
+    <None Include="..\Resources\GraniteFS.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\GraniteFS_2D.glsl">
+    <None Include="..\Resources\Marble.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\MarbleFS_HL.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\GraniteFS_Light.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\Menu_FS.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

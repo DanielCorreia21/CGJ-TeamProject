@@ -38,14 +38,21 @@ using namespace std;
 
 bool tcoords = true;
 bool normals = true;
+bool menuIshowing = true;
+bool pause = false;
 
 const char vertexShaderPath[] = "../Resources/vertexShader.glsl";
-const char vertexShaderPath_Texture[] = "../Resources/GraniteVS.glsl";
+const char vertexShaderPath_Texture[] = "../Resources/MarbleVS.glsl";
 const char fragmentShaderPath[] = "../Resources/fragmentShader.glsl";
-const char fragmentShaderPath_Texture[] = "../Resources/GraniteFS_3D.glsl";
+const char fragmentShaderPath_Texture[] = "../Resources/MarbleFS.glsl";
+const char fragmentShaderPath_Granite[] = "../Resources/GraniteFS.glsl";
+const char fragmentShaderPath_Menu[] = "../Resources/Menu_FS.glsl";
 
 const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
+const string MENU_SCENE_GRAPH = "MainMenu";
+const string ESC_MENU_SCENE_GRAPH = "EscMenu";
 const string MAIN_SHADER = "main";
+const string MENU_SHADER = "menu";
 const string CUBE_MESH = "cube";
 const string COLOR_UNIFORM = "Color";
 
@@ -203,16 +210,25 @@ void setBlueColor() {
 
 ///////////////////////////////////////////////////////////////////// SCENE
 
-
 SceneNode* backboard;
 SceneNode* frame;
 SceneNode* pieces;
 
 void createTextures() {
 
+	#pragma region materials
+
+	Texture3D* texture = new Texture3D();
+	texture->createPerlinNoise(128, 7, 7, 7, 2, 2, 8);
+	TextureManager::getInstance()->add("marble", (Texture*)texture);
+
 	Texture3D* texture_0 = new Texture3D();
-	texture_0->createPerlinNoise(128, 5, 5, 5, 2, 2, 8);
-	TextureManager::getInstance()->add("number_0", (Texture*)texture_0);
+	texture_0->createPerlinNoise(128, 7, 7, 7, 2, 2, 8);
+	TextureManager::getInstance()->add("granite", (Texture*)texture_0);
+
+	#pragma endregion
+
+	#pragma region numbers
 
 	Texture2D* texture_1 = new Texture2D();
 	texture_1->load("../numbers/1.png");
@@ -245,14 +261,56 @@ void createTextures() {
 	Texture2D* texture_8 = new Texture2D();
 	texture_8->load("../numbers/8.png");
 	TextureManager::getInstance()->add("number_8", (Texture*)texture_8);
-	
-	//Texture2D* backb = new Texture2D();
-	//backb->load("../numbers/backb.png");
-	//TextureManager::getInstance()->add("backb", (Texture*)backb);
 
-	//Texture2D* fram = new Texture2D();
-	//fram->load("../numbers/fram.png");
-	//TextureManager::getInstance()->add("fram", (Texture*)fram);
+	#pragma endregion
+	
+	#pragma region menu
+
+	Texture2D* fundo_main = new Texture2D();
+	fundo_main->load("../menu/fundo_main.png");
+	TextureManager::getInstance()->add("fundo_main", (Texture*)fundo_main);
+
+	Texture2D* fundo_esc = new Texture2D();
+	fundo_esc->load("../menu/fundo_esc.png");
+	TextureManager::getInstance()->add("fundo_esc", (Texture*)fundo_esc);
+
+	Texture2D* title = new Texture2D();
+	title->load("../menu/title.png");
+	TextureManager::getInstance()->add("title", (Texture*)title);
+
+	Texture2D* new_game = new Texture2D();
+	new_game->load("../menu/new_game.png");
+	TextureManager::getInstance()->add("new_game", (Texture*)new_game);
+
+	Texture2D* load_game = new Texture2D();
+	load_game->load("../menu/load_game.png");
+	TextureManager::getInstance()->add("load_game", (Texture*)load_game);
+
+	Texture2D* save = new Texture2D();
+	save->load("../menu/save.png");
+	TextureManager::getInstance()->add("save", (Texture*)save);
+
+	Texture2D* load = new Texture2D();
+	load->load("../menu/load.png");
+	TextureManager::getInstance()->add("load", (Texture*)load);
+
+	Texture2D* exit_main = new Texture2D();
+	exit_main->load("../menu/exit_main.png");
+	TextureManager::getInstance()->add("exit_main", (Texture*)exit_main);
+
+	Texture2D* exit_esc = new Texture2D();
+	exit_esc->load("../menu/exit_esc.png");
+	TextureManager::getInstance()->add("exit_esc", (Texture*)exit_esc);
+
+	Texture2D* continu = new Texture2D();
+	continu->load("../menu/continue.png");
+	TextureManager::getInstance()->add("continue", (Texture*)continu);
+
+	Texture2D* snap = new Texture2D();
+	snap->load("../menu/snap.png");
+	TextureManager::getInstance()->add("snap", (Texture*)snap);
+
+	#pragma endregion
 
 }
 
@@ -269,27 +327,24 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::scalingMatrix(Vector3d(11.0f,11.0f,1.0f))
 	);
 
-	//TextureInfo* tinfo_b = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("backb"));
-	//backboard->addTexture(tinfo_b);
-
 #pragma endregion
 
 	#pragma region frame
 
-	//TextureInfo* tinfo_f = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("fram"));
+	TextureInfo* tinfo_f = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("granite"));
 
 	frame = new SceneNode();
 	frame->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
 	//frame->setPreDrawFun(setRedColor);
-	frame->setPreDrawFun(setRedColor);
 	frame->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.8f))
 	);
-	//frame->addTexture(tinfo_f);
+	frame->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	frame->addTexture(tinfo_f);
 
 	SceneNode* frameUp = new SceneNode();
 	frameUp->setParent(frame);
-	frameUp->setPreDrawFun(setRedColor);
+	//frameUp->setPreDrawFun(setRedColor);
 	frameUp->setMesh(cubeMesh);
 	//Define shape and set Z
 	//UP Frame
@@ -297,43 +352,47 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 2.0f, 0.0f))
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
-	//frameUp->addTexture(tinfo_f);
+	frameUp->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	frameUp->addTexture(tinfo_f);
 
 	//Define positions and rotations of other frame components
 	//Down
 	SceneNode* frameDown = new SceneNode();
 	frameDown->setParent(frame);
-	frameDown->setPreDrawFun(setRedColor);
+	//frameDown->setPreDrawFun(setRedColor);
 	frameDown->setMesh(cubeMesh);
 	frameDown->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, -2.0f, 0.0f))
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
-	//frameDown->addTexture(tinfo_f);
+	frameDown->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	frameDown->addTexture(tinfo_f);
 
 	//Right
 	SceneNode* frameRight = new SceneNode();
 	frameRight->setParent(frame);
-	frameRight->setPreDrawFun(setRedColor);
+	//frameRight->setPreDrawFun(setRedColor);
 	frameRight->setMesh(cubeMesh);
 	frameRight->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(2.0f, 0.0f, 0.0f))
 		* MatrixFactory::rotateZMatrix(90)
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
-	//frameRight->addTexture(tinfo_f);
+	frameRight->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	frameRight->addTexture(tinfo_f);
 
 	//Left
 	SceneNode* frameLeft = new SceneNode();
 	frameLeft->setParent(frame);
-	frameLeft->setPreDrawFun(setRedColor);
+	//frameLeft->setPreDrawFun(setRedColor);
 	frameLeft->setMesh(cubeMesh);
 	frameLeft->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-2.0f, 0.0f, 0.0f))
 		* MatrixFactory::rotateZMatrix(90)
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
-	//frameLeft->addTexture(tinfo_f);
+	frameLeft->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	frameLeft->addTexture(tinfo_f);
 
 #pragma endregion
 
@@ -348,7 +407,7 @@ void createEnvironmentSceneGraph()
 	);
 
 
-	TextureInfo* tinfo_0 = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("number_0"));
+	TextureInfo* tinfo_0 = new TextureInfo(GL_TEXTURE0, 0, "NoiseTexture", TextureManager::getInstance()->get("marble"));
 
 	SceneNode* piece1 = new SceneNode();
 	piece1->setParent(pieces);
@@ -358,7 +417,7 @@ void createEnvironmentSceneGraph()
 	);
 
 	TextureInfo* tinfo_1 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_1"));
-	piece1->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece1->setShaderProgram(ShaderProgramManager::getInstance()->get("Marble"));
 	piece1->addTexture(tinfo_0);
 	piece1->addTexture(tinfo_1);
 
@@ -369,7 +428,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.4f, 0.0f))
 	);
 	TextureInfo* tinfo_2 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_2"));
-	piece2->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece2->setShaderProgram(ShaderProgramManager::getInstance()->get("Marble"));
 	piece2->addTexture(tinfo_0);
 	piece2->addTexture(tinfo_2);
 
@@ -380,7 +439,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.4f, 0.0f))
 	);
 	TextureInfo* tinfo_3 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_3"));
-	piece3->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece3->setShaderProgram(ShaderProgramManager::getInstance()->get("Marble"));
 	piece3->addTexture(tinfo_0);
 	piece3->addTexture(tinfo_3);
 
@@ -391,7 +450,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, 0.0f, 0.0f))
 	);
 	TextureInfo* tinfo_4 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_4"));
-	piece4->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece4->setShaderProgram(ShaderProgramManager::getInstance()->get("Marble"));
 	piece4->addTexture(tinfo_0);
 	piece4->addTexture(tinfo_4);
 
@@ -402,7 +461,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.0f))
 	);
 	TextureInfo* tinfo_5 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_5"));
-	piece5->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece5->setShaderProgram(ShaderProgramManager::getInstance()->get("Marble"));
 	piece5->addTexture(tinfo_0);
 	piece5->addTexture(tinfo_5);
 
@@ -413,7 +472,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.4f, 0.0f, 0.0f))
 	);
 	TextureInfo* tinfo_6 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_6"));
-	piece6->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece6->setShaderProgram(ShaderProgramManager::getInstance()->get("Marble"));
 	piece6->addTexture(tinfo_0);
 	piece6->addTexture(tinfo_6);
 
@@ -424,7 +483,7 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(-0.4f, -0.4f, 0.0f))
 	);
 	TextureInfo* tinfo_7 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_7"));
-	piece7->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece7->setShaderProgram(ShaderProgramManager::getInstance()->get("Marble"));
 	piece7->addTexture(tinfo_0);
 	piece7->addTexture(tinfo_7);
 
@@ -435,13 +494,12 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.0f, -0.4f, 0.0f))
 	);
 	TextureInfo* tinfo_8 = new TextureInfo(GL_TEXTURE1, 1, "Texture_1", TextureManager::getInstance()->get("number_8"));
-	piece8->setShaderProgram(ShaderProgramManager::getInstance()->get("Granite"));
+	piece8->setShaderProgram(ShaderProgramManager::getInstance()->get("Marble"));
 	piece8->addTexture(tinfo_0);
 	piece8->addTexture(tinfo_8);
 
 #pragma endregion
 }
-
 
 void createSceneGraph()
 {
@@ -468,9 +526,210 @@ void createSceneGraph()
 	slidingPuzzleScenegraph->init(*(ShaderProgramManager::getInstance()->get(MAIN_SHADER)));
 }
 
+void createMainMenuEnvironment()
+{
+	Mesh* cubeMesh = MeshManager::getInstance()->get(CUBE_MESH);
+
+#pragma region fundo
+
+	TextureInfo* fundo = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("fundo_main"));
+
+	SceneNode* plane = new SceneNode();
+	plane->setParent(SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->getRoot());
+	plane->setPreDrawFun(setBlueColor);
+	plane->setMesh(cubeMesh);
+	plane->setMatrix(
+		MatrixFactory::scalingMatrix(Vector3d(15.0f, 15.0f, 0.1f))
+	);
+	plane->addTexture(fundo);
+
+#pragma endregion
+
+#pragma region top text
+
+	TextureInfo* game_name = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("title"));
+
+	SceneNode* text = new SceneNode();
+	text->setParent(SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->getRoot());
+	text->setMesh(cubeMesh);
+	text->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, 2.08f, 0.0f))
+		* MatrixFactory::scalingMatrix(Vector3d(9.5f, 1.6f, 0.2f))
+	);
+	text->addTexture(game_name);
+
+#pragma endregion
+
+#pragma region buttons
+
+	TextureInfo* start_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("new_game"));
+
+	SceneNode* startButton = new SceneNode();
+	startButton->setParent(SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->getRoot());
+	startButton->setMesh(cubeMesh);
+	startButton->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.4f, 0.0f))
+		* MatrixFactory::scalingMatrix(Vector3d(6.0f, 1.8f, 0.5f))
+	);
+	startButton->addTexture(start_button);
+
+	TextureInfo* load_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("load_game"));
+
+	SceneNode* loadButton = new SceneNode();
+	loadButton->setParent(SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->getRoot());
+	loadButton->setMesh(cubeMesh);
+	loadButton->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, -0.5f, 0.0f))
+		* MatrixFactory::scalingMatrix(Vector3d(6.0f, 1.8f, 0.5f))
+	);
+	loadButton->addTexture(load_button);
+
+	TextureInfo* exit_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("exit_main"));
+
+	SceneNode* exitButton = new SceneNode();
+	exitButton->setParent(SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->getRoot());
+	exitButton->setMesh(cubeMesh);
+	exitButton->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, -1.5f, 0.0f))
+		* MatrixFactory::scalingMatrix(Vector3d(6.0f, 1.8f, 0.5f))
+	);
+	exitButton->addTexture(exit_button);
+
+#pragma endregion
+}
+
+void createMainMenuGraph()
+{
+	Mesh* mesh = new Mesh();
+	MeshManager::getInstance()->add(CUBE_MESH, mesh);
+
+	string s = string("../objs/cube5.obj");
+	mesh->init(s);
+
+	SceneGraph* menuScenegraph = new SceneGraph();
+	menuScenegraph->setCamera(&camera);
+	SceneGraphManager::getInstance()->add(MENU_SCENE_GRAPH, menuScenegraph);
+
+	SceneNode* n = menuScenegraph->getRoot();
+	n->setShaderProgram(ShaderProgramManager::getInstance()->get(MENU_SHADER));
+
+	createMainMenuEnvironment();
+
+	menuScenegraph->init(*(ShaderProgramManager::getInstance()->get(MENU_SHADER)));
+}
+
+void createEscMenuEnvironment()
+{
+	Mesh* cubeMesh = MeshManager::getInstance()->get(CUBE_MESH);
+
+#pragma region fundo
+
+	TextureInfo* fundo = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("fundo_esc"));
+
+	SceneNode* plane = new SceneNode();
+	plane->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
+	plane->setPreDrawFun(setBlueColor);
+	plane->setMesh(cubeMesh);
+	plane->setMatrix(
+		MatrixFactory::scalingMatrix(Vector3d(15.0f, 15.0f, 0.1f))
+	);
+	plane->addTexture(fundo);
+
+#pragma endregion
+
+#pragma region buttons
+
+	TextureInfo* continue_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("continue"));
+
+	SceneNode* continueButton = new SceneNode();
+	continueButton->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
+	continueButton->setMesh(cubeMesh);
+	continueButton->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, 1.6f, 0.0f))
+		* MatrixFactory::scalingMatrix(Vector3d(6.0f, 1.8f, 0.5f))
+	);
+	continueButton->addTexture(continue_button);
+
+	TextureInfo* save_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("save"));
+
+	SceneNode* saveButton = new SceneNode();
+	saveButton->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
+	saveButton->setMesh(cubeMesh);
+	saveButton->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.7f, 0.0f))
+		* MatrixFactory::scalingMatrix(Vector3d(6.0f, 1.8f, 0.5f))
+	);
+	saveButton->addTexture(save_button);
+
+	TextureInfo* load_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("load"));
+
+	SceneNode* loadButton = new SceneNode();
+	loadButton->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
+	loadButton->setMesh(cubeMesh);
+	loadButton->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, -0.2f, 0.0f))
+		* MatrixFactory::scalingMatrix(Vector3d(6.0f, 1.8f, 0.5f))
+	);
+	loadButton->addTexture(load_button);
+
+	TextureInfo* snap_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("snap"));
+
+	SceneNode* snapButton = new SceneNode();
+	snapButton->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
+	snapButton->setMesh(cubeMesh);
+	snapButton->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, -1.1f, 0.0f))
+		* MatrixFactory::scalingMatrix(Vector3d(6.0f, 1.8f, 0.5f))
+	);
+	snapButton->addTexture(snap_button);
+
+	TextureInfo* exit_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("exit_esc"));
+
+	SceneNode* exitButton = new SceneNode();
+	exitButton->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
+	exitButton->setMesh(cubeMesh);
+	exitButton->setMatrix(
+		MatrixFactory::translationMatrix(Vector3d(0.0f, -2.0f, 0.0f))
+		* MatrixFactory::scalingMatrix(Vector3d(6.0f, 1.8f, 0.5f))
+	);
+	exitButton->addTexture(exit_button);
+
+#pragma endregion
+}
+
+void createEscMenuGraph()
+{
+	Mesh* mesh = new Mesh();
+	MeshManager::getInstance()->add(CUBE_MESH, mesh);
+
+	string s = string("../objs/cube5.obj");
+	mesh->init(s);
+
+	SceneGraph* escMenuScenegraph = new SceneGraph();
+	escMenuScenegraph->setCamera(&camera);
+	SceneGraphManager::getInstance()->add(ESC_MENU_SCENE_GRAPH, escMenuScenegraph);
+
+	SceneNode* n = escMenuScenegraph->getRoot();
+	n->setShaderProgram(ShaderProgramManager::getInstance()->get(MENU_SHADER));
+
+	createEscMenuEnvironment();
+
+	escMenuScenegraph->init(*(ShaderProgramManager::getInstance()->get(MENU_SHADER)));
+}
+
 void drawScene()
 {
-	SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->draw();
+	if (menuIshowing) {
+		SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->draw();
+	}
+
+	else if (pause) {
+		SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->draw();
+	}
+
+	else {
+		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->draw();
+	}
 
 #ifndef ERROR_CALLBACK
 	ErrorHandler::checkOpenGLError("ERROR: Could not draw scene.");
@@ -525,8 +784,10 @@ int mouse_pressed = 0;
 
 void mouse_callback(GLFWwindow* win, double xpos, double ypos)
 {
-	camera.look(xpos, ypos, mouse_pressed);
-
+	if (menuIshowing == false && pause == false) {
+		camera.look(xpos, ypos, mouse_pressed);
+	}
+	
 }
 
 void mouse_button_callback(GLFWwindow* win, int button, int action, int mods)
@@ -637,25 +898,33 @@ GLFWwindow* setup(int major, int minor,
 
 	ShaderProgram* shaders = new ShaderProgram();
 	shaders->addUniform(COLOR_UNIFORM);
-	//shaders->addUniform("Texture_1");
-	//shaders->addUniform("NoiseTexture");
 	shaders->init(vertexShaderPath, fragmentShaderPath, tcoords, normals);
 	ShaderProgramManager::getInstance()->add(MAIN_SHADER, shaders);
 
+	ShaderProgram* menu_shaders = new ShaderProgram();
+	menu_shaders->addUniform(COLOR_UNIFORM);
+	menu_shaders->addUniform("Texture_1");
+	menu_shaders->init(vertexShaderPath_Texture, fragmentShaderPath_Menu, tcoords, normals);
+	ShaderProgramManager::getInstance()->add(MENU_SHADER, menu_shaders);
+
+	ShaderProgram* m_shaders = new ShaderProgram();
+	m_shaders->addUniform(COLOR_UNIFORM);
+	m_shaders->addUniform("Texture_1");
+	m_shaders->addUniform("NoiseTexture");
+
+	m_shaders->init(vertexShaderPath_Texture, fragmentShaderPath_Texture, tcoords, normals);
+	ShaderProgramManager::getInstance()->add("Marble", m_shaders);
 
 	ShaderProgram* g_shaders = new ShaderProgram();
-	//g_shaders->addAttribute("inVertex", VERTICES);
-	//g_shaders->addAttribute("inTexcoords", TEXCOORDS);
-	//g_shaders->addAttribute("inNormal", NORMALS);
 	g_shaders->addUniform(COLOR_UNIFORM);
-	//g_shaders->addUniform("ModelMatrix");
-	g_shaders->addUniform("Texture_1");
 	g_shaders->addUniform("NoiseTexture");
 
-	g_shaders->init(vertexShaderPath_Texture, fragmentShaderPath_Texture, tcoords, normals);
+	g_shaders->init(vertexShaderPath_Texture, fragmentShaderPath_Granite, tcoords, normals);
 	ShaderProgramManager::getInstance()->add("Granite", g_shaders);
 
 	createTextures();
+	createEscMenuGraph();
+	createMainMenuGraph();
 	createSceneGraph();
 
 	return win;

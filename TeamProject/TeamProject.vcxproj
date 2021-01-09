@@ -166,7 +166,6 @@
     <ClCompile Include="Vector4d.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Atexture.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ErrorHandler.h" />
     <ClInclude Include="GLStatics.h" />
@@ -194,17 +193,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\fragmentShader.glsl" />
-    <None Include="..\Resources\GraniteFS _Tiles.glsl" />
-    <None Include="..\Resources\GraniteFS.glsl" />
-    <None Include="..\Resources\GraniteFS_2D.glsl" />
     <None Include="..\Resources\GraniteFS_3D.glsl" />
-    <None Include="..\Resources\GraniteFS_Normal.glsl" />
-    <None Include="..\Resources\GraniteVS.glsl" />
-    <None Include="..\Resources\texture_fs.glsl" />
+    <None Include="..\Resources\MarbleFS_HL.glsl" />
+    <None Include="..\Resources\MarbleFS.glsl" />
+    <None Include="..\Resources\GraniteFS_Light.glsl" />
+    <None Include="..\Resources\MarbleFS_3D.glsl" />
+    <None Include="..\Resources\MarbleFS_Normal.glsl" />
+    <None Include="..\Resources\MarbleVS.glsl" />
+    <None Include="..\Resources\Menu_FS.glsl" />
     <None Include="..\Resources\texture_vs.glsl" />
     <None Include="..\Resources\vertexShader.glsl" />
-    <None Include="..\Resources\wtv_fs.glsl" />
-    <None Include="..\Resources\wtv_fs_3D.glsl" />
+    <None Include="..\Resources\Marble.glsl" />
+    <None Include="..\Resources\GraniteFS.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
