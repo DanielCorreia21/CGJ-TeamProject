@@ -76,6 +76,10 @@ void loadDefaultTextures() {
 	Texture3D* texture_1 = new Texture3D();
 	texture_1->createPerlinNoise(128, 7, 7, 7, 2, 2, 8);
 	TextureManager::getInstance()->add("granite", (Texture*)texture_1);
+
+	Texture3D* texture_wood = new Texture3D();
+	//texture_wood->createPerlinNoise(128, 5, 5, 5, 2, 2, 8);
+	TextureManager::getInstance()->add("wood", (Texture*)texture_wood);
 }
 
 void loadDefaultPreDrawFunctions() {
@@ -120,6 +124,15 @@ void createShaders() {
 
 	g_shaders->init(textureVertexShaderPath, graniteFragmentShaderPath);
 	ShaderProgramManager::getInstance()->add(FRAME_SHADER, g_shaders);
+
+	//Wood Shader
+	ShaderProgram* w_shaders = new ShaderProgram();
+	w_shaders->addUniform(COLOR_UNIFORM);
+	w_shaders->addUniform(TEXTURE_UNIFORM_COLOR);
+	w_shaders->addUniform(TEXTURE_UNIFORM_NOISE);
+
+	w_shaders->init(textureVertexShaderPath, woodFragmentShaderPath);
+	ShaderProgramManager::getInstance()->add(BACKBOARD_SHADER, w_shaders);
 }
 
 void createTextures() {
@@ -215,14 +228,17 @@ void createEnvironmentSceneGraph()
 	Mesh* cubeMesh = MeshManager::getInstance()->get(CUBE_MESH);
 	Mesh* discMesh = MeshManager::getInstance()->get(DISC_MESH);
 
-	#pragma region backboard
+#pragma region backboard
+	TextureInfo* tinfo_wood = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_NOISE, TextureManager::getInstance()->get("wood"));
+	ShaderProgram* backboardShader = ShaderProgramManager::getInstance()->get(BACKBOARD_SHADER);
 	SceneNode* backboard = new SceneNode();
 	backboard->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
 	backboard->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("BlueColor"));
 	backboard->setMesh(cubeMesh);
 	backboard->setMatrix(
-		MatrixFactory::scalingMatrix(Vector3d(11.0f,11.0f,1.0f))
+		MatrixFactory::scalingMatrix(Vector3d(11.0f, 11.0f, 1.0f))
 	);
+	backboard->setShaderProgram(backboardShader);
 
 #pragma endregion
 

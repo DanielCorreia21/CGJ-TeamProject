@@ -229,5 +229,8 @@
     <None Include="..\Resources\menu_fs.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\Resources\wood_fs.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
