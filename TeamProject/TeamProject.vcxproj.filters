@@ -214,13 +214,19 @@
     <None Include="..\Resources\marble_fs.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Resources\marble_vs.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\Resources\color_fs.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\Resources\color_vs.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\texture_vs.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\granite_fs.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Resources\menu_fs.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

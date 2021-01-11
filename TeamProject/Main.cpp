@@ -39,6 +39,7 @@ using namespace std;
 
 #pragma region AppInstances
 Camera* camera;
+//Camera* camera_default;
 SceneFileHandler* sceneFileHandler;
 SlidePuzzleGameFileHandler* slidePuzzleGameFileHandler;
 GameSlidingPuzzle* game;
@@ -69,9 +70,14 @@ void loadDefaultTextures() {
 	//These are textures that I cannot recreate unless I start storing a lot of things, which doens't make sense.
 	//Therefore, these textures are loaded on startup
 	Texture3D* texture_0 = new Texture3D();
-	texture_0->createPerlinNoise(128, 5, 5, 5, 2, 2, 8);
+	texture_0->createPerlinNoise(128, 7, 7, 7, 2, 2, 8);
 	TextureManager::getInstance()->add("marble", (Texture*)texture_0);
+
+	Texture3D* texture_1 = new Texture3D();
+	texture_1->createPerlinNoise(128, 7, 7, 7, 2, 2, 8);
+	TextureManager::getInstance()->add("granite", (Texture*)texture_1);
 }
+
 void loadDefaultPreDrawFunctions() {
 	int len = sizeof(preDrawFunc) / sizeof(preDrawFunc[0]);
 	for (int i = 0; i < len; i++) {
@@ -82,35 +88,41 @@ void loadDefaultPreDrawFunctions() {
 #pragma endregion
 /////////////////////////////////////////////////////////////////////////////// Create new Scene
 #pragma region SCENE
+
 void createShaders() {
+
+	//Basic Color Shader
 	ShaderProgram* shaders = new ShaderProgram();
 	shaders->addUniform(COLOR_UNIFORM);
 	shaders->init(colorVertexShaderPath, colorFragmentShaderPath);
 	ShaderProgramManager::getInstance()->add(COLOR_SHADER, shaders);
 
+	//Menu Shader
+	ShaderProgram* menu_shaders = new ShaderProgram();
+	menu_shaders->addUniform(COLOR_UNIFORM);
+	menu_shaders->addUniform(TEXTURE_UNIFORM_COLOR);
+	menu_shaders->init(textureVertexShaderPath, menuFragmentShaderPath);
+	ShaderProgramManager::getInstance()->add(MENU_SHADER, menu_shaders);
 
+	//Marble Shader
+	ShaderProgram* m_shaders = new ShaderProgram();
+	m_shaders->addUniform(COLOR_UNIFORM);
+	m_shaders->addUniform(TEXTURE_UNIFORM_COLOR);
+	m_shaders->addUniform(TEXTURE_UNIFORM_NOISE);
+
+	m_shaders->init(textureVertexShaderPath, marbleFragmentShaderPath);
+	ShaderProgramManager::getInstance()->add(PIECES_SHADER, m_shaders);
+
+	//Granite Shader
 	ShaderProgram* g_shaders = new ShaderProgram();
 	g_shaders->addUniform(COLOR_UNIFORM);
-	g_shaders->addUniform(TEXTURE_UNIFORM_COLOR);
 	g_shaders->addUniform(TEXTURE_UNIFORM_NOISE);
 
-	g_shaders->init(textureVertexShaderPath, textureFragmentShaderPath);
-	ShaderProgramManager::getInstance()->add(PIECES_SHADER, g_shaders);
+	g_shaders->init(textureVertexShaderPath, graniteFragmentShaderPath);
+	ShaderProgramManager::getInstance()->add(FRAME_SHADER, g_shaders);
 }
 
 void createTextures() {
-
-	#pragma region materials
-
-	Texture3D* texture = new Texture3D();
-	texture->createPerlinNoise(128, 7, 7, 7, 2, 2, 8);
-	TextureManager::getInstance()->add("marble", (Texture*)texture);
-
-	Texture3D* texture_0 = new Texture3D();
-	texture_0->createPerlinNoise(128, 7, 7, 7, 2, 2, 8);
-	TextureManager::getInstance()->add("granite", (Texture*)texture_0);
-
-	#pragma endregion
 
 	#pragma region numbers
 
@@ -216,17 +228,19 @@ void createEnvironmentSceneGraph()
 
 	#pragma region frame
 
+	TextureInfo* tinfo_f = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_NOISE, TextureManager::getInstance()->get("granite"));
+	ShaderProgram* frameShader = ShaderProgramManager::getInstance()->get(FRAME_SHADER);
 
 	SceneNode* frame = new SceneNode();
 	frame->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
-	frame->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
+	//frame->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frame->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 0.0f, 0.8f))
 	);
 
 	SceneNode* frameUp = new SceneNode();
 	frameUp->setParent(frame);
-	frameUp->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
+	//frameUp->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameUp->setMesh(cubeMesh);
 
 	//UP Frame
@@ -234,39 +248,47 @@ void createEnvironmentSceneGraph()
 		MatrixFactory::translationMatrix(Vector3d(0.0f, 2.0f, 0.0f))
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
+	frameUp->setShaderProgram(frameShader);
+	frameUp->addTexture(tinfo_f);
 
 	//Define positions and rotations of other frame components
 	//Down
 	SceneNode* frameDown = new SceneNode();
 	frameDown->setParent(frame);
-	frameDown->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
+	//frameDown->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameDown->setMesh(cubeMesh);
 	frameDown->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(0.0f, -2.0f, 0.0f))
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
+	frameDown->setShaderProgram(frameShader);
+	frameDown->addTexture(tinfo_f);
 
 	//Right
 	SceneNode* frameRight = new SceneNode();
 	frameRight->setParent(frame);
-	frameRight->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
+	//frameRight->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameRight->setMesh(cubeMesh);
 	frameRight->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(2.0f, 0.0f, 0.0f))
 		* MatrixFactory::rotateZMatrix(90)
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
+	frameRight->setShaderProgram(frameShader);
+	frameRight->addTexture(tinfo_f);
 
 	//Left
 	SceneNode* frameLeft = new SceneNode();
 	frameLeft->setParent(frame);
-	frameLeft->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
+	//frameLeft->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("RedColor"));
 	frameLeft->setMesh(cubeMesh);
 	frameLeft->setMatrix(
 		MatrixFactory::translationMatrix(Vector3d(-2.0f, 0.0f, 0.0f))
 		* MatrixFactory::rotateZMatrix(90)
 		* MatrixFactory::scalingMatrix(Vector3d(11.0f, 1.0f, 3.0f))
 	);
+	frameLeft->setShaderProgram(frameShader);
+	frameLeft->addTexture(tinfo_f);
 
 #pragma endregion
 
@@ -403,7 +425,6 @@ void createSceneGraph()
 	SceneNode* n = slidingPuzzleScenegraph->getRoot();
 	n->setShaderProgram(ShaderProgramManager::getInstance()->get(COLOR_SHADER));
 
-
 	createEnvironmentSceneGraph();
 
 	slidingPuzzleScenegraph->init();
@@ -415,11 +436,11 @@ void createMainMenuEnvironment()
 
 #pragma region fundo
 
-	TextureInfo* fundo = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("fundo_main"));
+	TextureInfo* fundo = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_COLOR, TextureManager::getInstance()->get("fundo_main"));
 
 	SceneNode* plane = new SceneNode();
 	plane->setParent(SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->getRoot());
-	plane->setPreDrawFun(setBlueColor);
+	plane->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("BlueColor"));
 	plane->setMesh(cubeMesh);
 	plane->setMatrix(
 		MatrixFactory::scalingMatrix(Vector3d(15.0f, 15.0f, 0.1f))
@@ -430,7 +451,7 @@ void createMainMenuEnvironment()
 
 #pragma region top text
 
-	TextureInfo* game_name = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("title"));
+	TextureInfo* game_name = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_COLOR, TextureManager::getInstance()->get("title"));
 
 	SceneNode* text = new SceneNode();
 	text->setParent(SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->getRoot());
@@ -445,7 +466,7 @@ void createMainMenuEnvironment()
 
 #pragma region buttons
 
-	TextureInfo* start_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("new_game"));
+	TextureInfo* start_button = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_COLOR, TextureManager::getInstance()->get("new_game"));
 
 	SceneNode* startButton = new SceneNode();
 	startButton->setParent(SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->getRoot());
@@ -456,7 +477,7 @@ void createMainMenuEnvironment()
 	);
 	startButton->addTexture(start_button);
 
-	TextureInfo* load_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("load_game"));
+	TextureInfo* load_button = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_COLOR, TextureManager::getInstance()->get("load_game"));
 
 	SceneNode* loadButton = new SceneNode();
 	loadButton->setParent(SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->getRoot());
@@ -467,7 +488,7 @@ void createMainMenuEnvironment()
 	);
 	loadButton->addTexture(load_button);
 
-	TextureInfo* exit_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("exit_main"));
+	TextureInfo* exit_button = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_COLOR, TextureManager::getInstance()->get("exit_main"));
 
 	SceneNode* exitButton = new SceneNode();
 	exitButton->setParent(SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->getRoot());
@@ -484,13 +505,13 @@ void createMainMenuEnvironment()
 void createMainMenuGraph()
 {
 	Mesh* mesh = new Mesh();
-	MeshManager::getInstance()->add(CUBE_MESH, mesh);
-
-	string s = string("../objs/cube5.obj");
+	string s = string(cubeMeshPath);
 	mesh->init(s);
 
+	MeshManager::getInstance()->add(CUBE_MESH, mesh);
+
 	SceneGraph* menuScenegraph = new SceneGraph();
-	menuScenegraph->setCamera(&camera);
+	menuScenegraph->setCamera(camera);
 	SceneGraphManager::getInstance()->add(MENU_SCENE_GRAPH, menuScenegraph);
 
 	SceneNode* n = menuScenegraph->getRoot();
@@ -498,7 +519,7 @@ void createMainMenuGraph()
 
 	createMainMenuEnvironment();
 
-	menuScenegraph->init(*(ShaderProgramManager::getInstance()->get(MENU_SHADER)));
+	menuScenegraph->init();
 }
 
 void createEscMenuEnvironment()
@@ -507,11 +528,11 @@ void createEscMenuEnvironment()
 
 #pragma region fundo
 
-	TextureInfo* fundo = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("fundo_esc"));
+	TextureInfo* fundo = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_COLOR, TextureManager::getInstance()->get("fundo_esc"));
 
 	SceneNode* plane = new SceneNode();
 	plane->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
-	plane->setPreDrawFun(setBlueColor);
+	plane->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("BlueColor"));
 	plane->setMesh(cubeMesh);
 	plane->setMatrix(
 		MatrixFactory::scalingMatrix(Vector3d(15.0f, 15.0f, 0.1f))
@@ -522,7 +543,7 @@ void createEscMenuEnvironment()
 
 #pragma region buttons
 
-	TextureInfo* continue_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("continue"));
+	TextureInfo* continue_button = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_COLOR, TextureManager::getInstance()->get("continue"));
 
 	SceneNode* continueButton = new SceneNode();
 	continueButton->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
@@ -533,7 +554,7 @@ void createEscMenuEnvironment()
 	);
 	continueButton->addTexture(continue_button);
 
-	TextureInfo* save_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("save"));
+	TextureInfo* save_button = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_COLOR, TextureManager::getInstance()->get("save"));
 
 	SceneNode* saveButton = new SceneNode();
 	saveButton->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
@@ -544,7 +565,7 @@ void createEscMenuEnvironment()
 	);
 	saveButton->addTexture(save_button);
 
-	TextureInfo* load_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("load"));
+	TextureInfo* load_button = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_COLOR, TextureManager::getInstance()->get("load"));
 
 	SceneNode* loadButton = new SceneNode();
 	loadButton->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
@@ -555,7 +576,7 @@ void createEscMenuEnvironment()
 	);
 	loadButton->addTexture(load_button);
 
-	TextureInfo* snap_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("snap"));
+	TextureInfo* snap_button = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_COLOR, TextureManager::getInstance()->get("snap"));
 
 	SceneNode* snapButton = new SceneNode();
 	snapButton->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
@@ -566,7 +587,7 @@ void createEscMenuEnvironment()
 	);
 	snapButton->addTexture(snap_button);
 
-	TextureInfo* exit_button = new TextureInfo(GL_TEXTURE0, 0, "Texture_1", TextureManager::getInstance()->get("exit_esc"));
+	TextureInfo* exit_button = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_COLOR, TextureManager::getInstance()->get("exit_esc"));
 
 	SceneNode* exitButton = new SceneNode();
 	exitButton->setParent(SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->getRoot());
@@ -583,13 +604,13 @@ void createEscMenuEnvironment()
 void createEscMenuGraph()
 {
 	Mesh* mesh = new Mesh();
-	MeshManager::getInstance()->add(CUBE_MESH, mesh);
-
-	string s = string("../objs/cube5.obj");
+	string s = string(cubeMeshPath);
 	mesh->init(s);
 
+	MeshManager::getInstance()->add(CUBE_MESH, mesh);
+
 	SceneGraph* escMenuScenegraph = new SceneGraph();
-	escMenuScenegraph->setCamera(&camera);
+	escMenuScenegraph->setCamera(camera);
 	SceneGraphManager::getInstance()->add(ESC_MENU_SCENE_GRAPH, escMenuScenegraph);
 
 	SceneNode* n = escMenuScenegraph->getRoot();
@@ -597,7 +618,7 @@ void createEscMenuGraph()
 
 	createEscMenuEnvironment();
 
-	escMenuScenegraph->init(*(ShaderProgramManager::getInstance()->get(MENU_SHADER)));
+	escMenuScenegraph->init();
 }
 
 void drawScene()
@@ -617,6 +638,91 @@ void drawScene()
 #ifndef ERROR_CALLBACK
 	ErrorHandler::checkOpenGLError("ERROR: Could not draw scene.");
 #endif
+}
+
+void createMenus() {
+	camera = new Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
+
+	createShaders();
+	createTextures();
+	createEscMenuGraph();
+	createMainMenuGraph();
+}
+
+void createNewSlidePuzzleGame() {
+	//camera = new Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
+
+	createSceneGraph();
+
+	//Start the slide puzzle game
+	//Hardcoded: The third child of the sceneGraph's root node should be the piece's root node
+	game = new GameSlidingPuzzle(
+		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot()->getChildren().at(2)
+		, 8);
+	game->scramblePieces();
+	game->setMouseMode(GameSlidingPuzzle::MouseMode::Drag);
+}
+
+void evalButton(GLFWwindow* win, float xpos, float ypos) {
+
+	if (menuIshowing) { //Main menu
+		//New Game
+		if ((xpos >= 190.0f && xpos <= 445.0f) && (ypos >= 230.0f && ypos <= 298.0f)) {
+			createNewSlidePuzzleGame();
+			buttonPressed = true;
+		}
+		//Load Game
+		else if ((xpos >= 190.0f && xpos <= 445.0f) && (ypos >= 340.0f && ypos <= 408.0f)) {
+			cout << "Loading game...\n";
+			SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
+			camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
+
+			slidePuzzleGameFileHandler->loadGame(game);
+			game->reload(scene->getRoot()->getChildren().at(2)); //Update/Reload references to nodes
+			game->setPiecePositions(slidePuzzleGameFileHandler->piecesPositions); //Update positions of nodes in game
+			buttonPressed = true;
+		}
+		//Exit Game
+		else if ((xpos >= 190.0f && xpos <= 445.0f) && (ypos >= 460.0f && ypos <= 528.0f)) {
+			exitgame = true;
+			buttonPressed = true;
+		}
+	}
+
+	else if (pause) { //Menu Pausa (ESC)
+		//Continue
+		if ((xpos >= 188.0f && xpos <= 445.0f) && (ypos >= 90.0f && ypos <= 152.0f)) {
+			buttonPressed = true;
+		}
+		//Save
+		else if ((xpos >= 188.0f && xpos <= 445.0f) && (ypos >= 200.0f && ypos <= 262.0f)) {
+			cout << "Saving game...\n";
+			sceneFileHandler->saveScene(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH));
+			slidePuzzleGameFileHandler->saveGame(game);
+			buttonPressed = true;
+		}
+		//Load
+		else if ((xpos >= 188.0f && xpos <= 445.0f) && (ypos >= 310.0f && ypos <= 372.0f)) {
+			cout << "Loading game...\n";
+			SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
+			camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
+
+			slidePuzzleGameFileHandler->loadGame(game);
+			game->reload(scene->getRoot()->getChildren().at(2)); //Update/Reload references to nodes
+			game->setPiecePositions(slidePuzzleGameFileHandler->piecesPositions); //Update positions of nodes in game
+			buttonPressed = true;
+		}
+		//Snap
+		else if ((xpos >= 188.0f && xpos <= 445.0f) && (ypos >= 418.0f && ypos <= 478.0f)) {
+			//Take a  snapshot
+			buttonPressed = true;
+		}
+		//Exit
+		else if ((xpos >= 188.0f && xpos <= 445.0f) && (ypos >= 532.0f && ypos <= 584.0f)) {
+			exitomenu = true;
+			buttonPressed = true;
+		}
+	}
 }
 
 #pragma endregion
@@ -643,18 +749,23 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
-		glfwSetWindowShouldClose(win, GLFW_TRUE);
-		window_close_callback(win);
+		if (menuIshowing == false) {
+			pause = true;
+		}
 	}
 	game->handleKeyboardInput(key, action);
 
 	if (action == GLFW_PRESS || action == GLFW_RELEASE) {
-		camera->updateCameraPos(key, action);
+		if (menuIshowing == false && pause == false) {
+			camera->updateCameraPos(key, action);
+		}
 	}
 
 	if (key == GLFW_KEY_E && action == GLFW_PRESS)
 	{
-		camera->changeProjectionType();
+		if (menuIshowing == false && pause == false) {
+			camera->changeProjectionType();
+		}
 	}
 
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS)
@@ -706,8 +817,10 @@ int left_mouse_pressed = 0;
 
 void mouse_callback(GLFWwindow* win, double xpos, double ypos)
 {
-	camera->look((float) xpos, (float) ypos, right_mouse_pressed);
-	game->handleMouseDrag((float)xpos, (float)ypos, left_mouse_pressed);
+	if (menuIshowing == false && pause == false) {
+		camera->look((float)xpos, (float)ypos, right_mouse_pressed);
+		game->handleMouseDrag((float)xpos, (float)ypos, left_mouse_pressed);
+	}
 }
 
 void mouse_button_callback(GLFWwindow* win, int button, int action, int mods)
@@ -715,22 +828,68 @@ void mouse_button_callback(GLFWwindow* win, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_RIGHT) {
 		right_mouse_pressed = action;
 	}
+
 	else if (button == GLFW_MOUSE_BUTTON_LEFT) {
-		if (action == GLFW_PRESS) {
-			double xpos, ypos;
-			glfwGetCursorPos(win, &xpos, &ypos);
 
-			int viewport[4];
-			glGetIntegerv(GL_VIEWPORT, viewport);
+		//Se não estiver num Menu
+		if (menuIshowing == false && pause == false) {
 
-			GLint index;
-			glReadPixels((GLint)xpos, (GLint)(viewport[3] - ypos), 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+			if (action == GLFW_PRESS) {
+				double xpos, ypos;
+				glfwGetCursorPos(win, &xpos, &ypos);
 
-			game->handleMouseClick((float)xpos, (float)ypos, index);
+				int viewport[4];
+				glGetIntegerv(GL_VIEWPORT, viewport);
+
+				GLint index;
+				glReadPixels((GLint)xpos, (GLint)(viewport[3] - ypos), 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+
+				game->handleMouseClick((float)xpos, (float)ypos, index);
+			}
+			else if (action == GLFW_RELEASE) {
+				game->releasePiece();
+			}
 		}
-		else if (action == GLFW_RELEASE) {
-			game->releasePiece();
+
+		else { //Quando está num menu
+
+			if (action == GLFW_PRESS) {
+
+				double xpos, ypos;
+				glfwGetCursorPos(win, &xpos, &ypos);
+
+				evalButton(win, (float)xpos, (float)ypos);
+				std::cout << "fiz eval" << std::endl;
+			}
+
+			else if (action == GLFW_RELEASE) {
+
+				//Main Menu
+				if (menuIshowing && buttonPressed && exitgame) { //Se foi carregado o botão exit
+					glfwSetWindowShouldClose(win, GLFW_TRUE);
+					window_close_callback(win);
+				}
+
+				else if (menuIshowing && buttonPressed) { //Se foi carregado um botão
+					menuIshowing = false;
+					buttonPressed = false;
+				}
+
+				//Pausa (ESC MENU)
+				else if (pause && buttonPressed && exitomenu) { //Se foi carregado o botão exit
+					pause = false;
+					buttonPressed = false;
+					exitomenu = false;
+					menuIshowing = true;
+				}
+
+				else if (pause && buttonPressed) { //Se foi carregado um botão
+					pause = false;
+					buttonPressed = false;
+				}
+			}
 		}
+
 		left_mouse_pressed = action;
 	}
 }
@@ -842,6 +1001,8 @@ GLFWwindow* setup(int major, int minor,
 	//First, load the default "assets" the app needs
 	loadDefaultTextures();
 	loadDefaultPreDrawFunctions();
+
+	createMenus();
 
 	// By default, we always start a new game, on a new scene
 	createNewSlidePuzzleGame(); 

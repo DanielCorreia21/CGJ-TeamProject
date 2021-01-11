@@ -25,7 +25,8 @@ void main(void)
 		vec4 tex = texture(Texture, exTexcoord);
 
 		float intensity = clamp(noise, 0.0, 1.0);
-		vec3 color = mix(colour1, colour2, intensity*2);
-		FragmentColor = mix(tex, vec4(color,1.0), 0.5);
+		//intensity = cos(exVertex.x + intensity*2)*0.5 + 0.5;
+		vec3 color = mix(colour1, colour2, intensity*2); //sem2
+		FragmentColor = mix(tex, vec4(color,1.0), 0.5); //0.8
 	}
 }
