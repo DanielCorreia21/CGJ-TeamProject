@@ -30,6 +30,8 @@ public:
 	CameraType currentType;
 	RotationMode currentRotation;
 	Vector3d translationVector;
+	Matrix4d initialView;
+	int menu;
 
 	Camera(Vector3d eye, Vector3d front, Vector3d up);
 	Matrix4d getOrthoProj(double left, double right, double bottom, double top, double near, double far);

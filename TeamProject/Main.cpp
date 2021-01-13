@@ -640,14 +640,17 @@ void createEscMenuGraph()
 void drawScene()
 {
 	if (menuIshowing) {
+		camera->menu = 1;
 		SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->draw();
 	}
 
 	else if (pause) {
+		camera->menu = 1;
 		SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->draw();
 	}
 
 	else {
+		camera->menu = 0;
 		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->draw();
 	}
 
@@ -692,7 +695,6 @@ void evalButton(GLFWwindow* win, float xpos, float ypos) {
 			cout << "Loading game...\n";
 			SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
 			camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
-
 			slidePuzzleGameFileHandler->loadGame(game);
 			game->reload(scene->getRoot()->getChildren().at(2)); //Update/Reload references to nodes
 			game->setPiecePositions(slidePuzzleGameFileHandler->piecesPositions); //Update positions of nodes in game
@@ -722,7 +724,6 @@ void evalButton(GLFWwindow* win, float xpos, float ypos) {
 			cout << "Loading game...\n";
 			SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
 			camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
-
 			slidePuzzleGameFileHandler->loadGame(game);
 			game->reload(scene->getRoot()->getChildren().at(2)); //Update/Reload references to nodes
 			game->setPiecePositions(slidePuzzleGameFileHandler->piecesPositions); //Update positions of nodes in game
@@ -990,7 +991,7 @@ void setupOpenGL(int winx, int winy)
 #if _DEBUG
 	checkOpenGLInfo();
 #endif
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
