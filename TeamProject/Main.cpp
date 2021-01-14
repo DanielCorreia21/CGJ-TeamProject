@@ -76,6 +76,10 @@ void loadDefaultTextures() {
 	Texture3D* texture_1 = new Texture3D();
 	texture_1->createPerlinNoise(128, 7, 7, 7, 2, 2, 8);
 	TextureManager::getInstance()->add("granite", (Texture*)texture_1);
+
+	Texture3D* texture_wood = new Texture3D();
+	//texture_wood->createPerlinNoise(128, 5, 5, 5, 2, 2, 8);
+	TextureManager::getInstance()->add("wood", (Texture*)texture_wood);
 }
 
 void loadDefaultPreDrawFunctions() {
@@ -120,6 +124,15 @@ void createShaders() {
 
 	g_shaders->init(textureVertexShaderPath, graniteFragmentShaderPath);
 	ShaderProgramManager::getInstance()->add(FRAME_SHADER, g_shaders);
+
+	//Wood Shader
+	ShaderProgram* w_shaders = new ShaderProgram();
+	w_shaders->addUniform(COLOR_UNIFORM);
+	w_shaders->addUniform(TEXTURE_UNIFORM_COLOR);
+	w_shaders->addUniform(TEXTURE_UNIFORM_NOISE);
+
+	w_shaders->init(textureVertexShaderPath, woodFragmentShaderPath);
+	ShaderProgramManager::getInstance()->add(BACKBOARD_SHADER, w_shaders);
 }
 
 void createTextures() {
@@ -215,14 +228,17 @@ void createEnvironmentSceneGraph()
 	Mesh* cubeMesh = MeshManager::getInstance()->get(CUBE_MESH);
 	Mesh* discMesh = MeshManager::getInstance()->get(DISC_MESH);
 
-	#pragma region backboard
+#pragma region backboard
+	TextureInfo* tinfo_wood = new TextureInfo(GL_TEXTURE0, 0, TEXTURE_UNIFORM_NOISE, TextureManager::getInstance()->get("wood"));
+	ShaderProgram* backboardShader = ShaderProgramManager::getInstance()->get(BACKBOARD_SHADER);
 	SceneNode* backboard = new SceneNode();
 	backboard->setParent(SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->getRoot());
 	backboard->setPreDrawFun(PreDrawFunctionManager::getInstance()->get("BlueColor"));
 	backboard->setMesh(cubeMesh);
 	backboard->setMatrix(
-		MatrixFactory::scalingMatrix(Vector3d(11.0f,11.0f,1.0f))
+		MatrixFactory::scalingMatrix(Vector3d(11.0f, 11.0f, 1.0f))
 	);
+	backboard->setShaderProgram(backboardShader);
 
 #pragma endregion
 
@@ -624,14 +640,17 @@ void createEscMenuGraph()
 void drawScene()
 {
 	if (menuIshowing) {
+		camera->menu = 1;
 		SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->draw();
 	}
 
 	else if (pause) {
+		camera->menu = 1;
 		SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->draw();
 	}
 
 	else {
+		camera->menu = 0;
 		SceneGraphManager::getInstance()->get(SLIDING_PUZZLE_SCENE_GRAPH)->draw();
 	}
 
@@ -676,7 +695,6 @@ void evalButton(GLFWwindow* win, float xpos, float ypos) {
 			cout << "Loading game...\n";
 			SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
 			camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
-
 			slidePuzzleGameFileHandler->loadGame(game);
 			game->reload(scene->getRoot()->getChildren().at(2)); //Update/Reload references to nodes
 			game->setPiecePositions(slidePuzzleGameFileHandler->piecesPositions); //Update positions of nodes in game
@@ -706,7 +724,6 @@ void evalButton(GLFWwindow* win, float xpos, float ypos) {
 			cout << "Loading game...\n";
 			SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
 			camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
-
 			slidePuzzleGameFileHandler->loadGame(game);
 			game->reload(scene->getRoot()->getChildren().at(2)); //Update/Reload references to nodes
 			game->setPiecePositions(slidePuzzleGameFileHandler->piecesPositions); //Update positions of nodes in game
@@ -974,7 +991,7 @@ void setupOpenGL(int winx, int winy)
 #if _DEBUG
 	checkOpenGLInfo();
 #endif
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
