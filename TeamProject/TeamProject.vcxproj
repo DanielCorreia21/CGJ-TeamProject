@@ -213,6 +213,7 @@
     <None Include="..\Resources\menu_fs.glsl" />
     <None Include="..\Resources\texture_vs.glsl" />
     <None Include="..\Resources\color_vs.glsl" />
+    <None Include="..\Resources\wood_fs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -58,6 +58,7 @@ Camera::Camera(Vector3d initialPos, Vector3d cameraOrientation, Vector3d up)
 
 	orthoMatrix = getOrthoProj(-2, 2, -2, 2, 1, 100);
 	perspectiveMatrix = getPerspectiveProj(30, 640 / 640, 1, 100);
+	initialView = MatrixFactory::translationMatrix(translationVector) * getRotationMatrix() * getViewMatrix();
 }
 
 Matrix4d Camera::getViewMatrix()
@@ -172,20 +173,24 @@ void Camera::destroyBuffer()
 
 void Camera::draw()
 {
-
+	
 	Matrix4d projMatrix = this->getProjectionMatrix();
 
 	float proj_buffer[16];
 	projMatrix.toColumnMajorArray(proj_buffer);
 
-	Matrix4d viewMatrix = this->getViewMatrix();
-
-	Matrix4d translationMatrix = MatrixFactory::translationMatrix(translationVector);
-	viewMatrix = translationMatrix * getRotationMatrix() * viewMatrix;
-
 	float view_buffer[16];
-	viewMatrix.toColumnMajorArray(view_buffer);
+	if (menu == 0) {
+		Matrix4d viewMatrix = this->getViewMatrix();
 
+		Matrix4d translationMatrix = MatrixFactory::translationMatrix(translationVector);
+		viewMatrix = translationMatrix * getRotationMatrix() * viewMatrix;
+		
+		viewMatrix.toColumnMajorArray(view_buffer);
+	}
+	else {
+		initialView.toColumnMajorArray(view_buffer);
+	}
 
 
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
