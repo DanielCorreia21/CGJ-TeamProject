@@ -59,6 +59,7 @@ Camera::Camera(Vector3d initialPos, Vector3d cameraOrientation, Vector3d up)
 	orthoMatrix = getOrthoProj(-2, 2, -2, 2, 1, 100);
 	perspectiveMatrix = getPerspectiveProj(30, 640 / 640, 1, 100);
 	initialView = MatrixFactory::translationMatrix(translationVector) * getRotationMatrix() * getViewMatrix();
+	orthoMatrix = getOrthoProj(-2, 2, -2, 2, 1, 100);
 }
 
 Matrix4d Camera::getViewMatrix()
@@ -185,7 +186,7 @@ void Camera::draw()
 
 		Matrix4d translationMatrix = MatrixFactory::translationMatrix(translationVector);
 		viewMatrix = translationMatrix * getRotationMatrix() * viewMatrix;
-		
+		initialView.toColumnMajorArray(view_buffer);
 		viewMatrix.toColumnMajorArray(view_buffer);
 	}
 	else {

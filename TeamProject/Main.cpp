@@ -724,6 +724,10 @@ void evalButton(GLFWwindow* win, float xpos, float ypos) {
 			cout << "Loading game...\n";
 			SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
 			camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
+
+			SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH) -> setCamera(camera);
+			SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->setCamera(camera);
+
 			slidePuzzleGameFileHandler->loadGame(game);
 			game->reload(scene->getRoot()->getChildren().at(2)); //Update/Reload references to nodes
 			game->setPiecePositions(slidePuzzleGameFileHandler->piecesPositions); //Update positions of nodes in game
@@ -804,6 +808,9 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 		SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
 		camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
 
+		SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->setCamera(camera);
+		SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->setCamera(camera);
+
 		slidePuzzleGameFileHandler->loadGame(game);
 		game->reload(scene->getRoot()->getChildren().at(2)); //Update/Reload references to nodes
 		game->setPiecePositions(slidePuzzleGameFileHandler->piecesPositions); //Update positions of nodes in game
@@ -876,7 +883,6 @@ void mouse_button_callback(GLFWwindow* win, int button, int action, int mods)
 				glfwGetCursorPos(win, &xpos, &ypos);
 
 				evalButton(win, (float)xpos, (float)ypos);
-				std::cout << "fiz eval" << std::endl;
 			}
 
 			else if (action == GLFW_RELEASE) {
