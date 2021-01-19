@@ -59,6 +59,10 @@ bool exitgame = false;
 //Snapshot
 int width, height;
 float backgroundColor[] = {0.0f, 0.07f, 0.22f, 1.0f};
+
+//Mouse
+int right_mouse_pressed = 0;
+int left_mouse_pressed = 0;
 #pragma endregion
 
 /////////////////////////////////////////////////////////////////////////////// PreDrawFunctions
@@ -911,8 +915,7 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 	}
 }
 
-int right_mouse_pressed = 0;
-int left_mouse_pressed = 0;
+
 
 void mouse_callback(GLFWwindow* win, double xpos, double ypos)
 {
