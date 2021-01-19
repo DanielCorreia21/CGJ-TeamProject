@@ -58,6 +58,7 @@ bool exitgame = false;
 
 //Snapshot
 int width, height;
+float backgroundColor[] = {0.0f, 0.07f, 0.22f, 1.0f};
 #pragma endregion
 
 /////////////////////////////////////////////////////////////////////////////// PreDrawFunctions
@@ -802,7 +803,7 @@ void evalButton(GLFWwindow* win, float xpos, float ypos) {
 		//Snap
 		else if ((xpos >= 188.0f && xpos <= 445.0f) && (ypos >= 418.0f && ypos <= 478.0f)) {
 			//Take a  snapshot
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			pause = false;
 			menuIshowing = false;
@@ -1071,7 +1072,7 @@ void setupOpenGL(int winx, int winy)
 #if _DEBUG
 	checkOpenGLInfo();
 #endif
-	glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
+	glClearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
