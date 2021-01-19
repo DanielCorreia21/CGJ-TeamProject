@@ -1,4 +1,5 @@
 #include "SlidePuzzleGameFileHandler.h"
+#include <direct.h>
 
 const string gameSaveFileName = "SlidePuzzleGame";
 
@@ -85,13 +86,19 @@ void SlidePuzzleGameFileHandler::parseLine(string line) {
 }
 
 void SlidePuzzleGameFileHandler::loadGame(GameSlidingPuzzle* game) {
+
+	if (_mkdir(saves_dir.c_str()) == ENOENT) {
+		cout << "Could not load game. Path not found.";
+		return;
+	}
+
 	this->emptyPos = -1;
 	this->piecesPositions = vector<int>();
 
 	ifstream ifile("../Saves/" + gameSaveFileName + ".txt");
 	string line;
 	if (!ifile) {
-		cout << "File not loaded!";
+		cout << "Game not loaded!";
 		return;
 	}
 	while (std::getline(ifile, line))

@@ -1,3 +1,3 @@
-emptyPos 3
-piecePositions 1 2 5 -1 7 4 6 3 0 
+emptyPos 4
+piecePositions 6 7 1 0 -1 3 4 5 2 
 mouseMode drag

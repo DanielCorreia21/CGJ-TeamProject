@@ -1,5 +1,6 @@
 #include "SceneFileHandler.h"
 #include "SlidePuzzleSceneNode.h"
+#include <direct.h>
 
 using namespace std;
 
@@ -611,6 +612,11 @@ void SceneFileHandler::parseLine(string line) {
 
 SceneGraph* SceneFileHandler::loadScene(string sceneId) {
 
+	if (_mkdir(saves_dir.c_str()) == ENOENT) {
+		cout << "Could not load scene. Path not found.";
+		return NULL;
+	}
+
 #pragma region resetVariables
 	currentObjType = CurrentObjType::None;
 	sceneCamera = NULL;
@@ -620,10 +626,12 @@ SceneGraph* SceneFileHandler::loadScene(string sceneId) {
 	sceneCameras = map<Camera*, SceneGraph*>();
 #pragma endregion
 
+
+
 	ifstream ifile("../Saves/" + sceneId + ".txt");
 	string line;
 	if (!ifile) {
-		cout << "File not loaded!";
+		cout << "Scene not loaded!";
 		return NULL;
 	}
 	while (std::getline(ifile, line))

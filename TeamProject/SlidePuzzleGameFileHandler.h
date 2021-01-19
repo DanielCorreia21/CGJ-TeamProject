@@ -1,5 +1,6 @@
 #pragma once
 #include "GameSlidingPuzzle.h"
+#include "Globals.h"
 
 class SlidePuzzleGameFileHandler
 {
