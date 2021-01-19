@@ -206,6 +206,12 @@ void SceneFileHandler::saveScene(SceneGraph* scene) {
 #pragma endregion
 
 #pragma region writeToFile
+
+	if (_mkdir(saves_dir.c_str()) == ENOENT) {
+		cout << "Could not save scene. Path not found.";
+		return;
+	}
+
 	ofstream ofile;
 	ofile.open("../Saves/" + scene->getId() + ".txt", ios::out);
 	if (!ofile) {

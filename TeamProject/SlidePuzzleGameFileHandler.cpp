@@ -40,6 +40,12 @@ void SlidePuzzleGameFileHandler::saveGame(GameSlidingPuzzle* game) {
 	outputBuffer.push_back(mouseMode);
 
 #pragma region writeToFile
+
+	if (_mkdir(saves_dir.c_str()) == ENOENT) {
+		cout << "Could not save game. Path not found.";
+		return;
+	}
+
 	ofstream ofile;
 	ofile.open("../Saves/" + gameSaveFileName + ".txt", ios::out);
 	if (!ofile) {
