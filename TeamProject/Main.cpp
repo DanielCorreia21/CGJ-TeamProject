@@ -7,7 +7,9 @@
 // André Santos - 91000
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <regex>
 #include <iostream>
+#include <time.h>
 #include "Matrix2d.h"
 #include "Matrix3d.h"
 #include "MatrixFactory.h"
@@ -31,6 +33,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <FreeImage.h>
 #include "SceneFileHandler.h"
 #include "PreDrawFunction.h"
 #include "SlidePuzzleGameFileHandler.h"
@@ -43,6 +46,7 @@ Camera* camera;
 SceneFileHandler* sceneFileHandler;
 SlidePuzzleGameFileHandler* slidePuzzleGameFileHandler;
 GameSlidingPuzzle* game;
+int width, height;
 #pragma endregion
 
 /////////////////////////////////////////////////////////////////////////////// PreDrawFunctions
@@ -637,6 +641,7 @@ void createEscMenuGraph()
 	escMenuScenegraph->init();
 }
 
+
 void drawScene()
 {
 	if (menuIshowing) {
@@ -658,6 +663,45 @@ void drawScene()
 	ErrorHandler::checkOpenGLError("ERROR: Could not draw scene.");
 #endif
 }
+
+void takeSnapshot() {
+
+	const int numPixels = 3 * width * height;
+	GLubyte* pixels = (unsigned char*)malloc(numPixels * sizeof(GLubyte));
+
+	if (!pixels) {
+		std::cerr << "Error allocating memory for snapshot\n";
+		return;
+	}
+
+	GLenum format = GL_RGB;
+	if (FREEIMAGE_COLORORDER == FREEIMAGE_COLORORDER_BGR) {
+		format = GL_BGR;
+	}
+
+	glReadPixels(0, 0, width, height, format, GL_UNSIGNED_BYTE, pixels);
+
+	
+	//Use time for snapshot name
+	time_t now = time(NULL);
+	char str[26] = {};
+	ctime_s(str, 26, &now);
+	string name = regex_replace(str, regex{" "}, "_");
+	string accepted_name = regex_replace(name, regex{ ":" }, "-");
+	string directory = "../snapshots/";
+	string file_type = ".png";
+	string fullname = directory + accepted_name.substr(0, accepted_name.size() - 1) + file_type;
+
+	int stride = width * 3;
+
+	FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, stride, 24, 0, 0, 0, false);
+	FreeImage_Save(FIF_PNG, image, fullname.c_str(), 0);
+
+	// Free resources
+	FreeImage_Unload(image);
+	free(pixels);
+}
+
 
 void createMenus() {
 	camera = new Camera(Vector3d(0, 0, -10), Vector3d(0, 0, -1), Vector3d(0, 1, 0));
@@ -732,6 +776,12 @@ void evalButton(GLFWwindow* win, float xpos, float ypos) {
 		//Snap
 		else if ((xpos >= 188.0f && xpos <= 445.0f) && (ypos >= 418.0f && ypos <= 478.0f)) {
 			//Take a  snapshot
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			pause = false;
+			menuIshowing = false;
+			drawScene();
+			takeSnapshot();
 			buttonPressed = true;
 		}
 		//Exit
@@ -755,6 +805,8 @@ void window_close_callback(GLFWwindow* win)
 void window_size_callback(GLFWwindow* win, int winx, int winy)
 {
 	glViewport(0, 0, winx, winy);
+	width = winx;
+	height = winy;
 }
 
 void glfw_error_callback(int error, const char* description)
@@ -1074,9 +1126,10 @@ int main(int argc, char* argv[])
 	int gl_major = 4, gl_minor = 3;
 	int is_fullscreen = 0;
 	int is_vsync = 1;
-
+	width = 640;
+	height = 640;
 	GLFWwindow* win = setup(gl_major, gl_minor,
-		640, 640, "Team project", is_fullscreen, is_vsync);
+		width, height, "Team project", is_fullscreen, is_vsync);
 	run(win);
 
 	exit(EXIT_SUCCESS);

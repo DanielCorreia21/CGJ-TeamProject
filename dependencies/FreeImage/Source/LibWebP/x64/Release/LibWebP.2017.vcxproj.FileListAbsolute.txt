@@ -1,0 +1,1 @@
+C:\Users\danip\Desktop\CGJ-TeamProject\dependencies\FreeImage\Source\LibWebP\x64\Release\LibWebP.lib

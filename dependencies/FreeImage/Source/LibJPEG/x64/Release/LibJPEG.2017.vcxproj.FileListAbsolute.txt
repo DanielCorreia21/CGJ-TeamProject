@@ -1,0 +1,1 @@
+C:\Users\danip\Desktop\CGJ-TeamProject\dependencies\FreeImage\Source\LibJPEG\x64\Release\LibJPEG.lib

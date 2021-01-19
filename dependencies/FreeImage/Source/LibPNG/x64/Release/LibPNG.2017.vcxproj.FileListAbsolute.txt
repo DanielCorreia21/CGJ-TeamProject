@@ -1,0 +1,1 @@
+C:\Users\danip\Desktop\CGJ-TeamProject\dependencies\FreeImage\Source\LibPNG\x64\Release\LibPNG.lib
