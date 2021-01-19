@@ -44,8 +44,6 @@ public:
 	SceneNode();
 	void setParent(SceneNode* parent);
 	SceneNode* getParent();
-	//SceneNode *createNode();
-	//void addNode(SceneNode *node);
 	void setSceneGraph(SceneGraph *sceneGraph);
 	SceneGraph* getLocalSceneGraph();
 	void setMesh(Mesh* mesh);

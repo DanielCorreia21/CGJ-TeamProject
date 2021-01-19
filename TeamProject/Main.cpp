@@ -58,6 +58,11 @@ bool exitgame = false;
 
 //Snapshot
 int width, height;
+float backgroundColor[] = {0.0f, 0.07f, 0.22f, 1.0f};
+
+//Mouse
+int right_mouse_pressed = 0;
+int left_mouse_pressed = 0;
 #pragma endregion
 
 /////////////////////////////////////////////////////////////////////////////// PreDrawFunctions
@@ -685,6 +690,9 @@ void takeSnapshot() {
 		return;
 	}
 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	drawScene();
+
 	GLenum format = GL_RGB;
 	if (FREEIMAGE_COLORORDER == FREEIMAGE_COLORORDER_BGR) {
 		format = GL_BGR;
@@ -700,24 +708,25 @@ void takeSnapshot() {
 	
 
 	//creates directory if it doesnt exist
-	if (_mkdir(snapshots_directory.c_str()) != ENOENT) {
-		//if directory was created or already exists:
-
-		string name = regex_replace(str, regex{ " " }, "_");
-		string accepted_name = regex_replace(name, regex{ ":" }, "-");
-
-		string file_type = ".png";
-		string fullname = snapshots_directory + accepted_name.substr(0, accepted_name.size() - 1) + file_type;
-
-		int stride = width * 3;
-
-		FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, stride, 24, 0, 0, 0, false);
-		FreeImage_Save(FIF_PNG, image, fullname.c_str(), 0);
-
-		// Free resources
-		FreeImage_Unload(image);
-		free(pixels);
+	if (_mkdir(snapshots_directory.c_str()) == ENOENT) {
+		cerr << "Path to " + snapshots_directory + " not found!";
+		return;
 	}
+
+	string name = regex_replace(str, regex{ " " }, "_");
+	string accepted_name = regex_replace(name, regex{ ":" }, "-");
+
+	string file_type = ".png";
+	string fullname = snapshots_directory + accepted_name.substr(0, accepted_name.size() - 1) + file_type;
+
+	int stride = width * 3;
+
+	FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, stride, 24, 0, 0, 0, false);
+	FreeImage_Save(FIF_PNG, image, fullname.c_str(), 0);
+
+	// Free resources
+	FreeImage_Unload(image);
+	free(pixels);
 }
 
 
@@ -802,11 +811,9 @@ void evalButton(GLFWwindow* win, float xpos, float ypos) {
 		//Snap
 		else if ((xpos >= 188.0f && xpos <= 445.0f) && (ypos >= 418.0f && ypos <= 478.0f)) {
 			//Take a  snapshot
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 			pause = false;
 			menuIshowing = false;
-			drawScene();
 			takeSnapshot();
 			buttonPressed = true;
 		}
@@ -910,8 +917,7 @@ void key_callback(GLFWwindow* win, int key, int scancode, int action, int mods)
 	}
 }
 
-int right_mouse_pressed = 0;
-int left_mouse_pressed = 0;
+
 
 void mouse_callback(GLFWwindow* win, double xpos, double ypos)
 {
@@ -1071,7 +1077,7 @@ void setupOpenGL(int winx, int winy)
 #if _DEBUG
 	checkOpenGLInfo();
 #endif
-	glClearColor(0.1f, 0.1f, 0.5f, 1.0f);
+	glClearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
