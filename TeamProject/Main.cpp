@@ -690,6 +690,9 @@ void takeSnapshot() {
 		return;
 	}
 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	drawScene();
+
 	GLenum format = GL_RGB;
 	if (FREEIMAGE_COLORORDER == FREEIMAGE_COLORORDER_BGR) {
 		format = GL_BGR;
@@ -808,11 +811,9 @@ void evalButton(GLFWwindow* win, float xpos, float ypos) {
 		//Snap
 		else if ((xpos >= 188.0f && xpos <= 445.0f) && (ypos >= 418.0f && ypos <= 478.0f)) {
 			//Take a  snapshot
-			glClearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 			pause = false;
 			menuIshowing = false;
-			drawScene();
 			takeSnapshot();
 			buttonPressed = true;
 		}
