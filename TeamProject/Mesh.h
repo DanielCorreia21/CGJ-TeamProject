@@ -44,7 +44,6 @@ class Mesh : public Mappable
 			GLfloat nx, ny, nz;
 		} Normal;
 		GLuint ProgramId;
-		GLint ModelMatrix_UId, ViewMatrix_UId, ProjectionMatrix_UId;
 		GLuint VboVertices, VboTexcoords, VboNormals;
 		std::vector <Vertex> Vertices, vertexData;
 		std::vector <Texcoord> Texcoords, texcoordData;
