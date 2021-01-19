@@ -10,6 +10,7 @@
 #include <regex>
 #include <iostream>
 #include <time.h>
+#include <direct.h>
 #include "Matrix2d.h"
 #include "Matrix3d.h"
 #include "MatrixFactory.h"
@@ -686,20 +687,27 @@ void takeSnapshot() {
 	time_t now = time(NULL);
 	char str[26] = {};
 	ctime_s(str, 26, &now);
-	string name = regex_replace(str, regex{" "}, "_");
-	string accepted_name = regex_replace(name, regex{ ":" }, "-");
-	string directory = "../snapshots/";
-	string file_type = ".png";
-	string fullname = directory + accepted_name.substr(0, accepted_name.size() - 1) + file_type;
+	
 
-	int stride = width * 3;
+	//creates directory if it doesnt exist
+	if (_mkdir(snapshots_directory.c_str()) != ENOENT) {
+		//if directory was created or already exists:
 
-	FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, stride, 24, 0, 0, 0, false);
-	FreeImage_Save(FIF_PNG, image, fullname.c_str(), 0);
+		string name = regex_replace(str, regex{ " " }, "_");
+		string accepted_name = regex_replace(name, regex{ ":" }, "-");
 
-	// Free resources
-	FreeImage_Unload(image);
-	free(pixels);
+		string file_type = ".png";
+		string fullname = snapshots_directory + accepted_name.substr(0, accepted_name.size() - 1) + file_type;
+
+		int stride = width * 3;
+
+		FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, stride, 24, 0, 0, 0, false);
+		FreeImage_Save(FIF_PNG, image, fullname.c_str(), 0);
+
+		// Free resources
+		FreeImage_Unload(image);
+		free(pixels);
+	}
 }
 
 

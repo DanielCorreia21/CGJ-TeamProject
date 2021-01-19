@@ -31,5 +31,7 @@ const char graniteFragmentShaderPath[] = "../Resources/granite_fs.glsl";
 const char menuFragmentShaderPath[] = "../Resources/menu_fs.glsl";
 const char woodFragmentShaderPath[] = "../Resources/wood_fs.glsl";
 
+const string snapshots_directory = "../Snapshots/";
+
 const string cubeMeshPath = "../objs/cube5.obj";
 const string discMeshPath = "../objs/disc.obj";
