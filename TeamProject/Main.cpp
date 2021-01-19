@@ -43,10 +43,20 @@ using namespace std;
 
 #pragma region AppInstances
 Camera* camera;
-//Camera* camera_default;
 SceneFileHandler* sceneFileHandler;
 SlidePuzzleGameFileHandler* slidePuzzleGameFileHandler;
 GameSlidingPuzzle* game;
+#pragma endregion
+
+#pragma region HelperVariables
+//Menus
+bool menuIshowing = true;
+bool pause = false;
+bool buttonPressed = false;
+bool exitomenu = false;
+bool exitgame = false;
+
+//Snapshot
 int width, height;
 #pragma endregion
 
@@ -747,6 +757,10 @@ void evalButton(GLFWwindow* win, float xpos, float ypos) {
 			cout << "Loading game...\n";
 			SceneGraph* scene = sceneFileHandler->loadScene(SLIDING_PUZZLE_SCENE_GRAPH);
 			camera = sceneFileHandler->getCamera(scene)[0]; // We only use one camera
+
+			SceneGraphManager::getInstance()->get(MENU_SCENE_GRAPH)->setCamera(camera);
+			SceneGraphManager::getInstance()->get(ESC_MENU_SCENE_GRAPH)->setCamera(camera);
+
 			slidePuzzleGameFileHandler->loadGame(game);
 			game->reload(scene->getRoot()->getChildren().at(2)); //Update/Reload references to nodes
 			game->setPiecePositions(slidePuzzleGameFileHandler->piecesPositions); //Update positions of nodes in game

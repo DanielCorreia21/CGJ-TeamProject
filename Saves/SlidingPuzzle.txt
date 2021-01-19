@@ -1,8 +1,8 @@
 #camera
-angles -10.200003 70.600006 0.000000
+angles 1.500000 -45.899994 0.000000
 projectionType perspective
 rotationType euler
-translationVector 0.000000 0.000000 -17.599998
+translationVector 0.000000 0.000000 -14.100016
 #endcamera
 
 #shaderProgram
@@ -19,14 +19,6 @@ shaderUniforms Color NoiseTexture Texture
 shaderAtributes NONE
 vertexShaderPath ../Resources/texture_vs.glsl
 fragmentShaderPath ../Resources/marble_fs.glsl
-#endshaderProgram
-
-#shaderProgram
-shaderProgramMapName Wood
-shaderUniforms Color NoiseTexture Texture 
-shaderAtributes NONE
-vertexShaderPath ../Resources/texture_vs.glsl
-fragmentShaderPath ../Resources/wood_fs.glsl
 #endshaderProgram
 
 #shaderProgram
@@ -85,7 +77,7 @@ localMatrix 11.000000 0.000000 0.000000 0.000000 0.000000 11.000000 0.000000 0.0
 texturePaths NONE
 textureUniforms NONE
 textureMapNames NONE
-shaderProgramName Wood
+shaderProgramName Wood Shader
 preDrawFunName BlueColor
 #endsceneNode
 
@@ -193,7 +185,7 @@ nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
 meshMapName cube
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 -0.400000 0.000000 1.000000 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 0.000000 0.000000 1.000000 
 texturePaths marble ../numbers/1.png 
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_1 
@@ -209,7 +201,7 @@ nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
 meshMapName cube
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 0.400000 0.000000 1.000000 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 0.400000 0.000000 1.000000 
 texturePaths marble ../numbers/2.png 
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_2 
@@ -225,7 +217,7 @@ nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
 meshMapName cube
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.400000 0.000000 1.000000 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 -0.400000 0.000000 1.000000 
 texturePaths marble ../numbers/3.png 
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_3 
@@ -241,7 +233,7 @@ nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
 meshMapName cube
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -0.400000 0.000000 1.000000 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 0.000000 0.000000 1.000000 
 texturePaths marble ../numbers/4.png 
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_4 
@@ -257,7 +249,7 @@ nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
 meshMapName cube
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 0.000000 0.000000 1.000000 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 -0.400000 0.000000 1.000000 
 texturePaths marble ../numbers/5.png 
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_5 
@@ -273,7 +265,7 @@ nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
 meshMapName cube
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.400000 0.400000 0.000000 1.000000 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -0.400000 0.000000 1.000000 
 texturePaths marble ../numbers/6.png 
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_6 
@@ -289,7 +281,7 @@ nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
 meshMapName cube
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 -0.400000 0.000000 1.000000 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -0.400000 0.400000 0.000000 1.000000 
 texturePaths marble ../numbers/7.png 
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_7 
@@ -305,7 +297,7 @@ nodeType slidepuzzle
 hasSceneGraph false
 meshPath ../objs/cube5.obj
 meshMapName cube
-localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 
+localMatrix 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.400000 0.000000 1.000000 
 texturePaths marble ../numbers/8.png 
 textureUniforms NoiseTexture Texture 
 textureMapNames marble number_8 

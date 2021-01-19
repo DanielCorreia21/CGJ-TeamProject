@@ -3,11 +3,7 @@
 
 using namespace std;
 
-bool menuIshowing = true;
-bool pause = false;
-bool buttonPressed = false;
-bool exitomenu = false;
-bool exitgame = false;
+
 
 const string SLIDING_PUZZLE_SCENE_GRAPH = "SlidingPuzzle";
 const string MENU_SCENE_GRAPH = "MainMenu";
@@ -32,6 +28,7 @@ const char menuFragmentShaderPath[] = "../Resources/menu_fs.glsl";
 const char woodFragmentShaderPath[] = "../Resources/wood_fs.glsl";
 
 const string snapshots_directory = "../Snapshots/";
+const string saves_dir = "../Saves/";
 
 const string cubeMeshPath = "../objs/cube5.obj";
 const string discMeshPath = "../objs/disc.obj";
