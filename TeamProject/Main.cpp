@@ -705,24 +705,25 @@ void takeSnapshot() {
 	
 
 	//creates directory if it doesnt exist
-	if (_mkdir(snapshots_directory.c_str()) != ENOENT) {
-		//if directory was created or already exists:
-
-		string name = regex_replace(str, regex{ " " }, "_");
-		string accepted_name = regex_replace(name, regex{ ":" }, "-");
-
-		string file_type = ".png";
-		string fullname = snapshots_directory + accepted_name.substr(0, accepted_name.size() - 1) + file_type;
-
-		int stride = width * 3;
-
-		FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, stride, 24, 0, 0, 0, false);
-		FreeImage_Save(FIF_PNG, image, fullname.c_str(), 0);
-
-		// Free resources
-		FreeImage_Unload(image);
-		free(pixels);
+	if (_mkdir(snapshots_directory.c_str()) == ENOENT) {
+		cerr << "Path to " + snapshots_directory + " not found!";
+		return;
 	}
+
+	string name = regex_replace(str, regex{ " " }, "_");
+	string accepted_name = regex_replace(name, regex{ ":" }, "-");
+
+	string file_type = ".png";
+	string fullname = snapshots_directory + accepted_name.substr(0, accepted_name.size() - 1) + file_type;
+
+	int stride = width * 3;
+
+	FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, stride, 24, 0, 0, 0, false);
+	FreeImage_Save(FIF_PNG, image, fullname.c_str(), 0);
+
+	// Free resources
+	FreeImage_Unload(image);
+	free(pixels);
 }
 
 
